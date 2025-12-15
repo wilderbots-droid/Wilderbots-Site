@@ -3,11 +3,10 @@
  * Run with: node scripts/create-admin.js
  */
 
-const mongoose = require('mongoose')
-const bcrypt = require('bcryptjs')
-const readline = require('readline')
-
-const MONGODB_URI = 'mongodb+srv://wilderbots_db_user:8JBo8irTcBbRFAMB@wilderbotssite.lwn8esy.mongodb.net/wilderbots_db?retryWrites=true&w=majority'
+import mongoose from 'mongoose'
+import bcrypt from 'bcryptjs'
+import readline from 'readline'
+import connectDB from '../lib/mongodb.js'
 
 const AdminSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true, lowercase: true, trim: true },
@@ -36,7 +35,7 @@ function question(query) {
 
 async function createAdmin() {
   try {
-    await mongoose.connect(MONGODB_URI)
+    await connectDB()
     console.log('Connected to MongoDB\n')
 
     const name = await question('Enter admin name: ')

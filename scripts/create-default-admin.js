@@ -3,10 +3,9 @@
  * Run with: node scripts/create-default-admin.js
  */
 
-const mongoose = require('mongoose')
-const bcrypt = require('bcryptjs')
-
-const MONGODB_URI = 'mongodb+srv://wilderbots_db_user:8JBo8irTcBbRFAMB@wilderbotssite.lwn8esy.mongodb.net/wilderbots_db?retryWrites=true&w=majority'
+import mongoose from 'mongoose'
+import bcrypt from 'bcryptjs'
+import connectDB from '../lib/mongodb.js'
 
 const AdminSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true, lowercase: true, trim: true },
@@ -20,7 +19,7 @@ const Admin = mongoose.models.Admin || mongoose.model('Admin', AdminSchema)
 
 async function createDefaultAdmin() {
   try {
-    await mongoose.connect(MONGODB_URI)
+    await connectDB()
     console.log('Connected to MongoDB\n')
 
     const defaultEmail = 'admin@wilderbots.com'

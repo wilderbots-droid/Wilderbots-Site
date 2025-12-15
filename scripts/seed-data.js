@@ -3,10 +3,9 @@
  * Run with: node scripts/seed-data.js
  */
 
-const mongoose = require('mongoose')
-const bcrypt = require('bcryptjs')
-
-const MONGODB_URI = 'mongodb+srv://wilderbots_db_user:8JBo8irTcBbRFAMB@wilderbotssite.lwn8esy.mongodb.net/wilderbots_db?retryWrites=true&w=majority'
+import mongoose from 'mongoose'
+import bcrypt from 'bcryptjs'
+import connectDB from '../lib/mongodb.js'
 
 // Schemas
 const ServiceSchema = new mongoose.Schema({
@@ -116,7 +115,7 @@ const Policy = mongoose.models.Policy || mongoose.model('Policy', PolicySchema)
 
 async function seedData() {
   try {
-    await mongoose.connect(MONGODB_URI)
+    await connectDB()
     console.log('Connected to MongoDB\n')
 
     // Seed Services
