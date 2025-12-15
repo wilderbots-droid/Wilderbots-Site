@@ -437,8 +437,8 @@ export default function OrderPage({ onBack }) {
             
             <div className="aspect-video bg-black rounded-xl overflow-hidden mb-6 relative group">
               <Image 
-                src="https://images.unsplash.com/photo-1551817958-c9b54d85239e?q=80&w=2070&auto=format&fit=crop" 
-                alt="Dev Kit" 
+                src="/kit.png"
+                alt="Wilder Watch Dev Kit" 
                 fill
                 className="object-cover opacity-80"
                 unoptimized
@@ -591,9 +591,27 @@ export default function OrderPage({ onBack }) {
                   <span className="font-bold">Secure Payment via Razorpay</span>
                   <p className="text-xs text-gray-400 mt-1">Pay securely using Credit/Debit Card, UPI, Net Banking, or Wallets</p>
                 </div>
-                <div className="ml-auto flex gap-2">
-                  <div className="w-8 h-5 bg-white/10 rounded"></div>
-                  <div className="w-8 h-5 bg-white/10 rounded"></div>
+                <div className="ml-auto flex gap-2 items-center">
+                  {/* Visa Logo */}
+                  <div className="relative w-12 h-8">
+                    <Image 
+                      src="/visa-logo.svg"
+                      alt="Visa"
+                      fill
+                      className="object-contain"
+                      unoptimized
+                    />
+                  </div>
+                  {/* Mastercard Logo */}
+                  <div className="relative w-12 h-8">
+                    <Image 
+                      src="/mastercard-logo.svg"
+                      alt="Mastercard"
+                      fill
+                      className="object-contain"
+                      unoptimized
+                    />
+                  </div>
                 </div>
               </div>
               <div className="p-4 bg-blue-900/10 border border-blue-500/20 rounded-lg">
