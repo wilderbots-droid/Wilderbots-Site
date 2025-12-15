@@ -35,3 +35,4 @@ MaintenanceSchema.statics.getMaintenance = async function() {
 }
 
 export default mongoose.models.Maintenance || mongoose.model('Maintenance', MaintenanceSchema)
+

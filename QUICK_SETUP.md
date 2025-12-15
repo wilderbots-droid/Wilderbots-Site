@@ -110,3 +110,4 @@ Both emails use the same Hostinger servers:
 - **Check Status:** Run `node scripts/check-email-setup.js` to verify
 
 
+

@@ -105,3 +105,4 @@ EmailSchema.index({ subject: 'text', text: 'text', html: 'text' })
 export default mongoose.models.Email || mongoose.model('Email', EmailSchema)
 
 
+

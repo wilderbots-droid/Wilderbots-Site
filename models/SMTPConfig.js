@@ -98,3 +98,4 @@ SMTPConfigSchema.pre('save', async function() {
 export default mongoose.models.SMTPConfig || mongoose.model('SMTPConfig', SMTPConfigSchema)
 
 
+
