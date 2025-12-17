@@ -180,20 +180,7 @@ export default function ContactUsPage({ onBack }) {
       other: MessageSquare
     }
 
-    // If we have managed email addresses, use them
-    if (emailAddresses.length > 0) {
-      return emailAddresses.map((emailAddr) => {
-        const Icon = purposeIconMap[emailAddr.purpose] || MessageSquare
-        return {
-          icon: Icon,
-          title: emailAddr.label,
-          email: emailAddr.email,
-          description: emailAddr.description || `Contact us for ${emailAddr.purpose} inquiries`
-        }
-      })
-    }
-
-    // Fallback to company info departments
+    // Priority 1: Use company info departments if configured
     if (companyInfo && companyInfo.departments && companyInfo.departments.length > 0) {
       return companyInfo.departments.map((dept, index) => {
         const iconKeys = Object.keys(iconMap)
@@ -203,6 +190,19 @@ export default function ContactUsPage({ onBack }) {
           title: dept.title,
           email: dept.email,
           description: dept.description
+        }
+      })
+    }
+
+    // Priority 2: Fallback to managed email addresses
+    if (emailAddresses.length > 0) {
+      return emailAddresses.map((emailAddr) => {
+        const Icon = purposeIconMap[emailAddr.purpose] || MessageSquare
+        return {
+          icon: Icon,
+          title: emailAddr.label,
+          email: emailAddr.email,
+          description: emailAddr.description || `Contact us for ${emailAddr.purpose} inquiries`
         }
       })
     }
