@@ -2,6 +2,8 @@ import { getAdminFromRequest } from '../../../lib/adminAuth'
 import formidable from 'formidable'
 import fs from 'fs'
 import path from 'path'
+import connectDB from '../../../lib/mongodb'
+import Avatar from '../../../models/Avatar'
 
 export const config = {
   api: {
@@ -19,17 +21,10 @@ export default async function handler(req, res) {
     return res.status(401).json({ error: 'Unauthorized' })
   }
 
-  try {
-    const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'avatars')
-    
-    // Ensure upload directory exists
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true })
-    }
+  await connectDB()
 
+  try {
     const form = formidable({
-      uploadDir,
-      keepExtensions: true,
       maxFileSize: 5 * 1024 * 1024, // 5MB
       filter: (part) => {
         // Only allow image files
@@ -45,23 +40,37 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'No file uploaded' })
     }
 
+    // Read file data
+    const fileData = fs.readFileSync(file.filepath)
+    
     // Generate unique filename
     const timestamp = Date.now()
     const originalName = file.originalFilename || 'avatar'
     const ext = path.extname(originalName) || '.jpg'
     const filename = `avatar_${timestamp}${ext}`
-    const filepath = path.join(uploadDir, filename)
 
-    // Move file to final location
-    fs.renameSync(file.filepath, filepath)
+    // Save to MongoDB
+    const avatar = new Avatar({
+      filename: filename,
+      data: fileData,
+      contentType: file.mimetype || 'image/jpeg',
+      size: file.size,
+      uploadedBy: admin.id
+    })
 
-    // Return the public URL
-    const publicUrl = `/uploads/avatars/${filename}`
+    await avatar.save()
+
+    // Clean up temporary file
+    fs.unlinkSync(file.filepath)
+
+    // Return the API URL to serve the image
+    const publicUrl = `/api/admin/avatar/${avatar._id}`
 
     res.status(200).json({
       success: true,
       url: publicUrl,
-      filename: filename
+      filename: filename,
+      id: avatar._id.toString()
     })
   } catch (error) {
     console.error('Upload error:', error)

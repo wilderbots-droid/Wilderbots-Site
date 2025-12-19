@@ -126,13 +126,24 @@ export default function AdminTeam() {
         ? `/api/admin/team?id=${editingId}`
         : '/api/admin/team'
       
+      // Ensure social object is always properly structured
+      const dataToSave = {
+        ...formData,
+        social: {
+          linkedin: formData.social?.linkedin || '',
+          github: formData.social?.github || '',
+          email: formData.social?.email || '',
+          twitter: formData.social?.twitter || ''
+        }
+      }
+      
       const response = await fetch(url, {
         method: editingId ? 'PUT' : 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(dataToSave),
       })
 
       if (response.ok) {
@@ -342,10 +353,10 @@ export default function AdminTeam() {
                   </label>
                   <input
                     type="url"
-                    value={formData.social.linkedin}
+                    value={formData.social?.linkedin || ''}
                     onChange={(e) => setFormData({
                       ...formData,
-                      social: { ...formData.social, linkedin: e.target.value }
+                      social: { ...(formData.social || {}), linkedin: e.target.value }
                     })}
                     className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                     placeholder="https://linkedin.com/in/..."
@@ -358,10 +369,10 @@ export default function AdminTeam() {
                   </label>
                   <input
                     type="url"
-                    value={formData.social.github}
+                    value={formData.social?.github || ''}
                     onChange={(e) => setFormData({
                       ...formData,
-                      social: { ...formData.social, github: e.target.value }
+                      social: { ...(formData.social || {}), github: e.target.value }
                     })}
                     className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                     placeholder="https://github.com/..."
@@ -374,10 +385,10 @@ export default function AdminTeam() {
                   </label>
                   <input
                     type="email"
-                    value={formData.social.email}
+                    value={formData.social?.email || ''}
                     onChange={(e) => setFormData({
                       ...formData,
-                      social: { ...formData.social, email: e.target.value }
+                      social: { ...(formData.social || {}), email: e.target.value }
                     })}
                     className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                     placeholder="email@example.com"
@@ -390,10 +401,10 @@ export default function AdminTeam() {
                   </label>
                   <input
                     type="url"
-                    value={formData.social.twitter}
+                    value={formData.social?.twitter || ''}
                     onChange={(e) => setFormData({
                       ...formData,
-                      social: { ...formData.social, twitter: e.target.value }
+                      social: { ...(formData.social || {}), twitter: e.target.value }
                     })}
                     className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                     placeholder="https://twitter.com/..."
