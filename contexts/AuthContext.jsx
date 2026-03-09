@@ -1,10 +1,14 @@
-import { createContext, useContext, useState, useEffect } from 'react'
+import { createContext, useContext, useState, useEffect, useRef } from 'react'
+import { useRouter } from 'next/router'
 
 const AuthContext = createContext()
+const INACTIVITY_TIMEOUT = 15 * 60 * 1000 // 15 minutes in milliseconds
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
+  const inactivityTimerRef = useRef(null)
+  const router = useRouter()
 
   useEffect(() => {
     // Check for existing session on mount
@@ -42,14 +46,14 @@ export function AuthProvider({ children }) {
     }
   }
 
-  const signup = async (name, email, password) => {
+  const signup = async (name, email, password, mobile) => {
     try {
       const response = await fetch('/api/auth/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({ name, email, password, mobile }),
       })
 
       const data = await response.json()
@@ -94,6 +98,60 @@ export function AuthProvider({ children }) {
     localStorage.removeItem('wilderbots_orders')
     setUser(null)
   }
+
+  const logoutDueToInactivity = () => {
+    logout()
+    router.push('/login')
+  }
+
+  const resetInactivityTimer = () => {
+    // Clear existing timer
+    if (inactivityTimerRef.current) {
+      clearTimeout(inactivityTimerRef.current)
+    }
+
+    // Only set timer if user is logged in
+    if (user) {
+      inactivityTimerRef.current = setTimeout(() => {
+        logoutDueToInactivity()
+      }, INACTIVITY_TIMEOUT)
+    }
+  }
+
+  // Setup inactivity detection
+  useEffect(() => {
+    if (!user) {
+      // Clear timer if user is not logged in
+      if (inactivityTimerRef.current) {
+        clearTimeout(inactivityTimerRef.current)
+      }
+      return
+    }
+
+    // Define activity handler
+    const handleActivity = () => {
+      resetInactivityTimer()
+    }
+
+    // Add event listeners for various user activities
+    const events = ['mousedown', 'keydown', 'scroll', 'touchstart', 'click']
+    events.forEach(event => {
+      window.addEventListener(event, handleActivity)
+    })
+
+    // Set initial timer
+    resetInactivityTimer()
+
+    // Cleanup function
+    return () => {
+      events.forEach(event => {
+        window.removeEventListener(event, handleActivity)
+      })
+      if (inactivityTimerRef.current) {
+        clearTimeout(inactivityTimerRef.current)
+      }
+    }
+  }, [user])
 
   const getOrders = () => {
     const orders = localStorage.getItem('wilderbots_orders')

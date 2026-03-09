@@ -589,9 +589,22 @@ export default function AdminEmailManagement() {
   }
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h2 className="text-2xl font-bold text-white flex items-center">
+            <Mail className="w-6 h-6 mr-2 text-purple-400" />
+            Email Management
+          </h2>
+          <p className="text-sm text-gray-400 mt-1">
+            Manage your emails, compose messages, and configure SMTP accounts
+          </p>
+        </div>
+      </div>
+
       {/* Tabs */}
-      <div className="flex flex-col gap-4 border-b border-gray-800 pb-4 mb-4 flex-shrink-0">
+      <div className="flex flex-col gap-4 border-b border-gray-800 pb-4 flex-shrink-0">
         {/* Main Tabs */}
         <div className="flex items-center gap-4">
           <button

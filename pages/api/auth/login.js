@@ -17,13 +17,29 @@ export default async function handler(req, res) {
 
     // Validate input
     if (!email || !password) {
-      return res.status(400).json({ error: 'Email and password are required' })
+      return res.status(400).json({ error: 'Email/Mobile and password are required' })
     }
 
-    // Find user
-    const user = await User.findOne({ email: email.toLowerCase() })
-    if (!user) {
-      return res.status(401).json({ error: 'Invalid email or password' })
+    // Determine if input is email or mobile
+    const isEmail = email.includes('@')
+    let user
+
+    if (isEmail) {
+      // Find user by email
+      user = await User.findOne({ email: email.toLowerCase() })
+      if (!user) {
+        return res.status(401).json({ error: 'Invalid email or password' })
+      }
+    } else {
+      // Find user by mobile
+      const mobileRegex = /^[0-9]{10}$/
+      if (!mobileRegex.test(email)) {
+        return res.status(400).json({ error: 'Please enter a valid email or 10-digit mobile number' })
+      }
+      user = await User.findOne({ phone: email })
+      if (!user) {
+        return res.status(401).json({ error: 'Invalid mobile number or password' })
+      }
     }
 
     // Check if user is blocked
@@ -38,7 +54,7 @@ export default async function handler(req, res) {
     // Verify password
     const isPasswordValid = await bcrypt.compare(password, user.password)
     if (!isPasswordValid) {
-      return res.status(401).json({ error: 'Invalid email or password' })
+      return res.status(401).json({ error: isEmail ? 'Invalid email or password' : 'Invalid mobile number or password' })
     }
 
     // Update last login
@@ -57,6 +73,7 @@ export default async function handler(req, res) {
       id: user._id.toString(),
       name: user.name,
       email: user.email,
+      phone: user.phone,
       createdAt: user.createdAt,
       lastLogin: user.lastLogin
     }

@@ -76,6 +76,7 @@ export default function ContactUsPage({ onBack }) {
     setSubmitStatus(null)
 
     try {
+      console.log('Submitting contact form...')
       const token = localStorage.getItem('wilderbots_token')
       const headers = {
         'Content-Type': 'application/json',
@@ -84,19 +85,24 @@ export default function ContactUsPage({ onBack }) {
         headers['Authorization'] = `Bearer ${token}`
       }
 
+      console.log('Form data:', formData)
+
       const response = await fetch('/api/contact', {
         method: 'POST',
         headers,
         body: JSON.stringify(formData),
       })
 
+      console.log('Response status:', response.status)
       const data = await response.json()
+      console.log('Response data:', data)
 
-      if (response.ok) {
+      if (response.ok || response.status === 201) {
+        console.log('✅ Contact submitted successfully')
         setSubmitStatus('success')
         setFormData({
-          name: '',
-          email: '',
+          name: user?.name || '',
+          email: user?.email || '',
           subject: '',
           category: 'general',
           message: ''
@@ -107,13 +113,14 @@ export default function ContactUsPage({ onBack }) {
           setSubmitStatus(null)
         }, 5000)
       } else {
+        console.error('❌ Contact submission failed:', response.status, data)
         setSubmitStatus('error')
         setTimeout(() => {
           setSubmitStatus(null)
         }, 5000)
       }
     } catch (error) {
-      console.error('Error submitting contact form:', error)
+      console.error('❌ Error submitting contact form:', error)
       setSubmitStatus('error')
       setTimeout(() => {
         setSubmitStatus(null)

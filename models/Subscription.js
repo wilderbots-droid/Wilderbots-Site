@@ -1,6 +1,7 @@
 import mongoose from 'mongoose'
 
-const SubscriptionSchema = new mongoose.Schema({
+// Absolutely minimal schema - no options, no hooks, no middleware
+const subscriptionSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
@@ -23,24 +24,17 @@ const SubscriptionSchema = new mongoose.Schema({
   },
   unsubscribedAt: {
     type: Date
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now
-  },
-  updatedAt: {
-    type: Date,
-    default: Date.now
   }
 })
 
-SubscriptionSchema.pre('save', function(next) {
-  this.updatedAt = Date.now()
-  if (this.status === 'unsubscribed' && !this.unsubscribedAt) {
-    this.unsubscribedAt = Date.now()
-  }
-  next()
-})
+// Get or create model
+let SubscriptionModel
 
-export default mongoose.models.Subscription || mongoose.model('Subscription', SubscriptionSchema)
+try {
+  SubscriptionModel = mongoose.model('Subscription')
+} catch (error) {
+  SubscriptionModel = mongoose.model('Subscription', subscriptionSchema)
+}
+
+export default SubscriptionModel
 

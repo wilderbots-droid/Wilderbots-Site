@@ -129,7 +129,7 @@ export default function ServicesSection() {
               const colors = getColorClasses(color)
               const IconComponent = getIconComponent(service.icon)
               return (
-                <div key={service._id || index} className={`group bg-black border border-white/10 rounded-3xl p-8 ${colors.border} transition-all hover:-translate-y-2 scroll-fade-in`} style={{ transitionDelay: `${index * 0.1}s` }}>
+                <div key={service._id || index} className={`group bg-black border border-white/10 rounded-3xl p-8 ${colors.border} transition-all hover:-translate-y-2`}>
                   <div className={`w-14 h-14 bg-gradient-to-br ${colors.bg} rounded-2xl flex items-center justify-center mb-6 shadow-lg ${colors.shadow}`}>
                     <IconComponent className="text-white w-7 h-7" />
                   </div>
