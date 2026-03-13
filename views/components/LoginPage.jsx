@@ -62,7 +62,7 @@ export default function LoginPage({ onBack }) {
     // Prevent duplicate requests
     if (oauthLoading) return
     
-    if (provider === 'google') {
+    if (provider === 'firebase' || provider === 'google') {
       setOAuthLoading(provider)
       setError('')
       try {
