@@ -1,10 +1,24 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Cpu, Zap, ArrowRight, Ruler, Smartphone, Terminal, PenTool, Github, Box, Database, Wrench, X, Check, Code, Video, Heart, Smile, Settings, Bell, Store, CheckCircle } from 'lucide-react'
 import Image from 'next/image'
 
 export default function ProductSection({ onOrderClick }) {
   const [tilt, setTilt] = useState({ x: 0, y: 0 })
   const [showBoxContents, setShowBoxContents] = useState(false)
+  const [product, setProduct] = useState({})
+
+  useEffect(() => {
+    const fetchProductDetails = async () => {
+      try {
+        const response = await fetch('/api/product')
+        const data = await response.json()
+        setProduct(data)
+      } catch (error) {
+        console.error('Error fetching product details:', error)
+      }
+    }
+    fetchProductDetails()
+  }, [])
 
   const handleMouseMove = (e) => {
     const { left, top, width, height } = e.currentTarget.getBoundingClientRect()
@@ -21,18 +35,17 @@ export default function ProductSection({ onOrderClick }) {
     <section id="products" className="py-24 px-6 bg-black relative">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-20 space-y-4 scroll-fade-in">
-          <h2 className="text-4xl md:text-6xl font-bold tracking-tight">Not just a Watch.<br/>It's a Workshop.</h2>
-          <p className="text-xl text-gray-400">The Wilder Watch Development Kit. You don't just buy it. You build it.</p>
+          <h2 className="text-4xl md:text-6xl font-bold tracking-tight">{product.title || 'Not just a Watch.<br/>It\'s a Workshop.'}</h2>
+          <p className="text-xl text-gray-400">{product.subtitle || 'The Wilder Watch Development Kit. You don\'t just buy it. You build it.'}</p>
         </div>
 
         {/* Main Product Feature with INTERACTIVE IMAGE */}
         <div className="bg-neutral-900 rounded-[2.5rem] p-8 md:p-0 overflow-hidden mb-8 grid md:grid-cols-2 items-center scroll-fade-in">
           <div className="p-8 md:p-20 space-y-8 order-2 md:order-1">
-            <div className="inline-block px-4 py-1 bg-green-500/20 text-green-400 rounded-full text-sm font-bold">Development Kit Edition</div>
-            <h3 className="text-4xl md:text-5xl font-bold leading-tight">Engineered by <br/>You.</h3>
+            <div className="inline-block px-4 py-1 bg-green-500/20 text-green-400 rounded-full text-sm font-bold">{product.edition || 'Development Kit Edition'}</div>
+            <h3 className="text-4xl md:text-5xl font-bold leading-tight">{product.engineeredBy || 'Engineered by <br/>You.'}</h3>
             <p className="text-gray-400 text-lg">
-              The Wilder Watch arrives as a modular kit. Follow our interactive guides to assemble the PCB, display, and battery. 
-              Then, flash your own code or use our open-source OS to customize every watch face, gesture, and AI feature.
+              {product.description || 'The Wilder Watch arrives as a modular kit. Follow our interactive guides to assemble the PCB, display, and battery. Then, flash your own code or use our open-source OS to customize every watch face, gesture, and AI feature.'}
             </p>
             <div className="flex gap-4 pt-4">
               <button 
@@ -40,7 +53,7 @@ export default function ProductSection({ onOrderClick }) {
                 className="px-6 py-3 bg-green-500 text-black font-bold rounded-full hover:bg-green-400 transition-all flex items-center gap-2"
                 aria-label="Pre-order Wilder Watch Dev Kit"
               >
-                Pre-order Kit ($299) <ArrowRight size={18} />
+                Pre-order Kit (Rs {product.price || '299'}) <ArrowRight size={18} />
               </button>
               <button 
                 onClick={() => setShowBoxContents(true)}
@@ -62,7 +75,7 @@ export default function ProductSection({ onOrderClick }) {
               style={{ transform: `rotateX(${tilt.x}deg) rotateY(${tilt.y}deg) scale(1.05)` }}
             >
               <Image 
-                src="/kit.png" 
+                src={product.image || '/kit.png'} 
                 alt="Wilder Watch Development Kit" 
                 width={700}
                 height={800}

@@ -78,7 +78,7 @@ export default function FAQPage({ onBack }) {
     { 
       category: "Ordering & Shipping",
       q: "What is the price of the Wilder Watch Dev Kit?", 
-      a: "The Wilder Watch Dev Kit is priced at $299.00. This includes all components, assembly guide, and access to our open-source firmware. Shipping costs may vary by location and will be calculated at checkout." 
+      a: "The Wilder Watch Dev Kit is priced at Rs 299.00. This includes all components, assembly guide, and access to our open-source firmware. Shipping costs may vary by location and will be calculated at checkout." 
     },
     { 
       category: "Ordering & Shipping",

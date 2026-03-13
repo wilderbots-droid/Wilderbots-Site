@@ -205,7 +205,7 @@ export default function OrderTrackerPage({ onBack }) {
                       <p className="font-bold">Wilder Watch Dev Kit</p>
                       <p className="text-sm text-gray-400">Complete Edition • Onyx Black PCB</p>
                     </div>
-                    <p className="font-bold">$299.00</p>
+                    <p className="font-bold">Rs 299.00</p>
                   </div>
                   <div className="flex justify-between items-center pt-4">
                     <p className="text-gray-400">Shipping Address</p>
@@ -223,7 +223,7 @@ export default function OrderTrackerPage({ onBack }) {
                   </div>
                   <div className="flex justify-between items-center pt-4 border-t border-white/10">
                     <p className="text-xl font-bold">Total</p>
-                    <p className="text-xl font-bold">$299.00</p>
+                    <p className="text-xl font-bold">Rs 299.00</p>
                   </div>
                 </div>
               </div>

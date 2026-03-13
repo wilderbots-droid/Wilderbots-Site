@@ -1,6 +1,7 @@
 import mongoose from 'mongoose'
 
-const ContactSchema = new mongoose.Schema({
+// Minimal Contact schema without problematic hooks
+const contactSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
@@ -47,10 +48,14 @@ const ContactSchema = new mongoose.Schema({
   }
 })
 
-ContactSchema.pre('save', function(next) {
-  this.updatedAt = Date.now()
-  next()
-})
+// Get or create model
+let ContactModel
 
-export default mongoose.models.Contact || mongoose.model('Contact', ContactSchema)
+try {
+  ContactModel = mongoose.model('Contact')
+} catch (error) {
+  ContactModel = mongoose.model('Contact', contactSchema)
+}
+
+export default ContactModel
 

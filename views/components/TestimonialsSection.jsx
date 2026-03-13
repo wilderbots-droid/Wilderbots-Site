@@ -59,7 +59,7 @@ export default function TestimonialsSection() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {testimonials.slice(0, 3).map((testimonial, i) => (
-              <div key={testimonial._id || i} className="bg-neutral-900/50 border border-white/10 rounded-3xl p-8 relative scroll-fade-in" style={{ transitionDelay: `${i * 0.15}s` }}>
+              <div key={testimonial._id || i} className="bg-neutral-900/50 border border-white/10 rounded-3xl p-8 relative">
                 <Quote className="absolute top-8 right-8 text-white/10 w-12 h-12" />
                 <div className="flex items-center gap-4 mb-6">
                   <Image 

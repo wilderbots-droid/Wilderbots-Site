@@ -1,8 +1,57 @@
+import { useState, useEffect } from 'react'
 import { ArrowLeft, ArrowRight, Box, Terminal, Github, Cpu, Zap, Ruler, Smartphone, Database, Wrench, PenTool, CheckCircle, Code, Video, FileText, Heart, Mic, Smile, Settings, Bell, Store, Bot, Calendar, Home } from 'lucide-react'
 import Image from 'next/image'
 import Logo from './Logo'
 
 export default function DevKitLandingPage({ onBack, onOrder }) {
+  const [product, setProduct] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+
+  useEffect(() => {
+    fetchProduct()
+  }, [])
+
+  const fetchProduct = async () => {
+    try {
+      const response = await fetch('/api/product')
+      if (!response.ok) {
+        throw new Error('Failed to fetch product')
+      }
+      const data = await response.json()
+      setProduct(data)
+    } catch (err) {
+      setError(err.message)
+      console.error('Error fetching product:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-black text-white font-sans flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-green-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p>Loading product...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error || !product) {
+    return (
+      <div className="min-h-screen bg-black text-white font-sans flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-400 mb-4">Error loading product: {error}</p>
+          <button onClick={onBack} className="text-green-400 hover:text-green-300">
+            Go Back
+          </button>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-black text-white font-sans selection:bg-green-500 selection:text-black overflow-x-hidden">
       {/* Header */}
@@ -12,7 +61,7 @@ export default function DevKitLandingPage({ onBack, onOrder }) {
         </button>
         <div className="flex items-center gap-2">
           <Logo size={35} showText={false} />
-          <span className="font-bold">Wilder Watch Dev Kit</span>
+          <span className="font-bold">Wilder Watch {product.edition}</span>
         </div>
         <div className="w-16"></div>
       </div>
@@ -24,21 +73,20 @@ export default function DevKitLandingPage({ onBack, onOrder }) {
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="grid md:grid-cols-2 gap-16 items-center">
             <div className="space-y-8">
-              <div className="inline-block px-4 py-1 bg-green-500/20 text-green-400 rounded-full text-sm font-bold">Development Kit Edition</div>
+              <div className="inline-block px-4 py-1 bg-green-500/20 text-green-400 rounded-full text-sm font-bold">{product.edition}</div>
               <h1 className="text-5xl md:text-7xl font-bold leading-tight">
-                Not just a Watch.<br/>
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-blue-500">It's a Workshop.</span>
+                {product.title}<br/>
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-blue-500">{product.subtitle}</span>
               </h1>
               <p className="text-xl text-gray-300 leading-relaxed">
-                The Wilder Watch arrives as a modular kit. Follow our interactive guides to assemble the PCB, display, and battery. 
-                Then, flash your own code or use our open-source OS to customize every watch face, gesture, and AI feature.
+                {product.description}
               </p>
               <div className="flex flex-col sm:flex-row gap-4 pt-4">
                 <button 
                   onClick={onOrder}
                   className="px-8 py-4 bg-green-500 text-black font-bold rounded-full hover:bg-green-400 transition-all transform hover:scale-105 flex items-center justify-center gap-2"
                 >
-                  Order Now ($299) <ArrowRight size={20} />
+                  Order Now (Rs {product.price}) <ArrowRight size={20} />
                 </button>
                 <a 
                   href="https://github.com/wilderbots" 
@@ -53,8 +101,8 @@ export default function DevKitLandingPage({ onBack, onOrder }) {
             <div className="relative">
               <div className="aspect-video bg-gradient-to-br from-neutral-800 to-neutral-900 rounded-3xl overflow-hidden flex items-center justify-center">
                 <Image 
-                  src="/kit.png" 
-                  alt="Wilder Watch Development Kit" 
+                  src={product.image} 
+                  alt={product.title} 
                   width={800}
                   height={600}
                   className="object-contain"
@@ -361,7 +409,7 @@ export default function DevKitLandingPage({ onBack, onOrder }) {
             onClick={onOrder}
             className="px-12 py-5 bg-green-500 text-black font-bold text-xl rounded-full hover:bg-green-400 transition-all transform hover:scale-105 flex items-center justify-center gap-2 mx-auto"
           >
-            Order Your Dev Kit ($299) <ArrowRight size={24} />
+            Order Your Dev Kit (Rs {product.price}) <ArrowRight size={24} />
           </button>
           <p className="text-sm text-gray-500 mt-6">
             Free shipping worldwide • 10-day processing time • 30-day money-back guarantee

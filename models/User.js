@@ -14,7 +14,25 @@ const UserSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: true
+    required: function() {
+      // Password is required only if not using OAuth
+      return !this.authProvider
+    }
+  },
+  authProvider: {
+    type: String,
+    enum: ['google', 'github', 'facebook', null],
+    default: null
+  },
+  authProviderId: {
+    type: String
+  },
+  avatar: {
+    type: String
+  },
+  isEmailVerified: {
+    type: Boolean,
+    default: false
   },
   address: {
     street: String,

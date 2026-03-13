@@ -73,12 +73,12 @@ export default function Navigation() {
           <Link href="/contact" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">Contact</Link>
           {user ? (
             <>
+              <span className="px-5 py-2 text-white text-sm font-semibold flex items-center gap-2">
+                <User size={18} /> {user.name}
+              </span>
               <Link href="/dashboard" className="px-5 py-2 bg-purple-600 text-white text-sm font-bold rounded-full hover:bg-purple-700 transition-all transform hover:scale-105 flex items-center gap-2">
                 <User size={18} /> Dashboard
               </Link>
-              <button onClick={handleLogout} className="px-5 py-2 bg-red-600 text-white text-sm font-bold rounded-full hover:bg-red-700 transition-all transform hover:scale-105 flex items-center gap-2">
-                <LogOut size={18} /> Logout
-              </button>
             </>
           ) : (
             <Link href="/login" className="px-5 py-2 bg-purple-600 text-white text-sm font-bold rounded-full hover:bg-purple-700 transition-all transform hover:scale-105 flex items-center gap-2">
@@ -112,12 +112,12 @@ export default function Navigation() {
           <Link href="/contact" className="text-lg font-medium text-left">Contact</Link>
           {user ? (
             <>
+              <div className="w-full py-3 text-white text-center font-semibold flex items-center justify-center gap-2">
+                <User size={18} /> {user.name}
+              </div>
               <Link href="/dashboard" className="w-full py-3 bg-purple-600 text-white text-center font-bold rounded-full flex items-center justify-center gap-2">
                 <User size={18} /> Dashboard
               </Link>
-              <button onClick={handleLogout} className="w-full py-3 bg-red-600 text-white text-center font-bold rounded-full flex items-center justify-center gap-2">
-                <LogOut size={18} /> Logout
-              </button>
             </>
           ) : (
             <Link href="/login" className="w-full py-3 bg-purple-600 text-white text-center font-bold rounded-full flex items-center justify-center gap-2">

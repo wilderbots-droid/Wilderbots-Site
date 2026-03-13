@@ -453,7 +453,7 @@ export default function OrderPage({ onBack }) {
             </div>
             <div className="flex justify-between items-center text-xl font-bold border-t border-white/10 pt-4">
               <span>Total</span>
-              <span>$299.00</span>
+              <span>Rs 299.00</span>
             </div>
           </div>
           <div className="bg-blue-900/10 border border-blue-500/20 rounded-2xl p-6 flex gap-4">
@@ -626,7 +626,7 @@ export default function OrderPage({ onBack }) {
               disabled={orderStep === 'processing' || !razorpayLoaded}
               className="w-full bg-green-500 hover:bg-green-400 text-black font-bold text-xl py-5 rounded-full mt-8 transition-all transform hover:scale-[1.01] flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
             >
-              {orderStep === 'processing' ? 'Processing...' : !razorpayLoaded ? 'Loading Payment Gateway...' : 'Pay $299.00 & Pre-Order'}
+              {orderStep === 'processing' ? 'Processing...' : !razorpayLoaded ? 'Loading Payment Gateway...' : 'Pay Rs 299.00 & Pre-Order'}
             </button>
             <p className="text-center text-xs text-gray-500 mt-4">
               By clicking above, you agree to the 10-day shipping lead time and our Terms of Service.

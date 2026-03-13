@@ -5,8 +5,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "NODE_ENV=development node server.js",
-    "build": "next build",
+    "clean": "node -e \"const fs=require('fs'); const path=require('path'); const nextDir=path.join(process.cwd(), '.next'); if(fs.existsSync(nextDir)) { fs.rmSync(nextDir, {recursive:true}); console.log('✓ Cleaned .next folder'); }\"",
+    "dev": "npm run clean && node server.js",
+    "build": "npm run clean && next build",
     "start": "NODE_ENV=production node server.js",
     "lint": "next lint"
   },

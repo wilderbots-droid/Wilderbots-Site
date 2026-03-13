@@ -341,7 +341,7 @@ export default function DashboardPage({ onBack }) {
                         </div>
                         <div className="mt-3">
                           <p className="font-medium">Wilder Watch Dev Kit</p>
-                          <p className="text-sm text-gray-400">$299.00</p>
+                          <p className="text-sm text-gray-400">Rs 299.00</p>
                         </div>
                       </div>
                       <div className="flex gap-3">

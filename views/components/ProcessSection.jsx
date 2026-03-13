@@ -20,9 +20,6 @@ export default function ProcessSection() {
             <p className="text-gray-400 leading-relaxed">
               Receive your kit with all necessary components. Follow our 3D interactive guide to snap the PCB, screen, and sensors into the chassis. No soldering required.
             </p>
-            <div className="absolute top-10 right-0 hidden md:block">
-              <ArrowRight className="text-white/10 w-8 h-8" />
-            </div>
           </div>
           
           <div className="p-6 relative scroll-fade-in">
@@ -33,9 +30,6 @@ export default function ProcessSection() {
             <p className="text-gray-400 leading-relaxed">
               Connect to your laptop via USB-C. Load our pre-built OS or start writing your own Python scripts to control the sensors and display.
             </p>
-            <div className="absolute top-10 right-0 hidden md:block">
-              <ArrowRight className="text-white/10 w-8 h-8" />
-            </div>
           </div>
           
           <div className="p-6 relative scroll-slide-right">

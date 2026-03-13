@@ -26,6 +26,7 @@ import {
 import AdminUsers from './AdminUsers'
 import AdminOrders from './AdminOrders'
 import AdminServices from './AdminServices'
+import AdminProducts from './AdminProducts'
 import AdminCareers from './AdminCareers'
 import AdminJobApplications from './AdminJobApplications'
 import AdminContacts from './AdminContacts'
@@ -174,6 +175,17 @@ export default function AdminDashboard({ admin, onLogout }) {
             >
               <Package className="w-5 h-5" />
               <span className="font-medium">Services</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('products')}
+              className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all ${
+                activeTab === 'products'
+                  ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg shadow-blue-500/25'
+                  : 'text-gray-400 hover:bg-gray-800 hover:text-white'
+              }`}
+            >
+              <ShoppingBag className="w-5 h-5" />
+              <span className="font-medium">Products</span>
             </button>
             <button
               onClick={() => setActiveTab('careers')}
@@ -337,6 +349,7 @@ export default function AdminDashboard({ admin, onLogout }) {
                   {activeTab === 'users' && 'User Management'}
                   {activeTab === 'orders' && 'Order Management'}
                   {activeTab === 'services' && 'Services Management'}
+                  {activeTab === 'products' && 'Products Management'}
                   {activeTab === 'careers' && 'Careers Management'}
                   {activeTab === 'applications' && 'Job Applications'}
                   {activeTab === 'contacts' && 'Contact Messages'}
@@ -355,6 +368,7 @@ export default function AdminDashboard({ admin, onLogout }) {
                   {activeTab === 'users' && 'Manage all registered users'}
                   {activeTab === 'orders' && 'Track and manage all orders'}
                   {activeTab === 'services' && 'Manage your services and offerings'}
+                  {activeTab === 'products' && 'Manage products and featured items'}
                   {activeTab === 'careers' && 'Manage job listings and positions'}
                   {activeTab === 'applications' && 'Review and manage job applications'}
                   {activeTab === 'contacts' && 'Manage contact form submissions'}
@@ -585,6 +599,7 @@ export default function AdminDashboard({ admin, onLogout }) {
         {activeTab === 'users' && <AdminUsers />}
         {activeTab === 'orders' && <AdminOrders />}
         {activeTab === 'services' && <AdminServices />}
+        {activeTab === 'products' && <AdminProducts />}
         {activeTab === 'careers' && <AdminCareers />}
         {activeTab === 'applications' && <AdminJobApplications />}
         {activeTab === 'contacts' && <AdminContacts />}
