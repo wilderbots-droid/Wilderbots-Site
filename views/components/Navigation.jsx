@@ -10,46 +10,38 @@ export default function Navigation() {
   const [scrolled, setScrolled] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const { user, logout } = useAuth()
+  const [products, setProducts] = useState([])
 
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50)
     }
 
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch('/api/product')
+        const data = await response.json()
+        if (Array.isArray(data)) {
+          setProducts(data)
+        }
+      } catch (error) {
+        console.error('Error fetching products for nav:', error)
+      }
+    }
+
     window.addEventListener('scroll', handleScroll)
+    fetchProducts()
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
   const scrollToSection = (id) => {
-    // If not on home page, navigate to home page first (without query params)
     if (router.pathname !== '/') {
-      // Use replace to ensure clean navigation
-      router.replace(`/#${id}`)
-      // Wait for page to load, then scroll
-      setTimeout(() => {
-        const element = document.getElementById(id)
-        if (element) {
-          element.scrollIntoView({ behavior: 'smooth' })
-        }
-      }, 300)
+      router.push(`/#${id}`)
     } else {
-      // If on home page but view is not landing, reset to landing first
-      if (router.query.view && (router.query.view === 'devkit' || router.query.view === 'order')) {
-        // Explicitly navigate to home without query params
-        router.replace('/' + (id ? `#${id}` : ''), undefined, { shallow: true })
-        setTimeout(() => {
-          const element = document.getElementById(id)
-          if (element) {
-            element.scrollIntoView({ behavior: 'smooth' })
-          }
-        }, 150)
-      } else {
-        // Already on landing page, just scroll
-        const element = document.getElementById(id)
-        if (element) {
-          element.scrollIntoView({ behavior: 'smooth' })
-          setMobileMenuOpen(false)
-        }
+      const element = document.getElementById(id)
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' })
+        setMobileMenuOpen(false)
       }
     }
   }
@@ -60,32 +52,49 @@ export default function Navigation() {
         <Logo 
           size={60} 
           showText={true}
-          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          onClick={() => router.push('/')}
         />
 
         {/* Desktop Nav */}
         <div className="hidden md:flex items-center gap-8">
-          <button onClick={() => scrollToSection('products')} className="text-sm font-medium text-gray-300 hover:text-white transition-colors">The Kit</button>
+          <div className="relative group">
+            <button 
+              onClick={() => scrollToSection('products')}
+              className="text-sm font-medium text-gray-300 hover:text-white transition-colors flex items-center gap-1 py-2"
+            >
+              Products
+              <svg className="w-4 h-4 transition-transform group-hover:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            <div className="absolute top-full left-0 w-64 bg-neutral-900/95 backdrop-blur-xl border border-white/10 rounded-2xl p-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform translate-y-2 group-hover:translate-y-0">
+              {products.map(p => (
+                <Link 
+                  key={p._id} 
+                  href={`/products/${p._id}`}
+                  className="block px-4 py-3 rounded-xl hover:bg-white/5 transition-colors"
+                >
+                  <div className="text-sm font-bold text-white">{p.title.split(' ')[0]} {p.title.split(' ')[1]}</div>
+                  <div className="text-xs text-gray-500 truncate">{p.subtitle}</div>
+                </Link>
+              ))}
+            </div>
+          </div>
           <button onClick={() => scrollToSection('education')} className="text-sm font-medium text-gray-300 hover:text-white transition-colors">Education</button>
           <Link href="/services" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">Services</Link>
           <Link href="/about" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">About Us</Link>
-          <Link href="/careers" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">Careers</Link>
           <Link href="/contact" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">Contact</Link>
+          
           {user ? (
-            <>
-              <span className="px-5 py-2 text-white text-sm font-semibold flex items-center gap-2">
-                <User size={18} /> {user.name}
-              </span>
-              <Link href="/dashboard" className="px-5 py-2 bg-purple-600 text-white text-sm font-bold rounded-full hover:bg-purple-700 transition-all transform hover:scale-105 flex items-center gap-2">
-                <User size={18} /> Dashboard
-              </Link>
-            </>
+            <Link href="/dashboard" className="px-5 py-2 bg-purple-600 text-white text-sm font-bold rounded-full hover:bg-purple-700 transition-all flex items-center gap-2">
+              <User size={18} /> Dashboard
+            </Link>
           ) : (
-            <Link href="/login" className="px-5 py-2 bg-purple-600 text-white text-sm font-bold rounded-full hover:bg-purple-700 transition-all transform hover:scale-105 flex items-center gap-2">
+            <Link href="/login" className="px-5 py-2 bg-purple-600 text-white text-sm font-bold rounded-full hover:bg-purple-700 transition-all flex items-center gap-2">
               <LogIn size={18} /> Login
             </Link>
           )}
-          <a href="https://neureck.com" target="_blank" rel="noopener noreferrer" className="px-5 py-2 bg-white text-black text-sm font-bold rounded-full hover:bg-gray-200 transition-all transform hover:scale-105">
+          <a href="https://neureck.com" target="_blank" rel="noopener noreferrer" className="px-5 py-2 bg-white text-black text-sm font-bold rounded-full hover:bg-gray-200 transition-all">
             Launch Neureck
           </a>
         </div>
@@ -94,8 +103,6 @@ export default function Navigation() {
         <button 
           className="md:hidden text-white" 
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          aria-label="Toggle mobile menu"
-          aria-expanded={mobileMenuOpen}
         >
           {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
@@ -103,30 +110,24 @@ export default function Navigation() {
 
       {/* Mobile Nav */}
       {mobileMenuOpen && (
-        <div className="md:hidden absolute top-full left-0 w-full bg-black/95 backdrop-blur-xl border-b border-white/10 p-6 flex flex-col gap-6 z-50" role="menu" aria-label="Mobile navigation menu">
-          <button onClick={() => scrollToSection('products')} className="text-lg font-medium text-left">The Kit</button>
+        <div className="md:hidden fixed inset-0 top-0 left-0 bg-black z-50 p-6 flex flex-col gap-6 pt-24">
+          <button onClick={() => setMobileMenuOpen(false)} className="absolute top-6 right-6 text-white text-sm">Close</button>
+          <div className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Products</div>
+          {products.map(p => (
+            <Link 
+              key={p._id} 
+              href={`/products/${p._id}`}
+              onClick={() => setMobileMenuOpen(false)}
+              className="text-2xl font-bold"
+            >
+              {p.title}
+            </Link>
+          ))}
+          <div className="h-px bg-white/10 my-4"></div>
           <button onClick={() => scrollToSection('education')} className="text-lg font-medium text-left">Education</button>
           <Link href="/services" className="text-lg font-medium text-left">Services</Link>
           <Link href="/about" className="text-lg font-medium text-left">About Us</Link>
-          <Link href="/careers" className="text-lg font-medium text-left">Careers</Link>
           <Link href="/contact" className="text-lg font-medium text-left">Contact</Link>
-          {user ? (
-            <>
-              <div className="w-full py-3 text-white text-center font-semibold flex items-center justify-center gap-2">
-                <User size={18} /> {user.name}
-              </div>
-              <Link href="/dashboard" className="w-full py-3 bg-purple-600 text-white text-center font-bold rounded-full flex items-center justify-center gap-2">
-                <User size={18} /> Dashboard
-              </Link>
-            </>
-          ) : (
-            <Link href="/login" className="w-full py-3 bg-purple-600 text-white text-center font-bold rounded-full flex items-center justify-center gap-2">
-              <LogIn size={18} /> Login
-            </Link>
-          )}
-          <a href="https://neureck.com" target="_blank" rel="noopener noreferrer" className="w-full py-3 bg-white text-black text-center font-bold rounded-full">
-            Launch Neureck
-          </a>
         </div>
       )}
     </nav>

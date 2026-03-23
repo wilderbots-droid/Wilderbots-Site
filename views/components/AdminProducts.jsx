@@ -10,12 +10,21 @@ export default function AdminProducts() {
   const [formData, setFormData] = useState({
     title: '',
     subtitle: '',
-    edition: 'Development Kit Edition',
-    engineeredBy: 'Engineered by <br/>You.',
+    edition: 'Standard Edition',
+    engineeredBy: 'Wilderbots',
     description: '',
-    price: 299,
+    detailedOverview: '',
+    features: [],
+    price: 0,
     image: '/kit.png',
-    isActive: true
+    isActive: true,
+    isPrimary: false,
+    ctaText: 'Learn More',
+    ctaLink: '',
+    appStoreLink: '',
+    playStoreLink: '',
+    showCta: true,
+    showPrice: true
   })
 
   const fileInputRef = useRef(null)
@@ -60,10 +69,6 @@ export default function AdminProducts() {
         ? `/api/admin/products?id=${editingId}`
         : '/api/admin/products'
       
-      console.log('Saving product:', formData)
-      console.log('URL:', url)
-      console.log('Token exists:', !!token)
-
       const response = await fetch(url, {
         method: editingId ? 'PUT' : 'POST',
         headers: {
@@ -74,7 +79,6 @@ export default function AdminProducts() {
       })
 
       const data = await response.json()
-      console.log('API Response:', response.status, data)
 
       if (response.ok) {
         alert('Product saved successfully!')
@@ -82,7 +86,7 @@ export default function AdminProducts() {
         resetForm()
         setShowForm(false)
       } else {
-        alert(`Error saving product: ${data.error || 'Unknown error'}. Status: ${response.status}`)
+        alert(`Error saving product: ${data.error || 'Unknown error'}`)
       }
     } catch (error) {
       console.error('Error saving product:', error)
@@ -112,7 +116,10 @@ export default function AdminProducts() {
   }
 
   const handleEdit = (product) => {
-    setFormData(product)
+    setFormData({
+      ...product,
+      features: product.features || []
+    })
     setEditingId(product._id)
     setShowForm(true)
   }
@@ -121,12 +128,21 @@ export default function AdminProducts() {
     setFormData({
       title: '',
       subtitle: '',
-      edition: 'Development Kit Edition',
-      engineeredBy: 'Engineered by <br/>You.',
+      edition: 'Standard Edition',
+      engineeredBy: 'Wilderbots',
       description: '',
-      price: 299,
-      image: '/kit.png',
-      isActive: true
+      detailedOverview: '',
+      features: [],
+      price: '',
+      image: '',
+      isActive: true,
+      isPrimary: false,
+      ctaText: 'Learn More',
+      ctaLink: '',
+      appStoreLink: '',
+      playStoreLink: '',
+      showCta: true,
+      showPrice: true
     })
     setEditingId(null)
   }
@@ -134,6 +150,25 @@ export default function AdminProducts() {
   const handleCloseForm = () => {
     setShowForm(false)
     resetForm()
+  }
+
+  const handleAddFeature = () => {
+    setFormData({
+      ...formData,
+      features: [...formData.features, { title: '', description: '', icon: '' }]
+    })
+  }
+
+  const handleRemoveFeature = (index) => {
+    const newFeatures = [...formData.features]
+    newFeatures.splice(index, 1)
+    setFormData({ ...formData, features: newFeatures })
+  }
+
+  const handleFeatureChange = (index, field, value) => {
+    const newFeatures = [...formData.features]
+    newFeatures[index][field] = value
+    setFormData({ ...formData, features: newFeatures })
   }
 
   const filteredProducts = products.filter(product =>
@@ -171,7 +206,7 @@ export default function AdminProducts() {
       {/* Form Modal */}
       {showForm && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-neutral-900 border border-neutral-700 rounded-2xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="bg-neutral-900 border border-neutral-700 rounded-2xl p-8 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-2xl font-bold text-white">
                 {editingId ? 'Edit Product' : 'Add New Product'}
@@ -184,123 +219,250 @@ export default function AdminProducts() {
               </button>
             </div>
 
-            <div className="space-y-4">
-              <div>
-                <label className="block text-white font-semibold mb-2">Title *</label>
-                <input
-                  type="text"
-                  value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  placeholder="e.g., Not just a Watch. It's a Workshop."
-                  className="w-full px-4 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-gray-500"
-                />
+            <div className="space-y-6">
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-white font-semibold mb-2">Title *</label>
+                    <input
+                      type="text"
+                      value={formData.title}
+                      onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                      placeholder="e.g., Not just a Watch. It's a Workshop."
+                      className="w-full px-4 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-gray-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-white font-semibold mb-2">Subtitle *</label>
+                    <input
+                      type="text"
+                      value={formData.subtitle}
+                      onChange={(e) => setFormData({ ...formData, subtitle: e.target.value })}
+                      placeholder="e.g., The Wilder Watch Development Kit..."
+                      className="w-full px-4 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-gray-500"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-white font-semibold mb-2">Edition</label>
+                      <input
+                        type="text"
+                        value={formData.edition}
+                        onChange={(e) => setFormData({ ...formData, edition: e.target.value })}
+                        placeholder="e.g., Standard Edition"
+                        className="w-full px-4 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-gray-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-white font-semibold mb-2">Engineered By</label>
+                      <input
+                        type="text"
+                        value={formData.engineeredBy}
+                        onChange={(e) => setFormData({ ...formData, engineeredBy: e.target.value })}
+                        placeholder="e.g., Wilderbots"
+                        className="w-full px-4 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-gray-500"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-white font-semibold mb-2">Short Description *</label>
+                    <textarea
+                      value={formData.description}
+                      onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                      placeholder="Mini description for cards..."
+                      rows="2"
+                      className="w-full px-4 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-gray-500"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-white font-semibold mb-2">Image URL</label>
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="text"
+                        value={formData.image}
+                        onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                        placeholder="/kit.png"
+                        className="flex-1 px-4 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-gray-500"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        className="px-3 py-2 bg-neutral-700 text-white rounded-lg hover:bg-neutral-600"
+                      >
+                        <Package size={16} />
+                      </button>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        ref={fileInputRef}
+                        onChange={(e) => {
+                          const file = e.target.files && e.target.files[0]
+                          if (file) setFormData({ ...formData, image: `/${file.name}` })
+                        }}
+                        className="hidden"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-white font-semibold mb-2">Price (Rs)</label>
+                      <input
+                        type="number"
+                        value={formData.price}
+                        onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) })}
+                        className="w-full px-4 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-white"
+                      />
+                    </div>
+                    <div className="flex flex-col justify-end gap-2 pb-2">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={formData.isActive}
+                          onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
+                          className="w-4 h-4 rounded border-neutral-700 bg-neutral-800 text-green-500"
+                        />
+                        <span className="text-white text-sm font-semibold">Is Active</span>
+                      </label>
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={formData.isPrimary}
+                          onChange={(e) => setFormData({ ...formData, isPrimary: e.target.checked })}
+                          className="w-4 h-4 rounded border-neutral-700 bg-neutral-800 text-green-500"
+                        />
+                        <span className="text-white text-sm font-semibold">Is Primary</span>
+                      </label>
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={formData.showCta}
+                          onChange={(e) => setFormData({ ...formData, showCta: e.target.checked })}
+                          className="w-4 h-4 rounded border-neutral-700 bg-neutral-800 text-green-500"
+                        />
+                        <span className="text-white text-sm font-semibold">Show Main CTA</span>
+                      </label>
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={formData.showPrice}
+                          onChange={(e) => setFormData({ ...formData, showPrice: e.target.checked })}
+                          className="w-4 h-4 rounded border-neutral-700 bg-neutral-800 text-green-500"
+                        />
+                        <span className="text-white text-sm font-semibold">Show Price</span>
+                      </label>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-gray-400">CTA Text</label>
+                      <input
+                        type="text"
+                        value={formData.ctaText}
+                        onChange={(e) => setFormData({ ...formData, ctaText: e.target.value })}
+                        className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-white focus:outline-none focus:border-purple-500 transition-colors"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-gray-400">CTA Link (Internal or External)</label>
+                      <input
+                        type="text"
+                        value={formData.ctaLink}
+                        onChange={(e) => setFormData({ ...formData, ctaLink: e.target.value })}
+                        placeholder="/?view=order"
+                        className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-white focus:outline-none focus:border-purple-500 transition-colors"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-gray-400">App Store Link</label>
+                      <input
+                        type="text"
+                        value={formData.appStoreLink}
+                        onChange={(e) => setFormData({ ...formData, appStoreLink: e.target.value })}
+                        placeholder="https://apps.apple.com/..."
+                        className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-white focus:outline-none focus:border-purple-500 transition-colors"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-gray-400">Play Store Link</label>
+                      <input
+                        type="text"
+                        value={formData.playStoreLink}
+                        onChange={(e) => setFormData({ ...formData, playStoreLink: e.target.value })}
+                        placeholder="https://play.google.com/..."
+                        className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-white focus:outline-none focus:border-purple-500 transition-colors"
+                      />
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <div>
-                <label className="block text-white font-semibold mb-2">Subtitle *</label>
-                <input
-                  type="text"
-                  value={formData.subtitle}
-                  onChange={(e) => setFormData({ ...formData, subtitle: e.target.value })}
-                  placeholder="e.g., The Wilder Watch Development Kit..."
-                  className="w-full px-4 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-gray-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-white font-semibold mb-2">Edition</label>
-                <input
-                  type="text"
-                  value={formData.edition}
-                  onChange={(e) => setFormData({ ...formData, edition: e.target.value })}
-                  placeholder="e.g., Development Kit Edition"
-                  className="w-full px-4 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-gray-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-white font-semibold mb-2">Engineered By</label>
-                <input
-                  type="text"
-                  value={formData.engineeredBy}
-                  onChange={(e) => setFormData({ ...formData, engineeredBy: e.target.value })}
-                  placeholder="e.g., Engineered by You."
-                  className="w-full px-4 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-gray-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-white font-semibold mb-2">Description *</label>
+                <label className="block text-white font-semibold mb-2">Detailed Overview</label>
                 <textarea
-                  value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  placeholder="Detailed product description..."
+                  value={formData.detailedOverview}
+                  onChange={(e) => setFormData({ ...formData, detailedOverview: e.target.value })}
+                  placeholder="Full description for product page..."
                   rows="4"
                   className="w-full px-4 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-gray-500"
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-white font-semibold mb-2">Price ($)</label>
-                  <input
-                    type="number"
-                    value={formData.price}
-                    onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) })}
-                    placeholder="299"
-                    className="w-full px-4 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-gray-500"
-                  />
+              <div>
+                <div className="flex justify-between items-center mb-4">
+                  <label className="text-white font-semibold">Features</label>
+                  <button
+                    onClick={handleAddFeature}
+                    className="text-sm bg-blue-500/20 text-blue-400 px-3 py-1 rounded-md hover:bg-blue-500/30 transition-colors flex items-center gap-1"
+                  >
+                    <Plus size={14} /> Add Feature
+                  </button>
                 </div>
-
-                <div>
-                  <label className="block text-white font-semibold mb-2">Image URL</label>
-                  <div className="flex items-center gap-3">
-                    <input
-                      type="text"
-                      value={formData.image}
-                      onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                      placeholder="/kit.png"
-                      className="flex-1 px-4 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-gray-500"
-                    />
-
-                    <div className="flex items-center gap-2">
+                <div className="space-y-3">
+                  {formData.features.map((feature, index) => (
+                    <div key={index} className="p-4 bg-neutral-800 border border-neutral-700 rounded-xl relative group">
                       <button
-                        type="button"
-                        onClick={() => fileInputRef.current?.click()}
-                        title="Choose image file"
-                        className="px-3 py-2 bg-neutral-700 text-white rounded-lg hover:bg-neutral-600 transition-colors flex items-center justify-center"
+                        onClick={() => handleRemoveFeature(index)}
+                        className="absolute top-2 right-2 text-gray-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
                       >
-                        <Package size={16} />
+                        <Trash2 size={16} />
                       </button>
-
-                      <span className="max-w-[200px] text-sm text-gray-300 truncate">
-                        {formData.image && formData.image !== '/kit.png' ? formData.image : ''}
-                      </span>
+                      <div className="grid grid-cols-2 gap-4 mb-2">
+                        <input
+                          type="text"
+                          value={feature.title}
+                          onChange={(e) => handleFeatureChange(index, 'title', e.target.value)}
+                          placeholder="Feature Title"
+                          className="px-3 py-1 bg-neutral-900 border border-neutral-700 rounded text-white text-sm"
+                        />
+                        <input
+                          type="text"
+                          value={feature.icon}
+                          onChange={(e) => handleFeatureChange(index, 'icon', e.target.value)}
+                          placeholder="Lucide Icon Name"
+                          className="px-3 py-1 bg-neutral-900 border border-neutral-700 rounded text-white text-sm"
+                        />
+                      </div>
+                      <textarea
+                        value={feature.description}
+                        onChange={(e) => handleFeatureChange(index, 'description', e.target.value)}
+                        placeholder="Feature Description"
+                        rows="2"
+                        className="w-full px-3 py-1 bg-neutral-900 border border-neutral-700 rounded text-white text-sm"
+                      />
                     </div>
-
-                    <input
-                      type="file"
-                      accept="image/*"
-                      ref={fileInputRef}
-                      onChange={(e) => {
-                        const file = e.target.files && e.target.files[0]
-                        if (file) setFormData({ ...formData, image: file.name })
-                      }}
-                      className="hidden"
-                    />
-                  </div>
+                  ))}
                 </div>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  id="isActive"
-                  checked={formData.isActive}
-                  onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-                  className="w-4 h-4"
-                />
-                <label htmlFor="isActive" className="text-white">Active</label>
               </div>
             </div>
 

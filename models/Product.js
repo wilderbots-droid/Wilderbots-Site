@@ -12,16 +12,26 @@ const productSchema = new mongoose.Schema(
     },
     edition: {
       type: String,
-      default: 'Development Kit Edition'
+      default: 'Standard Edition'
     },
     engineeredBy: {
       type: String,
-      default: 'Engineered by <br/>You.'
+      default: 'Wilderbots'
     },
     description: {
       type: String,
       required: true
     },
+    detailedOverview: {
+      type: String
+    },
+    features: [
+      {
+        title: String,
+        description: String,
+        icon: String
+      }
+    ],
     price: {
       type: Number,
       required: true
@@ -31,6 +41,31 @@ const productSchema = new mongoose.Schema(
       required: true
     },
     isActive: {
+      type: Boolean,
+      default: true
+    },
+    isPrimary: {
+      type: Boolean,
+      default: false
+    },
+    ctaText: {
+      type: String,
+      default: 'Learn More'
+    },
+    ctaLink: {
+      type: String
+    },
+    appStoreLink: {
+      type: String
+    },
+    playStoreLink: {
+      type: String
+    },
+    showCta: {
+      type: Boolean,
+      default: true
+    },
+    showPrice: {
       type: Boolean,
       default: true
     }

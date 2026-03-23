@@ -15,6 +15,11 @@
   body {
     scroll-behavior: smooth;
     background-color: black;
+    cursor: none;
+  }
+
+  a, button, [role="button"], .cursor-pointer {
+    cursor: none !important;
   }
 }
 

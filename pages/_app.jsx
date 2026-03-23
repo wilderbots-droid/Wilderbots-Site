@@ -4,6 +4,9 @@ import '../styles/globals.css'
 import { AuthProvider } from '../contexts/AuthContext'
 import { Analytics } from "@vercel/analytics/next"
 import { SpeedInsights } from "@vercel/speed-insights/next"
+import { motion } from 'framer-motion'
+import CustomCursor from '../views/components/CustomCursor'
+import Logo from '../views/components/Logo'
 
 export default function App({ Component, pageProps }) {
   const router = useRouter()
@@ -144,10 +147,66 @@ export default function App({ Component, pageProps }) {
   // Show loading state while checking maintenance
   if (!maintenanceChecked && !router.pathname.startsWith('/admin') && router.pathname !== '/maintenance') {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-700 border-t-purple-600 mb-4"></div>
-          <p className="text-gray-400">Loading...</p>
+      <div className="min-h-screen bg-black flex items-center justify-center overflow-hidden">
+        <div className="relative">
+          {/* Pulsing Aura */}
+          <motion.div 
+            animate={{ scale: [1.2, 1.5, 1.2], opacity: [0.3, 0.4, 0.3] }}
+            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute inset-0 bg-purple-500/30 rounded-full blur-[100px]"
+          />
+          
+          <div className="relative flex flex-col items-center">
+            {/* Animated Logo Container */}
+            <motion.div
+              animate={{ 
+                y: [0, -15, 0],
+                rotateY: [0, 5, 0, -5, 0]
+              }}
+              transition={{ 
+                y: { duration: 3, repeat: Infinity, ease: "easeInOut" },
+                rotateY: { duration: 6, repeat: Infinity, ease: "linear" }
+              }}
+              className="relative group cursor-none"
+            >
+              <Logo size={140} showText={false} />
+              
+              {/* Scanning Light Effect Overlay */}
+              <div className="absolute inset-0 overflow-hidden pointer-events-none rounded-full">
+                <motion.div 
+                  animate={{ left: ['-150%', '150%'] }}
+                  transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+                  className="absolute top-0 w-1/3 h-full bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12"
+                />
+              </div>
+            </motion.div>
+            
+            <div className="mt-16 space-y-4 flex flex-col items-center">
+              {/* Futuristic Loading Text */}
+              <motion.span 
+                animate={{ opacity: [0.4, 1, 0.4] }}
+                transition={{ duration: 2, repeat: Infinity }}
+                className="text-[10px] font-mono tracking-[0.3em] text-white/40 uppercase"
+              >
+                Initializing Engine
+              </motion.span>
+              
+              {/* Sleek Progress Bar */}
+              <div className="w-32 h-[1px] bg-white/5 rounded-full overflow-hidden">
+                <motion.div 
+                  animate={{ 
+                    width: ["0%", "40%", "35%", "70%", "65%", "100%"] 
+                  }}
+                  transition={{ 
+                    duration: 4, 
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                  className="h-full bg-gradient-to-r from-purple-500 to-blue-500"
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     )
@@ -155,6 +214,7 @@ export default function App({ Component, pageProps }) {
 
   return (
     <AuthProvider>
+      <CustomCursor />
       <Component {...pageProps} />
       <Analytics />
       <SpeedInsights />

@@ -9,12 +9,27 @@ const productSchema = new mongoose.Schema(
   {
     title: { type: String, required: true },
     subtitle: { type: String, required: true },
-    edition: { type: String, default: 'Development Kit Edition' },
-    engineeredBy: { type: String, default: 'Engineered by <br/>You.' },
+    edition: { type: String, default: 'Standard Edition' },
+    engineeredBy: { type: String, default: 'Wilderbots' },
     description: { type: String, required: true },
+    detailedOverview: { type: String },
+    features: [
+      {
+        title: String,
+        description: String,
+        icon: String
+      }
+    ],
     price: { type: Number, required: true },
     image: { type: String, required: true },
-    isActive: { type: Boolean, default: true }
+    isActive: { type: Boolean, default: true },
+    isPrimary: { type: Boolean, default: false },
+    ctaText: { type: String, default: 'Learn More' },
+    ctaLink: { type: String },
+    appStoreLink: { type: String },
+    playStoreLink: { type: String },
+    showCta: { type: Boolean, default: true },
+    showPrice: { type: Boolean, default: true }
   },
   { timestamps: true }
 )
@@ -63,24 +78,27 @@ async function handler(req, res) {
 
     // Step 3: Handle GET request
     if (req.method === 'GET') {
-      const products = await Product.find().lean()
+      const products = await Product.find().sort({ isPrimary: -1, createdAt: -1 }).lean()
       return res.status(200).json({ success: true, products })
     }
 
     // Step 4: Handle POST request
     if (req.method === 'POST') {
-      const productData = {
-        title: req.body.title,
-        subtitle: req.body.subtitle,
-        edition: req.body.edition || 'Development Kit Edition',
-        engineeredBy: req.body.engineeredBy || 'Engineered by <br/>You.',
-        description: req.body.description,
-        price: req.body.price,
-        image: req.body.image,
-        isActive: req.body.isActive !== false
+      const {
+        title, subtitle, edition, engineeredBy, description,
+        detailedOverview, features, price, image, isActive,
+        isPrimary, ctaText, ctaLink, appStoreLink, playStoreLink, showCta, showPrice
+      } = req.body;
+
+      if (isPrimary) {
+        await Product.updateMany({}, { isPrimary: false });
       }
 
-      const product = await Product.create(productData)
+      const product = await Product.create({
+        title, subtitle, edition, engineeredBy, description,
+        detailedOverview, features, price, image, isActive,
+        isPrimary, ctaText, ctaLink, appStoreLink, playStoreLink, showCta, showPrice
+      });
       return res.status(201).json({ success: true, product })
     }
 
@@ -92,20 +110,25 @@ async function handler(req, res) {
         return res.status(400).json({ error: 'Product ID is required' })
       }
 
+      const {
+        title, subtitle, edition, engineeredBy, description,
+        detailedOverview, features, price, image, isActive,
+        isPrimary, ctaText, ctaLink, appStoreLink, playStoreLink, showCta, showPrice
+      } = req.body;
+
+      if (isPrimary) {
+        await Product.updateMany({ _id: { $ne: id } }, { isPrimary: false });
+      }
+
       const product = await Product.findByIdAndUpdate(
         id,
         {
-          title: req.body.title,
-          subtitle: req.body.subtitle,
-          edition: req.body.edition,
-          engineeredBy: req.body.engineeredBy,
-          description: req.body.description,
-          price: req.body.price,
-          image: req.body.image,
-          isActive: req.body.isActive
+          title, subtitle, edition, engineeredBy, description,
+          detailedOverview, features, price, image, isActive,
+          isPrimary, ctaText, ctaLink, appStoreLink, playStoreLink, showCta, showPrice
         },
-        { new: true, runValidators: false }
-      )
+        { new: true }
+      );
 
       if (!product) {
         return res.status(404).json({ error: 'Product not found' })

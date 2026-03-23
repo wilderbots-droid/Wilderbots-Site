@@ -13,38 +13,21 @@ import FAQSection from '../views/components/FAQSection'
 import TestimonialsSection from '../views/components/TestimonialsSection'
 import NewsletterSection from '../views/components/NewsletterSection'
 import Footer from '../views/components/Footer'
-import DevKitLandingPage from '../views/components/DevKitLandingPage'
 import OrderPage from '../views/components/OrderPage'
 
 export default function Home() {
   const router = useRouter()
   
   // Derive view directly from router query, default to 'landing'
-  // Use router.asPath to check actual URL path for more reliability
   const getView = () => {
     if (!router.isReady) return 'landing'
-    
-    // Check router.query first (most reliable)
     const queryView = router.query.view
-    
-    // Fallback: check asPath if query is not available yet
-    if (!queryView && router.asPath.includes('view=')) {
-      const match = router.asPath.match(/[?&]view=([^&]+)/)
-      if (match) {
-        const viewParam = match[1]
-        if (viewParam === 'devkit') return 'devkit'
-        if (viewParam === 'order') return 'order'
-      }
-    }
-    
-    if (queryView === 'devkit') return 'devkit'
     if (queryView === 'order') return 'order'
     return 'landing'
   }
   
   const view = getView()
-
-  // If in Order View, render Order Page
+  
   if (view === 'order') {
     return (
       <>
@@ -52,23 +35,7 @@ export default function Home() {
           <title>Order - Wilderbots</title>
         </Head>
         <OrderPage onBack={() => {
-          router.push('/?view=devkit', undefined, { shallow: true })
-        }} />
-      </>
-    )
-  }
-
-  // If in DevKit View, render DevKit Landing Page
-  if (view === 'devkit') {
-    return (
-      <>
-        <Head>
-          <title>Wilder Watch Dev Kit - Wilderbots</title>
-        </Head>
-        <DevKitLandingPage onBack={() => {
-          router.replace('/', undefined, { shallow: true })
-        }} onOrder={() => {
-          router.push('/?view=order', undefined, { shallow: true })
+          router.back()
         }} />
       </>
     )
@@ -88,9 +55,9 @@ export default function Home() {
         className="min-h-screen bg-black text-white font-sans selection:bg-purple-500 selection:text-white overflow-x-hidden"
       >
         <Navigation />
-      <Hero onOrderClick={() => router.push('/?view=devkit', undefined, { shallow: true })} />
+      <Hero onOrderClick={() => router.push('/products/69c03ecaad257115941e6117')} />
       <Marquee />
-      <ProductSection onOrderClick={() => router.push('/?view=devkit', undefined, { shallow: true })} />
+      <ProductSection onOrderClick={() => router.push('/products/69c03ecaad257115941e6117')} />
       <ProcessSection />
       <StatsSection />
       <EducationSection />

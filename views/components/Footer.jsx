@@ -7,10 +7,12 @@ export default function Footer() {
   const router = useRouter()
   const [companyInfo, setCompanyInfo] = useState(null)
   const [emailAddresses, setEmailAddresses] = useState([])
+  const [products, setProducts] = useState([])
 
   useEffect(() => {
     fetchCompanyInfo()
     fetchEmailAddresses()
+    fetchProducts()
   }, [])
 
   const fetchCompanyInfo = async () => {
@@ -34,6 +36,18 @@ export default function Footer() {
       }
     } catch (error) {
       console.error('Error fetching email addresses:', error)
+    }
+  }
+
+  const fetchProducts = async () => {
+    try {
+      const response = await fetch('/api/product')
+      if (response.ok) {
+        const data = await response.json()
+        setProducts(data || [])
+      }
+    } catch (error) {
+      console.error('Error fetching products:', error)
     }
   }
 
@@ -147,11 +161,13 @@ export default function Footer() {
         <div>
           <h4 className="font-bold mb-4">Product</h4>
           <ul className="space-y-2 text-gray-500">
-            <li>
-              <button onClick={() => scrollToSection('products')} className="hover:text-white transition-colors text-left">
-                Wilder Watch Dev Kit
-              </button>
-            </li>
+            {products.map(product => (
+              <li key={product._id}>
+                <a href={`/products/${product._id}`} className="hover:text-white transition-colors text-left block">
+                  {product.title}
+                </a>
+              </li>
+            ))}
             <li>
               <button onClick={() => scrollToSection('features')} className="hover:text-white transition-colors text-left">
                 Features

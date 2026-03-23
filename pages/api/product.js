@@ -8,17 +8,34 @@ export default async function handler(req, res) {
 
   try {
     await connectDB()
-    
-    // Fetch the active product (assumes there's only one main product)
-    const product = await Product.findOne({ isActive: true })
-      .select('-isActive -createdAt -updatedAt')
-      .lean()
 
-    if (!product) {
-      return res.status(404).json({ error: 'Product not found' })
+    const { id } = req.query
+
+    // If ID is provided, fetch single product
+    if (id) {
+      // Use lean() to get plain JS object and avoid schema-based filtering
+      const product = await Product.findById(id).lean()
+
+      if (!product) {
+        return res.status(404).json({ error: 'Product not found' })
+      }
+
+      return res.status(200).json(product)
     }
 
-    res.status(200).json(product)
+    // Fetch all active products
+    // We remove .select() to ensure everything is returned
+    const products = await Product.find({ isActive: true })
+      .sort({ isPrimary: -1, createdAt: -1 })
+      .lean()
+
+    console.log('API returning products count:', products.length);
+    if (products.length > 0) {
+      console.log('First product keys:', Object.keys(products[0]));
+      console.log('First product features:', products[0].features ? 'Present' : 'Missing');
+    }
+
+    res.status(200).json(products)
   } catch (error) {
     console.error('Get product error:', error)
     res.status(500).json({ error: 'Internal server error' })
