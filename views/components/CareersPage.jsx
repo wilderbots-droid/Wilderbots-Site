@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { motion } from 'framer-motion'
 import { ArrowLeft, ArrowRight, Code, Smartphone, Bot, GraduationCap, Package, Briefcase, Heart, Zap, Users, Globe, Coffee, TrendingUp, Award, Clock, X, Upload, FileText, Mail, AlertCircle } from 'lucide-react'
 import Link from 'next/link'
 import Logo from './Logo'
@@ -317,20 +318,40 @@ export default function CareersPage({ onBack }) {
       </div>
 
       {/* Hero Section */}
-      <section className="relative py-24 px-6 text-center overflow-hidden">
+      <motion.section
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.6 }}
+        className="relative py-24 px-6 text-center overflow-hidden"
+      >
         <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 via-blue-500/20 to-pink-500/20 blur-3xl"></div>
         <div className="max-w-4xl mx-auto relative z-10 space-y-6">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 font-bold tracking-wider text-xs uppercase">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 font-bold tracking-wider text-xs uppercase"
+          >
             <Users size={14} /> Join Our Team
-          </div>
-          <h1 className="text-5xl md:text-7xl font-bold leading-tight">
+          </motion.div>
+          <motion.h1
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.2 }}
+            className="text-5xl md:text-7xl font-bold leading-tight"
+          >
             Build the <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500">Future.</span>
-          </h1>
-          <p className="text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed">
-            Join a team that's revolutionizing wearable tech, education, and digital innovation. Work on meaningful projects that impact thousands of users worldwide.
-          </p>
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.35 }}
+            className="text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed"
+          >
+            Join a team that&apos;s revolutionizing wearable tech, education, and digital innovation. Work on meaningful projects that impact thousands of users worldwide.
+          </motion.p>
         </div>
-      </section>
+      </motion.section>
 
       {/* Why Work Here */}
       <section className="py-16 px-6 bg-neutral-900 border-t border-white/5">
@@ -342,13 +363,20 @@ export default function CareersPage({ onBack }) {
             {values.map((value, index) => {
               const Icon = value.icon
               return (
-                <div key={index} className="bg-black border border-white/10 rounded-2xl p-6 hover:border-purple-500/50 transition-all">
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: index * 0.08 }}
+                  className="bg-black border border-white/10 rounded-2xl p-6 hover:border-purple-500/50 transition-all"
+                >
                   <div className="w-12 h-12 bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-xl flex items-center justify-center mb-4">
                     <Icon className="text-purple-400 w-6 h-6" />
                   </div>
                   <h3 className="text-xl font-bold mb-2">{value.title}</h3>
                   <p className="text-gray-400 text-sm">{value.description}</p>
-                </div>
+                </motion.div>
               )
             })}
           </div>
@@ -364,13 +392,20 @@ export default function CareersPage({ onBack }) {
             {benefits.map((benefit, index) => {
               const Icon = benefit.icon
               return (
-                <div key={index} className="bg-neutral-900 border border-white/10 rounded-2xl p-6 hover:border-blue-500/50 transition-all">
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: (index % 3) * 0.1 }}
+                  className="bg-neutral-900 border border-white/10 rounded-2xl p-6 hover:border-blue-500/50 transition-all"
+                >
                   <div className="w-12 h-12 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-xl flex items-center justify-center mb-4">
                     <Icon className="text-blue-400 w-6 h-6" />
                   </div>
                   <h3 className="text-xl font-bold mb-2">{benefit.title}</h3>
                   <p className="text-gray-400 text-sm">{benefit.description}</p>
-                </div>
+                </motion.div>
               )
             })}
           </div>
@@ -389,7 +424,14 @@ export default function CareersPage({ onBack }) {
           ) : openPositions.length > 0 ? (
             <div className="space-y-4">
               {openPositions.map((position, index) => (
-                <div key={position._id || index} className="bg-black border border-white/10 rounded-2xl p-6 hover:border-purple-500/50 transition-all group">
+                <motion.div
+                  key={position._id || index}
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: index * 0.06 }}
+                  className="bg-black border border-white/10 rounded-2xl p-6 hover:border-purple-500/50 transition-all group"
+                >
                   <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
@@ -425,7 +467,7 @@ export default function CareersPage({ onBack }) {
                       Apply Now <ArrowRight size={16} />
                     </button>
                   </div>
-                </div>
+                </motion.div>
               ))}
             </div>
           ) : (

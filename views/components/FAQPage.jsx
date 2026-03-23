@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { motion } from 'framer-motion'
 import { ArrowLeft, ChevronRight, HelpCircle } from 'lucide-react'
 import Logo from './Logo'
 
@@ -178,25 +179,45 @@ export default function FAQPage({ onBack }) {
       </div>
 
       {/* Hero Section */}
-      <section className="relative py-24 px-6 overflow-hidden">
+      <motion.section
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.6 }}
+        className="relative py-24 px-6 overflow-hidden"
+      >
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-purple-600/20 rounded-full blur-[120px] animate-pulse"></div>
         
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="text-center max-w-4xl mx-auto space-y-8">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 font-bold tracking-wider text-xs uppercase">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 font-bold tracking-wider text-xs uppercase"
+            >
               <HelpCircle size={14} /> Frequently Asked Questions
-            </div>
-            <h1 className="text-5xl md:text-7xl font-bold leading-tight">
+            </motion.div>
+            <motion.h1
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.2 }}
+              className="text-5xl md:text-7xl font-bold leading-tight"
+            >
               Got Questions? <br/>
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-500">We've Got Answers.</span>
-            </h1>
-            <p className="text-xl text-gray-300 leading-relaxed">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-500">We&apos;ve Got Answers.</span>
+            </motion.h1>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.35 }}
+              className="text-xl text-gray-300 leading-relaxed"
+            >
               Find answers to common questions about our products, services, education platform, and more. 
-              Can't find what you're looking for? Contact us and we'll be happy to help.
-            </p>
+              Can&apos;t find what you&apos;re looking for? Contact us and we&apos;ll be happy to help.
+            </motion.p>
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* FAQs by Category */}
       <section className="py-24 px-6 bg-neutral-900">
@@ -205,7 +226,14 @@ export default function FAQPage({ onBack }) {
             <div className="text-center py-12 text-gray-400">Loading FAQs...</div>
           ) : categories.length > 0 ? (
             categories.map((category, categoryIndex) => (
-              <div key={categoryIndex} className="mb-16">
+              <motion.div
+                key={categoryIndex}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: categoryIndex * 0.05 }}
+                className="mb-16"
+              >
                 <h2 className="text-3xl font-bold mb-8 text-center">{category}</h2>
                 <div className="space-y-4">
                   {faqsByCategory[category].map((item, index) => {
@@ -228,7 +256,7 @@ export default function FAQPage({ onBack }) {
                     )
                   })}
                 </div>
-              </div>
+              </motion.div>
             ))
           ) : (
             <div className="text-center py-12 text-gray-400">No FAQs available at the moment.</div>

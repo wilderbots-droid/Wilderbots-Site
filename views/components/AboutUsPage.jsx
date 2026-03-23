@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { motion } from 'framer-motion'
 import { ArrowLeft, Github, Linkedin, Mail, Globe, Users, Lightbulb, Rocket, Target, Package, Code, BookOpen, Twitter } from 'lucide-react'
 import Image from 'next/image'
 import Logo from './Logo'
@@ -99,21 +100,41 @@ export default function AboutUsPage({ onBack }) {
       </div>
 
       {/* Hero Section */}
-      <section className="relative py-24 px-6 overflow-hidden">
+      <motion.section
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.6 }}
+        className="relative py-24 px-6 overflow-hidden"
+      >
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-purple-600/20 rounded-full blur-[120px] animate-pulse"></div>
         
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="text-center max-w-4xl mx-auto space-y-8">
-            <h1 className="text-5xl md:text-7xl font-bold leading-tight">
+            <motion.h1
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.1 }}
+              className="text-5xl md:text-7xl font-bold leading-tight"
+            >
               Product. Service. <br/>
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-500">Education.</span>
-            </h1>
-            <p className="text-xl text-gray-300 leading-relaxed">
+            </motion.h1>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.25 }}
+              className="text-xl text-gray-300 leading-relaxed"
+            >
               Wilderbots is a unique company operating at the intersection of hardware, software, and education. 
               We design and manufacture cutting-edge wearable technology, provide comprehensive IT services, and revolutionize 
-              STEM education through our Neureck platform. We're not just a company—we're a movement empowering the next generation of innovators.
-            </p>
-            <div className="flex items-center justify-center gap-8 pt-8">
+              STEM education through our Neureck platform. We&apos;re not just a company—we&apos;re a movement empowering the next generation of innovators.
+            </motion.p>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="flex items-center justify-center gap-8 pt-8"
+            >
               <div className="text-center">
                 <div className="text-3xl font-bold text-white">2019</div>
                 <div className="text-sm text-gray-400">Founded</div>
@@ -128,16 +149,22 @@ export default function AboutUsPage({ onBack }) {
                 <div className="text-3xl font-bold text-white">35</div>
                 <div className="text-sm text-gray-400">Countries</div>
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* Mission Section */}
       <section className="py-24 px-6 bg-neutral-900">
         <div className="max-w-7xl mx-auto">
           <div className="grid md:grid-cols-2 gap-16 items-center">
-            <div className="space-y-6">
+            <motion.div
+              initial={{ opacity: 0, x: -40 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7 }}
+              className="space-y-6"
+            >
               <h2 className="text-4xl md:text-5xl font-bold">Our Mission</h2>
               <p className="text-xl text-gray-300 leading-relaxed">
                 To bridge the gap between hardware innovation, software excellence, and educational empowerment. 
@@ -149,8 +176,14 @@ export default function AboutUsPage({ onBack }) {
                 transform digitally. Through Neureck, we revolutionize STEM education. Three pillars, one mission: 
                 empowering innovators everywhere.
               </p>
-            </div>
-            <div className="relative">
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: 40 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7, delay: 0.1 }}
+              className="relative"
+            >
               <div className="aspect-video bg-gradient-to-br from-purple-600/20 to-blue-600/20 rounded-3xl overflow-hidden">
                 <Image 
                   src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=2070&auto=format&fit=crop" 
@@ -160,7 +193,7 @@ export default function AboutUsPage({ onBack }) {
                   unoptimized
                 />
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>
@@ -260,13 +293,20 @@ export default function AboutUsPage({ onBack }) {
           </div>
           <div className="grid md:grid-cols-2 gap-8">
             {values.map((value, index) => (
-              <div key={index} className="bg-neutral-900 rounded-3xl p-8 border border-white/10 hover:border-purple-500/50 transition-all">
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: (index % 2) * 0.1 }}
+                className="bg-neutral-900 rounded-3xl p-8 border border-white/10 hover:border-purple-500/50 transition-all"
+              >
                 <div className="w-16 h-16 bg-purple-500/10 rounded-2xl flex items-center justify-center mb-6 border border-purple-500/20">
                   <value.icon className="text-purple-400 w-8 h-8" />
                 </div>
                 <h3 className="text-2xl font-bold mb-3">{value.title}</h3>
                 <p className="text-gray-400 leading-relaxed">{value.description}</p>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>

@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion'
 import { ArrowRight, Wrench } from 'lucide-react'
 import Spline from '@splinetool/react-spline'
 
@@ -21,21 +22,46 @@ export default function Hero({ onOrderClick }) {
       {/* Abstract Background Gradient (Reduced opacity to blend with Spline) */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-purple-600/10 rounded-full blur-[120px] animate-pulse pointer-events-none"></div>
 
-      <div className="relative z-10 max-w-4xl mx-auto space-y-6 pointer-events-none">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm mb-4 pointer-events-auto">
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: 'easeOut' }}
+        className="relative z-10 max-w-4xl mx-auto space-y-6 pointer-events-none"
+      >
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm mb-4 pointer-events-auto"
+        >
           <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
           <span className="text-xs font-medium tracking-wide text-gray-300">THE FUTURE IS NOW</span>
-        </div>
+        </motion.div>
 
-        <h1 className="text-6xl md:text-8xl font-bold tracking-tighter leading-[1.1] bg-clip-text text-transparent bg-gradient-to-b from-white to-white/60 drop-shadow-2xl pb-4 px-2">
+        <motion.h1
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.35 }}
+          className="text-6xl md:text-8xl font-bold tracking-tighter leading-[1.1] bg-clip-text text-transparent bg-gradient-to-b from-white to-white/60 drop-shadow-2xl pb-4 px-2"
+        >
           Wilder than <br /> Imagination.
-        </h1>
+        </motion.h1>
 
-        <p className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed drop-shadow-lg">
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.5 }}
+          className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed drop-shadow-lg"
+        >
           Pioneering the next generation of wearable tech and interactive education.
           We are Wilderbots.
-        </p>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8 relative z-50 pointer-events-auto">
+        </motion.p>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.65 }}
+          className="flex flex-col sm:flex-row gap-4 justify-center pt-8 relative z-50 pointer-events-auto"
+        >
           <button
             onClick={(e) => {
               e.preventDefault()
@@ -58,8 +84,8 @@ export default function Hero({ onOrderClick }) {
           >
             Visit Neureck <ArrowRight size={18} />
           </a>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
 
       {/* Hero Image / Graphic Overlay */}
       <div className="absolute bottom-0 left-0 w-full h-1/3 bg-gradient-to-t from-black to-transparent z-20 pointer-events-none"></div>

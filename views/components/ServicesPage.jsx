@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { motion } from 'framer-motion'
 import { ArrowLeft, Code, Smartphone, Globe, Bot, Monitor, Cloud, Eye, MessageSquare, Mic, BarChart3, Box, Video, Palette, Megaphone, Layers, ArrowRight, Package } from 'lucide-react'
 import Logo from './Logo'
 
@@ -153,25 +154,45 @@ export default function ServicesPage({ onBack }) {
       </div>
 
       {/* Hero Section */}
-      <section className="relative py-24 px-6 overflow-hidden">
+      <motion.section
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.6 }}
+        className="relative py-24 px-6 overflow-hidden"
+      >
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-purple-600/20 rounded-full blur-[120px] animate-pulse"></div>
         
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="text-center max-w-4xl mx-auto space-y-8">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 font-bold tracking-wider text-xs uppercase">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 font-bold tracking-wider text-xs uppercase"
+            >
               <Code size={14} /> IT Solutions
-            </div>
-            <h1 className="text-5xl md:text-7xl font-bold leading-tight">
+            </motion.div>
+            <motion.h1
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.2 }}
+              className="text-5xl md:text-7xl font-bold leading-tight"
+            >
               Complete IT <br/>
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500">Services Portfolio</span>
-            </h1>
-            <p className="text-xl text-gray-300 leading-relaxed">
+            </motion.h1>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.35 }}
+              className="text-xl text-gray-300 leading-relaxed"
+            >
               From mobile apps to AI solutions, web development to 3D projects—we offer comprehensive IT services 
               to transform your business and bring your vision to life.
-            </p>
+            </motion.p>
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* Services Grid */}
       <section className="py-24 px-6 bg-neutral-900">
@@ -184,7 +205,14 @@ export default function ServicesPage({ onBack }) {
                 const colors = getColorClasses(category.color)
                 const IconComponent = typeof category.icon === 'string' ? iconMap[category.icon] || Package : category.icon
                 return (
-                  <div key={category._id || index} className="group bg-black border border-white/10 rounded-3xl p-8 hover:border-purple-500/50 transition-all hover:-translate-y-2">
+                  <motion.div
+                    key={category._id || index}
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: (index % 3) * 0.1 }}
+                    className="group bg-black border border-white/10 rounded-3xl p-8 hover:border-purple-500/50 transition-all hover:-translate-y-2"
+                  >
                     <div className={`w-14 h-14 bg-gradient-to-br ${colors.bg} rounded-2xl flex items-center justify-center mb-6 shadow-lg ${colors.shadow}`}>
                       <IconComponent className="text-white w-7 h-7" />
                     </div>
@@ -200,7 +228,7 @@ export default function ServicesPage({ onBack }) {
                         </li>
                       ))}
                     </ul>
-                  </div>
+                  </motion.div>
                 )
               })}
             </div>
@@ -209,7 +237,13 @@ export default function ServicesPage({ onBack }) {
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 px-6 bg-black border-t border-white/10">
+      <motion.section
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6 }}
+        className="py-24 px-6 bg-black border-t border-white/10"
+      >
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-4xl md:text-5xl font-bold mb-6">Ready to Get Started?</h2>
           <p className="text-xl text-gray-400 mb-10">
@@ -223,7 +257,7 @@ export default function ServicesPage({ onBack }) {
             Get in Touch <ArrowRight size={20} />
           </a>
         </div>
-      </section>
+      </motion.section>
     </div>
   )
 }

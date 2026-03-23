@@ -40,6 +40,16 @@ const CompanyInfoSchema = new mongoose.Schema({
     instagram: String,
     youtube: String
   },
+  processSection: {
+    title: {
+      type: String,
+      default: 'Your Journey.'
+    },
+    badgeText: {
+      type: String,
+      default: 'Our Process'
+    }
+  },
   updatedAt: {
     type: Date,
     default: Date.now

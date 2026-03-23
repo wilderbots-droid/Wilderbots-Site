@@ -169,10 +169,10 @@ export default function App({ Component, pageProps }) {
               }}
               className="relative group cursor-none"
             >
-              <Logo size={140} showText={false} />
+              <Logo size={140} showText={false} className="bg-transparent" />
               
               {/* Scanning Light Effect Overlay */}
-              <div className="absolute inset-0 overflow-hidden pointer-events-none rounded-full">
+              <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 <motion.div 
                   animate={{ left: ['-150%', '150%'] }}
                   transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}

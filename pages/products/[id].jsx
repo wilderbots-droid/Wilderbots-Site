@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { motion } from 'framer-motion'
 import { useRouter } from 'next/router'
 import Head from 'next/head'
 import Navigation from '../../views/components/Navigation'
@@ -83,13 +84,23 @@ export default function ProductDetail() {
 
       <main className="pt-24">
         {/* Hero Section */}
-        <section className={`relative py-20 px-6 overflow-hidden ${isNightlife ? 'bg-gradient-to-b from-indigo-950/20 to-black' : ''}`}>
+        <motion.section
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6 }}
+          className={`relative py-20 px-6 overflow-hidden ${isNightlife ? 'bg-gradient-to-b from-indigo-950/20 to-black' : ''}`}
+        >
           {isNightlife && (
             <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-purple-600/10 rounded-full blur-[120px] -z-10 animate-pulse"></div>
           )}
           
           <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center">
-            <div className="space-y-8">
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.7, delay: 0.1 }}
+              className="space-y-8"
+            >
               <div className={`inline-block px-4 py-1 rounded-full text-sm font-bold ${
                 isNightlife ? 'bg-indigo-500/20 text-indigo-400' : 'bg-green-500/20 text-green-400'
               }`}>
@@ -158,9 +169,14 @@ export default function ProductDetail() {
                   </div>
                 )}
               </div>
-            </div>
+            </motion.div>
 
-            <div className="relative">
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.7, delay: 0.2 }}
+              className="relative"
+            >
               <div className={`absolute inset-0 blur-3xl rounded-full -z-10 opacity-30 ${
                 isNightlife ? 'bg-indigo-500' : 'bg-green-500'
               }`}></div>
@@ -174,9 +190,9 @@ export default function ProductDetail() {
                   unoptimized
                 />
               )}
-            </div>
+            </motion.div>
           </div>
-        </section>
+        </motion.section>
 
         {/* Detailed Overview */}
         <section className="py-24 px-6 bg-neutral-900/30">
@@ -201,7 +217,14 @@ export default function ProductDetail() {
                 {product.features.map((feature, index) => {
                   const Icon = iconMap[feature.icon] || CheckCircle
                   return (
-                    <div key={index} className="p-8 bg-neutral-900/50 border border-white/5 rounded-[2rem] hover:border-white/20 transition-all group">
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, y: 30 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.5, delay: (index % 3) * 0.1 }}
+                      className="p-8 bg-neutral-900/50 border border-white/5 rounded-[2rem] hover:border-white/20 transition-all group"
+                    >
                       <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-6 transition-all ${
                         isNightlife ? 'bg-indigo-500/20 text-indigo-400 group-hover:bg-indigo-500 group-hover:text-white' : 'bg-green-500/20 text-green-400 group-hover:bg-green-500 group-hover:text-black'
                       }`}>
@@ -211,7 +234,7 @@ export default function ProductDetail() {
                       <p className="text-gray-400 leading-relaxed">
                         {feature.description}
                       </p>
-                    </div>
+                    </motion.div>
                   )
                 })}
               </div>

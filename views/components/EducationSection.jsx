@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion'
 import { BookOpen, Aperture, Globe, ArrowRight, Play } from 'lucide-react'
 import Image from 'next/image'
 
@@ -6,7 +7,13 @@ export default function EducationSection() {
     <section id="education" className="py-32 px-6 relative bg-gradient-to-b from-black via-indigo-950/20 to-black">
       <div className="max-w-7xl mx-auto">
         <div className="grid md:grid-cols-2 gap-16 items-center">
-          <div className="space-y-8 scroll-slide-left">
+          <motion.div
+            initial={{ opacity: 0, x: -50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7 }}
+            className="space-y-8"
+          >
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 font-bold tracking-wider text-xs uppercase">
               <BookOpen size={14} /> Education Sector
             </div>
@@ -47,10 +54,16 @@ export default function EducationSection() {
               </a>
               <p className="mt-4 text-sm text-gray-500">Leaves Wilderbots to open our partner platform.</p>
             </div>
-          </div>
+          </motion.div>
 
           {/* Neureck Card Visual */}
-          <div className="relative group perspective-1000 scroll-slide-right">
+          <motion.div
+            initial={{ opacity: 0, x: 50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7, delay: 0.1 }}
+            className="relative group perspective-1000"
+          >
             <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 rounded-[2rem] transform rotate-3 scale-105 opacity-20 blur-xl group-hover:opacity-40 transition-opacity duration-500"></div>
             <div className="relative bg-neutral-900 border border-white/10 rounded-[2rem] overflow-hidden shadow-2xl transform transition-transform duration-500 group-hover:-rotate-1 group-hover:scale-[1.02]">
               {/* Browser Header */}
@@ -88,7 +101,7 @@ export default function EducationSection() {
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>

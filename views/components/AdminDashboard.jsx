@@ -21,7 +21,8 @@ import {
   HelpCircle,
   Star,
   Mail,
-  Send
+  Send,
+  Layers
 } from 'lucide-react'
 import AdminUsers from './AdminUsers'
 import AdminOrders from './AdminOrders'
@@ -39,6 +40,8 @@ import AdminSubscriptions from './AdminSubscriptions'
 import AdminPolicies from './AdminPolicies'
 import AdminEmailAddresses from './AdminEmailAddresses'
 import AdminEmailManagement from './AdminEmailManagement'
+import AdminProcess from './AdminProcess'
+import AdminStats from './AdminStats'
 
 export default function AdminDashboard({ admin, onLogout }) {
   const router = useRouter()
@@ -175,6 +178,28 @@ export default function AdminDashboard({ admin, onLogout }) {
             >
               <Package className="w-5 h-5" />
               <span className="font-medium">Services</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('process')}
+              className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all ${
+                activeTab === 'process'
+                  ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg shadow-blue-500/25'
+                  : 'text-gray-400 hover:bg-gray-800 hover:text-white'
+              }`}
+            >
+              <Layers className="w-5 h-5" />
+              <span className="font-medium">Journey Steps</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('stats')}
+              className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all ${
+                activeTab === 'stats'
+                  ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg shadow-blue-500/25'
+                  : 'text-gray-400 hover:bg-gray-800 hover:text-white'
+              }`}
+            >
+              <TrendingUp className="w-5 h-5" />
+              <span className="font-medium">Statistics</span>
             </button>
             <button
               onClick={() => setActiveTab('products')}
@@ -362,6 +387,8 @@ export default function AdminDashboard({ admin, onLogout }) {
                   {activeTab === 'email-management' && 'Email Management'}
                   {activeTab === 'admin-account' && 'Admin Account Settings'}
                   {activeTab === 'settings' && 'Company Settings'}
+                  {activeTab === 'process' && 'Journey Management'}
+                  {activeTab === 'stats' && 'Statistics Management'}
                 </h2>
                 <p className="text-sm text-gray-400 mt-1">
                   {activeTab === 'dashboard' && 'Welcome back, here\'s what\'s happening'}
@@ -380,6 +407,8 @@ export default function AdminDashboard({ admin, onLogout }) {
                   {activeTab === 'email-management' && 'Send and receive emails using SMTP/IMAP'}
                   {activeTab === 'admin-account' && 'Manage your admin account profile and password'}
                   {activeTab === 'settings' && 'Manage company information and settings'}
+                  {activeTab === 'process' && 'Manage your journey steps and process section'}
+                  {activeTab === 'stats' && 'Manage landing page statistics'}
                 </p>
               </div>
               <div className="text-sm text-gray-400">
@@ -616,6 +645,8 @@ export default function AdminDashboard({ admin, onLogout }) {
         )}
         {activeTab === 'admin-account' && <AdminAccountSettings admin={currentAdmin || admin} />}
         {activeTab === 'settings' && <AdminSettings />}
+        {activeTab === 'process' && <AdminProcess />}
+        {activeTab === 'stats' && <AdminStats />}
         </main>
       </div>
     </div>

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { motion } from 'framer-motion'
 import { Cpu, Zap, ArrowRight, Ruler, Smartphone, Terminal, PenTool, Github, Box, Database, Wrench, X, Check, Code, Video, Heart, Smile, Settings, Bell, Store, CheckCircle } from 'lucide-react'
 import Image from 'next/image'
 
@@ -34,7 +35,13 @@ export default function ProductSection() {
   return (
     <section id="products" className="py-32 px-6 bg-black relative">
       <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-20 space-y-4">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-20 space-y-4"
+        >
           <div className="inline-block px-3 py-1 bg-white/5 border border-white/10 rounded-full text-xs font-bold tracking-widest text-gray-400 uppercase">
             Our Ecosystem
           </div>
@@ -45,20 +52,24 @@ export default function ProductSection() {
             From wearable hardware to transformative nightlife platforms. 
             Explore the Wilderbots product lineup.
           </p>
-        </div>
+        </motion.div>
 
         <div className={`grid gap-8 ${
           products.length === 2 ? 'grid-cols-1 max-w-5xl mx-auto' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-2'
         }`}>
-          {products.map((product) => {
+          {products.map((product, index) => {
             const isPrimary = product.isPrimary
             const isNightlife = product.title.toLowerCase().includes('bottle')
 
             return (
-              <div 
+              <motion.div
                 key={product._id}
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
                 className={`group relative overflow-hidden rounded-[2.5rem] p-1 transition-all duration-500 hover:scale-[1.02] ${
-                  isPrimary 
+                  isPrimary && products.length !== 2
                     ? 'md:col-span-2 lg:col-span-2' 
                     : ''
                 }`}
@@ -68,8 +79,8 @@ export default function ProductSection() {
                   isNightlife ? 'from-indigo-600 via-purple-600 to-black' : 'from-green-500 via-blue-500 to-black'
                 }`}></div>
                 
-                <div className="bg-neutral-900 rounded-[2.4rem] h-full overflow-hidden flex flex-col md:flex-row items-center">
-                  <div className={`p-8 md:p-12 space-y-6 flex-1 order-2 md:order-1 ${isPrimary ? 'md:max-w-xl' : ''}`}>
+                <div className="bg-neutral-900 rounded-[2.4rem] h-full overflow-hidden flex flex-col md:flex-row items-stretch">
+                  <div className={`p-8 md:p-12 space-y-6 flex-1 order-2 md:order-1 flex flex-col justify-center ${isPrimary ? 'md:max-w-xl' : ''}`}>
                     <div className="flex items-center gap-3">
                       <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
                         isNightlife ? 'bg-indigo-500/20 text-indigo-400' : 'bg-green-500/20 text-green-400'
@@ -107,7 +118,7 @@ export default function ProductSection() {
                     </div>
                   </div>
 
-                  <div className={`relative flex-1 order-1 md:order-2 self-stretch overflow-hidden flex items-center justify-center p-8 bg-black/40 ${isPrimary ? 'h-[350px] md:h-full' : 'h-[300px]'}`}>
+                  <div className={`relative flex-1 order-1 md:order-2 self-stretch overflow-hidden flex items-center justify-center p-8 bg-black/40 ${isPrimary ? 'h-[350px] md:h-full' : 'h-[300px] md:h-full'}`}>
                     <div className={`absolute inset-0 blur-3xl opacity-20 -z-10 ${isNightlife ? 'bg-indigo-500' : 'bg-green-500'}`}></div>
                     <Image 
                       src={product.image} 
@@ -119,7 +130,7 @@ export default function ProductSection() {
                     />
                   </div>
                 </div>
-              </div>
+              </motion.div>
             )
           })}
         </div>

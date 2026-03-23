@@ -11,10 +11,10 @@ export default function Logo({ size = 120, showText = true, className = "", onCl
 
   return (
     <div 
-      className={`flex items-center ${onClick ? 'cursor-pointer' : ''} ${className}`}
+      className={`flex items-center bg-transparent ${onClick ? 'cursor-pointer' : ''} ${className}`}
       onClick={onClick}
     >
-      <div className="relative" style={{ width: `${logoWidth}px`, height: `${logoHeight}px` }}>
+      <div className="relative bg-transparent" style={{ width: `${logoWidth}px`, height: `${logoHeight}px` }}>
         <Image
           src={logoImage}
           alt="Wilderbots"

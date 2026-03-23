@@ -15,10 +15,16 @@
   body {
     scroll-behavior: smooth;
     background-color: black;
+  }
+
+  body.custom-cursor-active {
     cursor: none;
   }
 
-  a, button, [role="button"], .cursor-pointer {
+  body.custom-cursor-active a, 
+  body.custom-cursor-active button, 
+  body.custom-cursor-active [role="button"], 
+  body.custom-cursor-active .cursor-pointer {
     cursor: none !important;
   }
 }

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { motion } from 'framer-motion'
 import { ArrowLeft, Mail, Phone, MapPin, Clock, Send, MessageSquare, Briefcase, GraduationCap, Package, Linkedin, Github, Twitter, Instagram, Youtube } from 'lucide-react'
 import Logo from './Logo'
 import { useAuth } from '../../contexts/AuthContext'
@@ -261,29 +262,49 @@ export default function ContactUsPage({ onBack }) {
       </div>
 
       {/* Hero Section */}
-      <section className="relative py-24 px-6 overflow-hidden">
+      <motion.section
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.6 }}
+        className="relative py-24 px-6 overflow-hidden"
+      >
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-purple-600/20 rounded-full blur-[120px] animate-pulse"></div>
         
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="text-center max-w-4xl mx-auto space-y-8">
-            <h1 className="text-5xl md:text-7xl font-bold leading-tight">
-              Let's Build <br/>
+            <motion.h1
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.1 }}
+              className="text-5xl md:text-7xl font-bold leading-tight"
+            >
+              Let&apos;s Build <br/>
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-500">Something Together</span>
-            </h1>
-            <p className="text-xl text-gray-300 leading-relaxed">
-              Whether you're interested in our products, need IT services, want to explore educational partnerships, 
-              or just have a question—we're here to help. Reach out and let's start a conversation.
-            </p>
+            </motion.h1>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.25 }}
+              className="text-xl text-gray-300 leading-relaxed"
+            >
+              Whether you&apos;re interested in our products, need IT services, want to explore educational partnerships, 
+              or just have a question—we&apos;re here to help. Reach out and let&apos;s start a conversation.
+            </motion.p>
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* Contact Form & Info Section */}
       <section className="py-24 px-6 bg-neutral-900">
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-12">
             {/* Contact Form */}
-            <div>
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7 }}
+            >
               <h2 className="text-3xl font-bold mb-6">Send us a Message</h2>
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-4">
@@ -386,10 +407,15 @@ export default function ContactUsPage({ onBack }) {
                   )}
                 </button>
               </form>
-            </div>
+            </motion.div>
 
             {/* Contact Information */}
-            <div>
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7, delay: 0.1 }}
+            >
               <h2 className="text-3xl font-bold mb-6">Get in Touch</h2>
               <div className="space-y-6 mb-12">
                 {getContactInfo().map((info, index) => (
@@ -470,7 +496,7 @@ export default function ContactUsPage({ onBack }) {
                   </div>
                 </div>
               )}
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>
@@ -484,7 +510,14 @@ export default function ContactUsPage({ onBack }) {
           </div>
           <div className="grid md:grid-cols-2 gap-6">
             {getDepartments().map((dept, index) => (
-              <div key={index} className="bg-neutral-900 rounded-3xl p-8 border border-white/10 hover:border-purple-500/50 transition-all">
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: (index % 2) * 0.1 }}
+                className="bg-neutral-900 rounded-3xl p-8 border border-white/10 hover:border-purple-500/50 transition-all"
+              >
                 <div className="w-16 h-16 bg-purple-500/10 rounded-2xl flex items-center justify-center mb-6 border border-purple-500/20">
                   <dept.icon className="text-purple-400 w-8 h-8" />
                 </div>
@@ -497,7 +530,7 @@ export default function ContactUsPage({ onBack }) {
                   <Mail size={16} />
                   {dept.email}
                 </a>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>

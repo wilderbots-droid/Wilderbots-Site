@@ -10,3 +10,4 @@ export default function About() {
 
   return <AboutUsPage onBack={handleBack} />
 }
+

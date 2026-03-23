@@ -1,9 +1,14 @@
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/router'
 import { motion, useMotionValue, useSpring } from 'framer-motion'
 
 export default function CustomCursor() {
+  const router = useRouter()
   const [cursorVariant, setCursorVariant] = useState('default')
   const [isVisible, setIsVisible] = useState(false)
+  const [mounted, setMounted] = useState(false)
+
+  const isAdmin = router.pathname.startsWith('/admin') || router.pathname === '/login'
 
   const mouseX = useMotionValue(0)
   const mouseY = useMotionValue(0)
@@ -13,6 +18,17 @@ export default function CustomCursor() {
     damping: 30,
     stiffness: 200
   })
+
+  useEffect(() => {
+    if (mounted && !isAdmin) {
+      document.body.classList.add('custom-cursor-active')
+    } else {
+      document.body.classList.remove('custom-cursor-active')
+    }
+    return () => {
+      document.body.classList.remove('custom-cursor-active')
+    }
+  }, [mounted, isAdmin])
 
   useEffect(() => {
     // Sync scaleSpring with cursorVariant
@@ -51,6 +67,10 @@ export default function CustomCursor() {
     document.addEventListener('mouseleave', handleMouseLeaveWindow)
     document.addEventListener('mouseenter', handleMouseEnterWindow)
 
+    if (typeof window !== 'undefined') {
+      setMounted(true)
+    }
+
     return () => {
       window.removeEventListener('mousemove', handleMouseMove)
       window.removeEventListener('mouseover', handleMouseOver)
@@ -76,7 +96,7 @@ export default function CustomCursor() {
     }
   }
 
-  if (typeof window === 'undefined') return null
+  if (!mounted || isAdmin) return null
 
   return (
     <motion.div

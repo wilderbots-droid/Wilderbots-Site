@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { motion } from 'framer-motion'
 
 export default function NewsletterSection() {
   const [email, setEmail] = useState('')
@@ -66,7 +67,13 @@ export default function NewsletterSection() {
 
   return (
     <section id="vision" className="py-24 bg-neutral-900 border-t border-white/5">
-      <div className="max-w-4xl mx-auto px-6 text-center">
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6 }}
+        className="max-w-4xl mx-auto px-6 text-center"
+      >
         <h2 className="text-3xl md:text-5xl font-bold mb-6">Join the Wild Side.</h2>
         <p className="text-gray-400 mb-10 text-lg">
           Stay updated on the Wilder Watch release dates and new courses on Neureck.
@@ -96,7 +103,7 @@ export default function NewsletterSection() {
         {status === 'success' && message && (
           <p className="mt-4 text-green-400 text-sm">{message}</p>
         )}
-      </div>
+      </motion.div>
     </section>
   )
 }
