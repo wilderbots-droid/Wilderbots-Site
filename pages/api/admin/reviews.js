@@ -27,6 +27,10 @@ export default async function handler(req, res) {
       res.status(201).json({ success: true, review })
     } catch (error) {
       console.error('Create review error:', error)
+      if (error.name === 'ValidationError') {
+        const messages = Object.values(error.errors).map(err => err.message)
+        return res.status(400).json({ error: messages.join(', ') })
+      }
       res.status(500).json({ error: 'Internal server error' })
     }
   } else if (req.method === 'PUT') {
@@ -36,6 +40,10 @@ export default async function handler(req, res) {
       res.status(200).json({ success: true, review })
     } catch (error) {
       console.error('Update review error:', error)
+      if (error.name === 'ValidationError') {
+        const messages = Object.values(error.errors).map(err => err.message)
+        return res.status(400).json({ error: messages.join(', ') })
+      }
       res.status(500).json({ error: 'Internal server error' })
     }
   } else if (req.method === 'DELETE') {

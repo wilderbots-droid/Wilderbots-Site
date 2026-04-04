@@ -126,23 +126,23 @@ export default function AdminReviews() {
 
     setUploading(true)
     try {
-      const token = localStorage.getItem('admin_token')
-      const formData = new FormData()
-      formData.append('file', file)
+      const uploadData = new FormData()
+      uploadData.append('file', file)
 
       const response = await fetch('/api/admin/upload-avatar', {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
         },
-        body: formData,
+        body: uploadData,
       })
 
       if (response.ok) {
         const data = await response.json()
-        setFormData({ ...formData, avatar: data.url })
+        setFormData(prev => ({ ...prev, avatar: data.url }))
         setAvatarPreview(data.url)
       } else {
+
         const error = await response.json()
         alert(error.error || 'Upload failed')
       }
