@@ -28,15 +28,19 @@ const AdminSchema = new mongoose.Schema({
   }
 })
 
-AdminSchema.pre('save', async function(next) {
-  if (!this.isModified('password')) return next()
+AdminSchema.pre('save', async function() {
+  if (!this.isModified('password')) return
   this.password = await bcrypt.hash(this.password, 10)
-  next()
 })
+
 
 AdminSchema.methods.comparePassword = async function(candidatePassword) {
   return bcrypt.compare(candidatePassword, this.password)
 }
 
-export default mongoose.models.Admin || mongoose.model('Admin', AdminSchema)
+if (mongoose.models.Admin) {
+  delete mongoose.models.Admin
+}
+export default mongoose.model('Admin', AdminSchema)
+
 

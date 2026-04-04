@@ -39,10 +39,11 @@ const CareerSchema = new mongoose.Schema({
   }
 })
 
-CareerSchema.pre('save', function(next) {
+CareerSchema.pre('save', async function() {
   this.updatedAt = Date.now()
-  next()
 })
+
+
 
 export default mongoose.models.Career || mongoose.model('Career', CareerSchema)
 

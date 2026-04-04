@@ -54,21 +54,21 @@ const SavedAddressSchema = new mongoose.Schema({
   }
 })
 
-SavedAddressSchema.pre('save', function(next) {
+SavedAddressSchema.pre('save', async function() {
   this.updatedAt = Date.now()
-  next()
 })
 
+
 // Ensure only one default address per user
-SavedAddressSchema.pre('save', async function(next) {
+SavedAddressSchema.pre('save', async function() {
   if (this.isDefault && this.isModified('isDefault')) {
     await mongoose.model('SavedAddress').updateMany(
       { userId: this.userId, _id: { $ne: this._id } },
       { $set: { isDefault: false } }
     )
   }
-  next()
 })
+
 
 export default mongoose.models.SavedAddress || mongoose.model('SavedAddress', SavedAddressSchema)
 

@@ -46,10 +46,15 @@ const ReviewSchema = new mongoose.Schema({
   }
 })
 
-ReviewSchema.pre('save', function(next) {
+ReviewSchema.pre('save', async function() {
   this.updatedAt = Date.now()
-  next()
 })
 
-export default mongoose.models.Review || mongoose.model('Review', ReviewSchema)
+
+
+if (mongoose.models.Review) {
+  delete mongoose.models.Review
+}
+export default mongoose.model('Review', ReviewSchema)
+
 

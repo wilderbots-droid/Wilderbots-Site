@@ -32,10 +32,11 @@ const FAQSchema = new mongoose.Schema({
   }
 })
 
-FAQSchema.pre('save', function(next) {
+FAQSchema.pre('save', async function() {
   this.updatedAt = Date.now()
-  next()
 })
+
+
 
 export default mongoose.models.FAQ || mongoose.model('FAQ', FAQSchema)
 

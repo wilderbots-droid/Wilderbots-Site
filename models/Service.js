@@ -34,10 +34,11 @@ const ServiceSchema = new mongoose.Schema({
   }
 })
 
-ServiceSchema.pre('save', function(next) {
+ServiceSchema.pre('save', async function() {
   this.updatedAt = Date.now()
-  next()
 })
+
+
 
 export default mongoose.models.Service || mongoose.model('Service', ServiceSchema)
 

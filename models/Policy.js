@@ -27,11 +27,12 @@ const PolicySchema = new mongoose.Schema({
   timestamps: true
 })
 
-PolicySchema.pre('save', function(next) {
+PolicySchema.pre('save', async function() {
   this.updatedAt = Date.now()
   this.lastUpdated = Date.now()
-  next()
 })
+
+
 
 export default mongoose.models.Policy || mongoose.model('Policy', PolicySchema)
 

@@ -65,10 +65,15 @@ const OrderSchema = new mongoose.Schema({
   }
 })
 
-OrderSchema.pre('save', function(next) {
+OrderSchema.pre('save', async function() {
   this.updatedAt = Date.now()
-  next()
 })
 
-export default mongoose.models.Order || mongoose.model('Order', OrderSchema)
+
+
+if (mongoose.models.Order) {
+  delete mongoose.models.Order
+}
+export default mongoose.model('Order', OrderSchema)
+
 

@@ -53,10 +53,15 @@ const TeamMemberSchema = new mongoose.Schema({
   }
 })
 
-TeamMemberSchema.pre('save', function(next) {
+TeamMemberSchema.pre('save', async function() {
   this.updatedAt = Date.now()
-  next()
 })
 
-export default mongoose.models.TeamMember || mongoose.model('TeamMember', TeamMemberSchema)
+
+
+if (mongoose.models.TeamMember) {
+  delete mongoose.models.TeamMember
+}
+export default mongoose.model('TeamMember', TeamMemberSchema)
+
 
