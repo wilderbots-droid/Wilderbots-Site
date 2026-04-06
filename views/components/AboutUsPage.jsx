@@ -6,11 +6,31 @@ import Logo from './Logo'
 
 export default function AboutUsPage({ onBack }) {
   const [teamMembers, setTeamMembers] = useState([])
+  const [stats, setStats] = useState([
+    { value: '2019', label: 'Founded' },
+    { value: '50k+', label: 'Kits Shipped' },
+    { value: '35', label: 'Countries' }
+  ])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     fetchTeamMembers()
+    fetchStats()
   }, [])
+
+  const fetchStats = async () => {
+    try {
+      const response = await fetch('/api/stats')
+      if (response.ok) {
+        const data = await response.json()
+        if (data.success && data.stats && data.stats.length > 0) {
+          setStats(data.stats)
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching stats:', error)
+    }
+  }
 
   const fetchTeamMembers = async () => {
     try {
@@ -133,22 +153,19 @@ export default function AboutUsPage({ onBack }) {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
-              className="flex items-center justify-center gap-8 pt-8"
+              className="flex flex-wrap items-center justify-center gap-x-8 gap-y-4 pt-8"
             >
-              <div className="text-center">
-                <div className="text-3xl font-bold text-white">2019</div>
-                <div className="text-sm text-gray-400">Founded</div>
-              </div>
-              <div className="w-px h-12 bg-white/10"></div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-white">50k+</div>
-                <div className="text-sm text-gray-400">Kits Shipped</div>
-              </div>
-              <div className="w-px h-12 bg-white/10"></div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-white">35</div>
-                <div className="text-sm text-gray-400">Countries</div>
-              </div>
+              {stats.map((stat, index) => (
+                <div key={stat._id || index} className="flex items-center gap-8">
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-white">{stat.value}</div>
+                    <div className="text-sm text-gray-400">{stat.label}</div>
+                  </div>
+                  {index < stats.length - 1 && (
+                    <div className="hidden sm:block w-px h-12 bg-white/10"></div>
+                  )}
+                </div>
+              ))}
             </motion.div>
           </div>
         </div>
