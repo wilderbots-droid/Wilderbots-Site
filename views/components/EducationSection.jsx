@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { BookOpen, Aperture, Globe, ArrowRight, Play, Cpu, Zap, GraduationCap } from 'lucide-react'
+import { BookOpen, Aperture, Globe, ArrowRight, Cpu, Zap, GraduationCap } from 'lucide-react'
 import Image from 'next/image'
 
 export default function EducationSection() {
@@ -126,11 +126,6 @@ export default function EducationSection() {
                   className="object-cover opacity-80"
                   unoptimized
                 />
-                <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                  <div className="w-20 h-20 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center border border-white/20 group-hover:scale-110 transition-transform cursor-pointer">
-                    <Play fill="white" className="ml-1 text-white" size={32} />
-                  </div>
-                </div>
                 
                 {/* Floating Elements */}
                 <div className="absolute bottom-6 left-6 right-6 p-4 bg-black/60 backdrop-blur-xl rounded-xl border border-white/10">
