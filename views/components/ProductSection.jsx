@@ -118,14 +118,14 @@ export default function ProductSection() {
                     </div>
                   </div>
 
-                  <div className={`relative flex-1 order-1 md:order-2 self-stretch overflow-hidden flex items-center justify-center p-8 bg-black/40 ${isPrimary ? 'h-[350px] md:h-full' : 'h-[300px] md:h-full'}`}>
+                  <div className={`relative flex-1 order-1 md:order-2 self-stretch overflow-hidden flex items-center justify-center bg-black/40 ${isPrimary ? 'h-[350px] md:h-full' : 'h-[300px] md:h-full'}`}>
                     <div className={`absolute inset-0 blur-3xl opacity-20 -z-10 ${isNightlife ? 'bg-indigo-500' : 'bg-green-500'}`}></div>
                     <Image 
                       src={product.image} 
                       alt={product.title} 
                       width={500}
                       height={500}
-                      className="w-full h-full object-contain drop-shadow-2xl group-hover:scale-110 transition-transform duration-700"
+                      className="w-full h-full object-cover drop-shadow-2xl group-hover:scale-110 transition-transform duration-700"
                       unoptimized
                     />
                   </div>
