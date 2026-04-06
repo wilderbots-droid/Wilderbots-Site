@@ -7,6 +7,8 @@ export default function AdminProducts() {
   const [search, setSearch] = useState('')
   const [editingId, setEditingId] = useState(null)
   const [showForm, setShowForm] = useState(false)
+  const [uploading, setUploading] = useState(false)
+  const [imagePreview, setImagePreview] = useState(null)
   const [formData, setFormData] = useState({
     title: '',
     subtitle: '',
@@ -94,6 +96,61 @@ export default function AdminProducts() {
     }
   }
 
+  const handleFileUpload = async (file) => {
+    if (!file) return
+
+    if (!file.type.startsWith('image/')) {
+      alert('Please select an image file')
+      return
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert('File size must be less than 5MB')
+      return
+    }
+
+    setUploading(true)
+    try {
+      const token = localStorage.getItem('admin_token')
+      const uploadData = new FormData()
+      uploadData.append('file', file)
+
+      const response = await fetch('/api/admin/upload-product-image', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: uploadData,
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        setFormData(prev => ({ ...prev, image: data.url }))
+        setImagePreview(data.url)
+      } else {
+        const error = await response.json()
+        alert(error.error || 'Upload failed')
+      }
+    } catch (error) {
+      console.error('Upload error:', error)
+      alert('Upload failed. Please try again.')
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setImagePreview(reader.result)
+      }
+      reader.readAsDataURL(file)
+      handleFileUpload(file)
+    }
+  }
+
   const handleDelete = async (id) => {
     if (!confirm('Are you sure you want to delete this product?')) return
 
@@ -120,6 +177,7 @@ export default function AdminProducts() {
       ...product,
       features: product.features || []
     })
+    setImagePreview(product.image)
     setEditingId(product._id)
     setShowForm(true)
   }
@@ -144,6 +202,7 @@ export default function AdminProducts() {
       showCta: true,
       showPrice: true
     })
+    setImagePreview(null)
     setEditingId(null)
   }
 
@@ -281,32 +340,61 @@ export default function AdminProducts() {
 
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-white font-semibold mb-2">Image URL</label>
-                    <div className="flex items-center gap-3">
-                      <input
-                        type="text"
-                        value={formData.image}
-                        onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                        placeholder="/kit.png"
-                        className="flex-1 px-4 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-gray-500"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => fileInputRef.current?.click()}
-                        className="px-3 py-2 bg-neutral-700 text-white rounded-lg hover:bg-neutral-600"
-                      >
-                        <Package size={16} />
-                      </button>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        ref={fileInputRef}
-                        onChange={(e) => {
-                          const file = e.target.files && e.target.files[0]
-                          if (file) setFormData({ ...formData, image: `/${file.name}` })
-                        }}
-                        className="hidden"
-                      />
+                    <label className="block text-white font-semibold mb-2">Product Image</label>
+                    <div className="space-y-4">
+                      <div className="relative aspect-video bg-neutral-800 rounded-xl overflow-hidden border border-neutral-700 flex items-center justify-center group">
+                        {imagePreview || formData.image ? (
+                          <img
+                            src={imagePreview || formData.image}
+                            alt="Product preview"
+                            className="w-full h-full object-contain"
+                            onError={(e) => {
+                              e.target.src = '/kit.png'
+                            }}
+                          />
+                        ) : (
+                          <Package className="w-12 h-12 text-neutral-600" />
+                        )}
+                        {uploading && (
+                          <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                            <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+                          </div>
+                        )}
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                          <button
+                            type="button"
+                            onClick={() => fileInputRef.current?.click()}
+                            className="bg-white text-black px-4 py-2 rounded-full font-bold text-sm"
+                          >
+                            Change Image
+                          </button>
+                        </div>
+                      </div>
+                      
+                      <div className="flex gap-4">
+                        <div className="flex-1">
+                          <label className="text-xs text-gray-500 mb-1 block">Image URL (Direct Edit)</label>
+                          <input
+                            type="text"
+                            value={formData.image}
+                            onChange={(e) => {
+                              setFormData({ ...formData, image: e.target.value })
+                              setImagePreview(e.target.value)
+                            }}
+                            placeholder="/kit.png"
+                            className="w-full px-4 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-gray-500 text-sm"
+                          />
+                        </div>
+                        <div className="flex items-end">
+                          <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept="image/*"
+                            onChange={handleFileChange}
+                            className="hidden"
+                          />
+                        </div>
+                      </div>
                     </div>
                   </div>
 
