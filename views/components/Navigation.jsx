@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
-import { Menu, X, LogIn, User, LogOut } from 'lucide-react'
+import { Menu, X, LogIn, User, LogOut, Github, Linkedin, Twitter, Instagram, ArrowRight } from 'lucide-react'
 import Logo from './Logo'
 import Link from 'next/link'
 import { useAuth } from '../../contexts/AuthContext'
+import { motion, AnimatePresence } from 'framer-motion'
 
 export default function Navigation() {
   const router = useRouter()
