@@ -170,42 +170,7 @@ export default function App({ Component, pageProps }) {
               className="relative group cursor-none"
             >
               <Logo size={140} showText={false} className="bg-transparent" />
-              
-              {/* Scanning Light Effect Overlay */}
-              <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <motion.div 
-                  animate={{ left: ['-150%', '150%'] }}
-                  transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-                  className="absolute top-0 w-1/3 h-full bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12"
-                />
-              </div>
             </motion.div>
-            
-            <div className="mt-16 space-y-4 flex flex-col items-center">
-              {/* Futuristic Loading Text */}
-              <motion.span 
-                animate={{ opacity: [0.4, 1, 0.4] }}
-                transition={{ duration: 2, repeat: Infinity }}
-                className="text-[10px] font-mono tracking-[0.3em] text-white/40 uppercase"
-              >
-                Initializing Engine
-              </motion.span>
-              
-              {/* Sleek Progress Bar */}
-              <div className="w-32 h-[1px] bg-white/5 rounded-full overflow-hidden">
-                <motion.div 
-                  animate={{ 
-                    width: ["0%", "40%", "35%", "70%", "65%", "100%"] 
-                  }}
-                  transition={{ 
-                    duration: 4, 
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
-                  className="h-full bg-gradient-to-r from-purple-500 to-blue-500"
-                />
-              </div>
-            </div>
           </div>
         </div>
       </div>

@@ -108,29 +108,148 @@ export default function Navigation() {
         </button>
       </div>
 
-      {/* Mobile Nav */}
-      {mobileMenuOpen && (
-        <div className="md:hidden fixed inset-0 top-0 left-0 bg-black z-50 p-6 flex flex-col gap-6 pt-24">
-          <button onClick={() => setMobileMenuOpen(false)} className="absolute top-6 right-6 text-white text-sm">Close</button>
-          <div className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Products</div>
-          {products.map(p => (
-            <Link 
-              key={p._id} 
-              href={`/products/${p._id}`}
-              onClick={() => setMobileMenuOpen(false)}
-              className="text-2xl font-bold"
-            >
-              {p.title}
-            </Link>
-          ))}
-          <div className="h-px bg-white/10 my-4"></div>
-          <button onClick={() => scrollToSection('education')} className="text-lg font-medium text-left">Education</button>
-          <Link href="/services" className="text-lg font-medium text-left">Services</Link>
-          <Link href="/about" className="text-lg font-medium text-left">About Us</Link>
-          <Link href="/contact" className="text-lg font-medium text-left">Contact</Link>
-        </div>
-      )}
+      {/* Mobile Nav Overlay */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+            className="md:hidden fixed inset-0 bg-black/95 backdrop-blur-xl z-[60] flex flex-col p-6 overflow-y-auto"
+          >
+            {/* Header in Menu */}
+            <div className="flex justify-between items-center mb-12">
+              <Logo size={50} showText={true} onClick={() => { router.push('/'); setMobileMenuOpen(false); }} />
+              <button 
+                onClick={() => setMobileMenuOpen(false)}
+                className="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center border border-white/10"
+              >
+                <X size={24} className="text-white" />
+              </button>
+            </div>
+
+            {/* Menu Links */}
+            <div className="flex flex-col gap-8 flex-1">
+              <div className="space-y-4">
+                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest pl-2">Products</p>
+                <div className="grid grid-cols-1 gap-2">
+                  {products.map((p, i) => (
+                    <motion.div
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.1 + i * 0.05 }}
+                      key={p._id}
+                    >
+                      <Link 
+                        href={`/products/${p._id}`}
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="flex flex-col p-4 rounded-2xl bg-white/5 border border-white/5 hover:border-white/20 transition-colors"
+                      >
+                        <span className="text-lg font-bold text-white">{p.title}</span>
+                        <span className="text-xs text-gray-500 truncate">{p.subtitle}</span>
+                      </Link>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-6 pt-4">
+                {[
+                  { name: 'Services', href: '/services' },
+                  { name: 'About Us', href: '/about' },
+                  { name: 'Contact', href: '/contact' },
+                  { name: 'Education', action: () => scrollToSection('education') }
+                ].map((item, i) => (
+                  <motion.div
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.3 + i * 0.05 }}
+                    key={item.name}
+                  >
+                    {item.href ? (
+                      <Link 
+                        href={item.href}
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="text-3xl font-bold text-white pl-2"
+                      >
+                        {item.name}
+                      </Link>
+                    ) : (
+                      <button 
+                        onClick={item.action}
+                        className="text-3xl font-bold text-white pl-2 text-left w-full"
+                      >
+                        {item.name}
+                      </button>
+                    )}
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+
+            {/* Bottom Actions */}
+            <div className="mt-auto pt-8 border-t border-white/10 space-y-8">
+              <div className="flex flex-col gap-4">
+                <a 
+                  href="https://neureck.com" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="w-full py-4 bg-white text-black font-bold rounded-2xl flex items-center justify-center gap-2 text-lg shadow-[0_0_20px_rgba(255,255,255,0.1)] active:scale-95 transition-transform"
+                >
+                  Launch Neureck <ArrowRight size={20} />
+                </a>
+                {!user ? (
+                  <Link 
+                    href="/login" 
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="w-full py-4 bg-purple-600/20 text-purple-400 font-bold rounded-2xl border border-purple-500/30 flex items-center justify-center gap-2 text-lg"
+                  >
+                    <LogIn size={20} /> Customer Login
+                  </Link>
+                ) : (
+                  <Link 
+                    href="/dashboard" 
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="w-full py-4 bg-purple-600 text-white font-bold rounded-2xl flex items-center justify-center gap-2 text-lg"
+                  >
+                    <User size={20} /> Go to Dashboard
+                  </Link>
+                )}
+              </div>
+
+              {/* Social Links */}
+              <div className="flex justify-between items-center px-2 pb-4">
+                <div className="flex gap-4">
+                  {companyInfo?.socialMedia?.linkedin && (
+                    <a href={companyInfo.socialMedia.linkedin} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">
+                      <Linkedin size={22} />
+                    </a>
+                  )}
+                  {companyInfo?.socialMedia?.github && (
+                    <a href={companyInfo.socialMedia.github} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">
+                      <Github size={22} />
+                    </a>
+                  )}
+                  {companyInfo?.socialMedia?.instagram && (
+                    <a href={companyInfo.socialMedia.instagram} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">
+                      <Instagram size={22} />
+                    </a>
+                  )}
+                  {companyInfo?.socialMedia?.twitter && (
+                    <a href={companyInfo.socialMedia.twitter} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">
+                      <Twitter size={22} />
+                    </a>
+                  )}
+                </div>
+                <div className="text-[10px] uppercase tracking-widest text-gray-600 font-bold">
+                  Wilderbots Inc.
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </nav>
   )
 }
-

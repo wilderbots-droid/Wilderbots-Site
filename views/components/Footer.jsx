@@ -168,21 +168,6 @@ export default function Footer() {
                 </a>
               </li>
             ))}
-            <li>
-              <button onClick={() => scrollToSection('features')} className="hover:text-white transition-colors text-left">
-                Features
-              </button>
-            </li>
-            <li>
-              <a href="https://github.com/wilderbots" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
-                GitHub Repository
-              </a>
-            </li>
-            <li>
-              <button onClick={() => scrollToSection('process')} className="hover:text-white transition-colors text-left">
-                Build Process
-              </button>
-            </li>
           </ul>
         </div>
         
