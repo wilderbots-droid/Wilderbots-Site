@@ -68,7 +68,10 @@ export default function CustomCursor() {
     document.addEventListener('mouseenter', handleMouseEnterWindow)
 
     if (typeof window !== 'undefined') {
-      setMounted(true)
+      const isTouchDevice = !window.matchMedia('(pointer: fine)').matches
+      if (!isTouchDevice) {
+        setMounted(true)
+      }
     }
 
     return () => {
