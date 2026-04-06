@@ -126,6 +126,7 @@ export default function AdminReviews() {
 
     setUploading(true)
     try {
+      const token = localStorage.getItem('admin_token')
       const uploadData = new FormData()
       uploadData.append('file', file)
 
