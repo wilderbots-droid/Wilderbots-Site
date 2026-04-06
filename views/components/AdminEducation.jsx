@@ -1,11 +1,13 @@
-import { useState, useEffect } from 'react'
-import { BookOpen, Save, Plus, Trash2, Globe, Aperture, Cpu, Zap, GraduationCap } from 'lucide-react'
+import { useState, useEffect, useRef } from 'react'
+import { BookOpen, Save, Plus, Trash2, Globe, Aperture, Cpu, Zap, GraduationCap, Upload, Image as ImageIcon } from 'lucide-react'
 
 export default function AdminEducation() {
   const [content, setContent] = useState(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState({ type: '', text: '' })
+  const [uploading, setUploading] = useState(false)
+  const fileInputRef = useRef(null)
 
   useEffect(() => {
     fetchContent()
@@ -53,6 +55,40 @@ export default function AdminEducation() {
       setMessage({ type: 'error', text: 'An error occurred while saving.' })
     } finally {
       setSaving(false)
+    }
+  }
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0]
+    if (!file) return
+
+    setUploading(true)
+    setMessage({ type: '', text: '' })
+    
+    const formData = new FormData()
+    formData.append('file', file)
+
+    try {
+      const token = localStorage.getItem('admin_token')
+      const response = await fetch('/api/admin/upload-education-image', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        setContent({ ...content, browserImage: data.url })
+        setMessage({ type: 'success', text: 'Image uploaded successfully!' })
+      } else {
+        const errorData = await response.json()
+        setMessage({ type: 'error', text: errorData.error || 'Failed to upload image.' })
+      }
+    } catch (error) {
+      console.error('Error uploading image:', error)
+      setMessage({ type: 'error', text: 'An error occurred during upload.' })
+    } finally {
+      setUploading(false)
     }
   }
 
@@ -251,13 +287,51 @@ export default function AdminEducation() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Browser Image URL</label>
-              <input
-                type="text"
-                value={content?.browserImage || ''}
-                onChange={(e) => setContent({ ...content, browserImage: e.target.value })}
-                className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-blue-500"
-              />
+              <label className="block text-sm font-medium text-gray-300 mb-2">Browser Image</label>
+              <div className="space-y-4">
+                <div className="flex gap-4">
+                  <input
+                    type="text"
+                    value={content?.browserImage || ''}
+                    onChange={(e) => setContent({ ...content, browserImage: e.target.value })}
+                    className="flex-1 px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-blue-500 text-sm"
+                    placeholder="URL or upload an image..."
+                  />
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleImageUpload}
+                    accept="image/*"
+                    className="hidden"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current.click()}
+                    disabled={uploading}
+                    className="px-4 py-2 bg-blue-600/20 text-blue-400 rounded-lg border border-blue-500/30 hover:bg-blue-600/30 transition text-sm flex items-center shrink-0 disabled:opacity-50"
+                  >
+                    {uploading ? (
+                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-400 border-t-transparent mr-2"></div>
+                    ) : (
+                      <Upload size={16} className="mr-2" />
+                    )}
+                    Upload
+                  </button>
+                </div>
+                
+                {content?.browserImage && (
+                  <div className="relative group rounded-lg overflow-hidden border border-gray-700 aspect-video bg-gray-800/50">
+                    <img 
+                      src={content.browserImage} 
+                      alt="Preview" 
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                      <ImageIcon className="text-white w-8 h-8" />
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
