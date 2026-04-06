@@ -12,6 +12,7 @@ export default function Navigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const { user, logout } = useAuth()
   const [products, setProducts] = useState([])
+  const [companyInfo, setCompanyInfo] = useState(null)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -30,8 +31,21 @@ export default function Navigation() {
       }
     }
 
+    const fetchCompanyInfo = async () => {
+      try {
+        const response = await fetch('/api/company-info')
+        if (response.ok) {
+          const data = await response.json()
+          setCompanyInfo(data.companyInfo)
+        }
+      } catch (error) {
+        console.error('Error fetching company info:', error)
+      }
+    }
+
     window.addEventListener('scroll', handleScroll)
     fetchProducts()
+    fetchCompanyInfo()
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
