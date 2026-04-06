@@ -22,7 +22,8 @@ import {
   Star,
   Mail,
   Send,
-  Layers
+  Layers,
+  BookOpen
 } from 'lucide-react'
 import AdminUsers from './AdminUsers'
 import AdminOrders from './AdminOrders'
