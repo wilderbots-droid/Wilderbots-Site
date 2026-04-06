@@ -125,7 +125,7 @@ export default function ProductSection() {
                       alt={product.title} 
                       width={500}
                       height={500}
-                      className="w-full h-full object-cover drop-shadow-2xl group-hover:scale-110 transition-transform duration-700"
+                      className="w-full h-full object-cover object-right drop-shadow-2xl group-hover:scale-110 transition-transform duration-700"
                       unoptimized
                     />
                   </div>
