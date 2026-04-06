@@ -42,6 +42,7 @@ import AdminEmailAddresses from './AdminEmailAddresses'
 import AdminEmailManagement from './AdminEmailManagement'
 import AdminProcess from './AdminProcess'
 import AdminStats from './AdminStats'
+import AdminEducation from './AdminEducation'
 
 export default function AdminDashboard({ admin, onLogout }) {
   const router = useRouter()
@@ -200,6 +201,17 @@ export default function AdminDashboard({ admin, onLogout }) {
             >
               <TrendingUp className="w-5 h-5" />
               <span className="font-medium">Statistics</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('education')}
+              className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all ${
+                activeTab === 'education'
+                  ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg shadow-blue-500/25'
+                  : 'text-gray-400 hover:bg-gray-800 hover:text-white'
+              }`}
+            >
+              <BookOpen className="w-5 h-5" />
+              <span className="font-medium">Education</span>
             </button>
             <button
               onClick={() => setActiveTab('products')}
@@ -389,6 +401,7 @@ export default function AdminDashboard({ admin, onLogout }) {
                   {activeTab === 'settings' && 'Company Settings'}
                   {activeTab === 'process' && 'Journey Management'}
                   {activeTab === 'stats' && 'Statistics Management'}
+                  {activeTab === 'education' && 'Education Management'}
                 </h2>
                 <p className="text-sm text-gray-400 mt-1">
                   {activeTab === 'dashboard' && 'Welcome back, here\'s what\'s happening'}
@@ -409,6 +422,7 @@ export default function AdminDashboard({ admin, onLogout }) {
                   {activeTab === 'settings' && 'Manage company information and settings'}
                   {activeTab === 'process' && 'Manage your journey steps and process section'}
                   {activeTab === 'stats' && 'Manage landing page statistics'}
+                  {activeTab === 'education' && 'Manage education section content'}
                 </p>
               </div>
               <div className="text-sm text-gray-400">
@@ -647,6 +661,7 @@ export default function AdminDashboard({ admin, onLogout }) {
         {activeTab === 'settings' && <AdminSettings />}
         {activeTab === 'process' && <AdminProcess />}
         {activeTab === 'stats' && <AdminStats />}
+        {activeTab === 'education' && <AdminEducation />}
         </main>
       </div>
     </div>

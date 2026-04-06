@@ -1,8 +1,54 @@
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { BookOpen, Aperture, Globe, ArrowRight, Play } from 'lucide-react'
+import { BookOpen, Aperture, Globe, ArrowRight, Play, Cpu, Zap, GraduationCap } from 'lucide-react'
 import Image from 'next/image'
 
 export default function EducationSection() {
+  const [content, setContent] = useState(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchContent = async () => {
+      try {
+        const response = await fetch('/api/education')
+        if (response.ok) {
+          const data = await response.json()
+          if (data.success) {
+            setContent(data.content)
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching education content:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchContent()
+  }, [])
+
+  const getIcon = (iconName) => {
+    switch (iconName) {
+      case 'BookOpen': return <BookOpen size={14} />
+      case 'Aperture': return <Aperture size={24} />
+      case 'Globe': return <Globe size={24} />
+      case 'Cpu': return <Cpu size={24} />
+      case 'Zap': return <Zap size={24} />
+      case 'GraduationCap': return <GraduationCap size={24} />
+      default: return <Aperture size={24} />
+    }
+  }
+
+  if (loading || !content) {
+    return (
+      <section id="education" className="py-32 px-6 relative bg-black min-h-[600px] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </section>
+    )
+  }
+
+  // Handle gradient title split
+  const mainTitle = content.title.replace(content.titleGradient, '').trim()
+
   return (
     <section id="education" className="py-32 px-6 relative bg-gradient-to-b from-black via-indigo-950/20 to-black">
       <div className="max-w-7xl mx-auto">
@@ -15,44 +61,41 @@ export default function EducationSection() {
             className="space-y-8"
           >
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 font-bold tracking-wider text-xs uppercase">
-              <BookOpen size={14} /> Education Sector
+              {getIcon('BookOpen')} {content.badgeText}
             </div>
             
             <h2 className="text-5xl md:text-7xl font-bold leading-tight">
-              Learn like <br/>
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">Never Before.</span>
+              {mainTitle} <br/>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">{content.titleGradient}</span>
             </h2>
             
-            <p className="text-xl text-gray-300 leading-relaxed">
-              We don't just build hardware. We build minds. 
-              Explore our dedicated educational platform where technology meets pedagogy.
+            <p className="text-xl text-gray-300 leading-relaxed whitespace-pre-line">
+              {content.description}
             </p>
+            
             <div className="flex flex-col gap-4">
-              <div className="flex items-center gap-4 text-gray-400">
-                <div className="w-12 h-12 rounded-full bg-neutral-800 flex items-center justify-center text-white">
-                  <Aperture size={24} />
+              {content.features.map((feature, idx) => (
+                <div key={idx} className="flex items-center gap-4 text-gray-400">
+                  <div className="w-12 h-12 rounded-full bg-neutral-800 flex items-center justify-center text-white">
+                    {getIcon(feature.icon)}
+                  </div>
+                  <span>{feature.text}</span>
                 </div>
-                <span>Interactive AI-driven modules</span>
-              </div>
-              <div className="flex items-center gap-4 text-gray-400">
-                <div className="w-12 h-12 rounded-full bg-neutral-800 flex items-center justify-center text-white">
-                  <Globe size={24} />
-                </div>
-                <span>Global community of learners</span>
-              </div>
+              ))}
             </div>
+
             <div className="pt-8">
               <a 
-                href="https://neureck.com" 
+                href={content.ctaLink}
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="group relative inline-flex items-center justify-center px-8 py-5 text-lg font-bold text-white transition-all duration-200 bg-blue-600 rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600 hover:bg-blue-700 hover:scale-105"
               >
-                Visit Neureck.com
+                {content.ctaText}
                 <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 <div className="absolute -inset-3 rounded-full bg-blue-500 opacity-20 group-hover:opacity-40 blur-lg transition-opacity duration-200" />
               </a>
-              <p className="mt-4 text-sm text-gray-500">Leaves Wilderbots to open our partner platform.</p>
+              <p className="mt-4 text-sm text-gray-500">{content.ctaSubtext}</p>
             </div>
           </motion.div>
 
@@ -71,13 +114,13 @@ export default function EducationSection() {
                 <div className="w-3 h-3 rounded-full bg-red-500"></div>
                 <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
                 <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                <div className="ml-4 bg-neutral-900 rounded-md px-3 py-1 text-xs text-gray-500 flex-1 text-center font-mono">neureck.com</div>
+                <div className="ml-4 bg-neutral-900 rounded-md px-3 py-1 text-xs text-gray-500 flex-1 text-center font-mono">{content.browserUrl}</div>
               </div>
               
               {/* Browser Content */}
               <div className="relative h-[400px]">
                 <Image 
-                  src="https://images.unsplash.com/photo-1501504905252-473c47e087f8?q=80&w=1974&auto=format&fit=crop" 
+                  src={content.browserImage} 
                   alt="Neureck Platform" 
                   fill
                   className="object-cover opacity-80"
@@ -94,8 +137,8 @@ export default function EducationSection() {
                   <div className="flex items-center gap-3">
                     <div className="h-10 w-10 rounded-full bg-gradient-to-r from-pink-500 to-orange-400"></div>
                     <div>
-                      <p className="font-bold text-sm">Now Trending</p>
-                      <p className="text-xs text-gray-400">Introduction to Neural Networks</p>
+                      <p className="font-bold text-sm">{content.trendingTitle}</p>
+                      <p className="text-xs text-gray-400">{content.trendingSubtitle}</p>
                     </div>
                   </div>
                 </div>
