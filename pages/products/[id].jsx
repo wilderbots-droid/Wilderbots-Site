@@ -72,6 +72,7 @@ export default function ProductDetail() {
 
   const isDevKit = product.title.toLowerCase().includes('watch') || product.edition.toLowerCase().includes('dev')
   const isNightlife = product.title.toLowerCase().includes('bottle') || product.title.toLowerCase().includes('nightlife')
+  const isValueShift = product.title.toLowerCase().includes('valueshift')
 
   return (
     <div className="min-h-screen bg-black text-white font-sans selection:bg-purple-500 selection:text-white">
@@ -102,7 +103,9 @@ export default function ProductDetail() {
               className="space-y-8"
             >
               <div className={`inline-block px-4 py-1 rounded-full text-sm font-bold ${
-                isNightlife ? 'bg-indigo-500/20 text-indigo-400' : 'bg-green-500/20 text-green-400'
+                isNightlife ? 'bg-indigo-500/20 text-indigo-400' 
+                : isValueShift ? 'bg-blue-500/20 text-blue-400'
+                : 'bg-green-500/20 text-green-400'
               }`}>
                 {product.edition}
               </div>
@@ -129,7 +132,9 @@ export default function ProductDetail() {
                       }
                     }}
                     className={`px-8 py-4 font-bold rounded-full transition-all transform hover:scale-105 flex items-center gap-2 ${
-                      isNightlife ? 'bg-indigo-600 text-white hover:bg-indigo-500 shadow-[0_0_20px_rgba(79,70,229,0.3)]' : 'bg-white text-black hover:bg-gray-100'
+                      isNightlife ? 'bg-indigo-600 text-white hover:bg-indigo-500 shadow-[0_0_20px_rgba(79,70,229,0.3)]' 
+                      : isValueShift ? 'bg-blue-600 text-white hover:bg-blue-500 shadow-[0_0_20px_rgba(37,99,235,0.3)]'
+                      : 'bg-white text-black hover:bg-gray-100'
                     }`}
                   >
                     {product.ctaText} <ArrowRight size={20} />
@@ -178,7 +183,9 @@ export default function ProductDetail() {
               className="relative"
             >
               <div className={`absolute inset-0 blur-3xl rounded-full -z-10 opacity-30 ${
-                isNightlife ? 'bg-indigo-500' : 'bg-green-500'
+                isNightlife ? 'bg-indigo-500' 
+                : isValueShift ? 'bg-blue-500'
+                : 'bg-green-500'
               }`}></div>
               {product.image && (
                 <Image 
@@ -226,7 +233,9 @@ export default function ProductDetail() {
                       className="p-8 bg-neutral-900/50 border border-white/5 rounded-[2rem] hover:border-white/20 transition-all group"
                     >
                       <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-6 transition-all ${
-                        isNightlife ? 'bg-indigo-500/20 text-indigo-400 group-hover:bg-indigo-500 group-hover:text-white' : 'bg-green-500/20 text-green-400 group-hover:bg-green-500 group-hover:text-black'
+                        isNightlife ? 'bg-indigo-500/20 text-indigo-400 group-hover:bg-indigo-500 group-hover:text-white' 
+                        : isValueShift ? 'bg-blue-500/20 text-blue-400 group-hover:bg-blue-500 group-hover:text-white'
+                        : 'bg-green-500/20 text-green-400 group-hover:bg-green-500 group-hover:text-black'
                       }`}>
                         <Icon size={24} />
                       </div>
@@ -271,7 +280,7 @@ export default function ProductDetail() {
           <div className="max-w-4xl mx-auto space-y-8 bg-neutral-900/50 p-12 md:p-20 rounded-[3rem] border border-white/10">
             <h2 className="text-4xl md:text-5xl font-bold">Ready to take the next step?</h2>
             <p className="text-xl text-gray-400">
-              Join the Wilderbots community and experience the future of {isNightlife ? 'nightlife' : 'tech'}.
+              Join the Wilderbots community and experience the future of {isNightlife ? 'nightlife' : isValueShift ? 'vehicle transactions' : 'tech'}.
             </p>
             <div className="flex flex-col items-center gap-6">
               {product.showCta !== false && (
@@ -290,10 +299,12 @@ export default function ProductDetail() {
                     }
                   }}
                   className={`px-12 py-4 text-xl font-bold rounded-full transition-all transform hover:scale-105 ${
-                    isNightlife ? 'bg-indigo-600 text-white hover:bg-indigo-500 shadow-[0_0_30px_rgba(79,70,229,0.4)]' : 'bg-green-500 text-black hover:bg-green-400'
+                    isNightlife ? 'bg-indigo-600 text-white hover:bg-indigo-500 shadow-[0_0_30px_rgba(79,70,229,0.4)]' 
+                    : isValueShift ? 'bg-blue-600 text-white hover:bg-blue-500 shadow-[0_0_30px_rgba(37,99,235,0.4)]'
+                    : 'bg-green-500 text-black hover:bg-green-400'
                   }`}
                 >
-                  Pre-order {product.title.split(' ')[0]} Now
+                  {product.ctaText || `Pre-order ${product.title.split(' ')[0]} Now`}
                 </button>
               )}
 

@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const MONGODB_URI = "mongodb+srv://admin:admin123@cluster0.p7y6a.mongodb.net/wilderbots?retryWrites=true&w=majority"
+const MONGODB_URI = "mongodb+srv://wilderbots_db_user:8JBo8irTcBbRFAMB@wilderbotssite.lwn8esy.mongodb.net/wilderbots_db?retryWrites=true&w=majority"
 
 // Define schema with strict: false to ensure all fields are saved
 const productSchema = new mongoose.Schema({}, { strict: false, collection: 'products' });
@@ -67,6 +67,29 @@ async function seed() {
         isPrimary: false,
         ctaText: "Join the Club",
         ctaLink: "",
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        title: "ValueShift",
+        subtitle: "Empowering car owners with AI-driven trust.",
+        edition: "Mobile App Edition",
+        engineeredBy: "By ValueShift",
+        description: "Buy and sell verified pre-owned vehicles with confidence. We bridge the gap between uncertainty and trust through data transparency and expert companionship.",
+        detailedOverview: "The smartest way to buy and sell pre-owned vehicles.\n\nOur AI-powered tool scans your car's details and condition through simple photos you upload. We generate a professional listing, provide full legal support for RTO transfers, and connect you with verified buyers to close the deal securely.",
+        features: [
+          { title: "AI-Powered Scanning", description: "Scan your car's details and condition instantly through simple photos.", icon: "Smartphone" },
+          { title: "Honest Valuations", description: "Get instant valuations based on real-time market data and local demand.", icon: "BarChart3" },
+          { title: "Expert Inspections", description: "150+ point technical inspections by certified mechanics.", icon: "Wrench" },
+          { title: "RTO Legal Support", description: "Full legal support for RTO transfers and secure ownership transition.", icon: "ShieldCheck" }
+        ],
+        price: 0,
+        showPrice: false,
+        image: "/valueshift-vehicle.png",
+        isActive: true,
+        isPrimary: false,
+        ctaText: "Visit ValueShift.in",
+        ctaLink: "https://valueshift.in",
         createdAt: new Date(),
         updatedAt: new Date()
       }
