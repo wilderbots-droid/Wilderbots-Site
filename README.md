@@ -79,6 +79,6 @@ All UI components are located in `views/components/`:
 
 ## License
 
-© 2024 Wilderbots Inc. All rights reserved.
+© 2025 Wilderbots Technologies Private Limited. All rights reserved.
 
 
