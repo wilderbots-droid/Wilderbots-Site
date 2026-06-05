@@ -153,18 +153,13 @@ export default function CareersPage({ onBack }) {
         whyWilderbots: formData.whyWilderbots.trim()
       }
 
-      console.log('Submitting application:', requestBody)
-
       const response = await fetch('/api/job-application', {
         method: 'POST',
         headers,
         body: JSON.stringify(requestBody),
       })
 
-      console.log('Response status:', response.status)
-
       const data = await response.json()
-      console.log('Response data:', data)
 
       if (response.ok) {
         setIsSubmitting(false)
@@ -195,7 +190,7 @@ export default function CareersPage({ onBack }) {
         setSubmitStatus('error')
         const errorMessage = data.error || data.message || 'Failed to submit application. Please try again.'
         alert(errorMessage)
-        console.error('API Error Response:', data)
+        console.error('Job application API error:', data)
         setTimeout(() => {
           setSubmitStatus(null)
         }, 5000)
@@ -747,4 +742,3 @@ export default function CareersPage({ onBack }) {
     </div>
   )
 }
-

@@ -1,0 +1,11 @@
+{
+    "schema_version": 1,
+    "commit": "8df4ce309c489d2579fd1e0ba38cf4bca4f65f46",
+    "indexed_at": "2026-06-05T20:14:08Z",
+    "project": "Users-kratucare-Wilderbots-Site",
+    "nodes": 702,
+    "edges": 1385,
+    "original_size": 3604480,
+    "compressed_size": 540977,
+    "compression_level": 3
+}

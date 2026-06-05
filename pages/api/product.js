@@ -29,12 +29,6 @@ export default async function handler(req, res) {
       .sort({ isPrimary: -1, createdAt: -1 })
       .lean()
 
-    console.log('API returning products count:', products.length);
-    if (products.length > 0) {
-      console.log('First product keys:', Object.keys(products[0]));
-      console.log('First product features:', products[0].features ? 'Present' : 'Missing');
-    }
-
     res.status(200).json(products)
   } catch (error) {
     console.error('Get product error:', error)

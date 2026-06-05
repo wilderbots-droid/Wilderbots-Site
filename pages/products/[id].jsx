@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
+import Image from 'next/image'
 import { useRouter } from 'next/router'
 import Head from 'next/head'
 import Navigation from '../../views/components/Navigation'
 import Footer from '../../views/components/Footer'
-import Image from 'next/image'
 import { 
   Cpu, Zap, ArrowRight, Ruler, Smartphone, Terminal, 
   PenTool, Github, Box, Database, Wrench, X, Check, 
@@ -151,7 +151,7 @@ export default function ProductDetail() {
                         rel="noopener noreferrer"
                         className="h-[56px] px-6 bg-black border border-white/10 rounded-2xl flex items-center justify-center hover:bg-neutral-900 transition-all hover:border-white/30"
                       >
-                         <img src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Download_on_the_App_Store_Badge.svg" alt="Download on the App Store" className="h-[32px]" />
+                         <Image src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Download_on_the_App_Store_Badge.svg" alt="Download on the App Store" width={108} height={32} className="h-[32px] w-auto" unoptimized />
                       </a>
                     )}
                     {product.playStoreLink && (
@@ -161,7 +161,7 @@ export default function ProductDetail() {
                         rel="noopener noreferrer"
                         className="h-[56px] px-6 bg-black border border-white/10 rounded-2xl flex items-center justify-center hover:bg-neutral-900 transition-all hover:border-white/30"
                       >
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Get it on Google Play" className="h-[32px]" />
+                        <Image src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Get it on Google Play" width={108} height={32} className="h-[32px] w-auto" unoptimized />
                       </a>
                     )}
                   </div>
@@ -259,7 +259,7 @@ export default function ProductDetail() {
                 <div className="flex-1 space-y-6">
                   <h2 className="text-4xl font-bold leading-tight">Empowering Venues with <br/>Bar ERM</h2>
                   <p className="text-gray-400 text-lg leading-relaxed">
-                    A powerful tool for venue owners to manage inventory, track pours in real-time, and offer personalized service to their most loyal customers. Elevate your bar's operations to the digital age.
+                    A powerful tool for venue owners to manage inventory, track pours in real-time, and offer personalized service to their most loyal customers. Elevate your bar&apos;s operations to the digital age.
                   </p>
                   <button className="px-8 py-3 border border-indigo-400 text-indigo-400 hover:bg-indigo-400 hover:text-white transition-all font-bold rounded-full">
                     Learn about ERM
@@ -312,12 +312,12 @@ export default function ProductDetail() {
                 <div className="flex flex-wrap justify-center gap-6 mt-4">
                   {product.appStoreLink && (
                     <a href={product.appStoreLink} target="_blank" rel="noopener noreferrer" className="hover:scale-105 transition-transform h-[64px] bg-black px-6 rounded-2xl border border-white/10 flex items-center">
-                      <img src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Download_on_the_App_Store_Badge.svg" alt="App Store" className="h-[36px]" />
+                      <Image src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Download_on_the_App_Store_Badge.svg" alt="App Store" width={122} height={36} className="h-[36px] w-auto" unoptimized />
                     </a>
                   )}
                   {product.playStoreLink && (
                     <a href={product.playStoreLink} target="_blank" rel="noopener noreferrer" className="hover:scale-105 transition-transform h-[64px] bg-black px-6 rounded-2xl border border-white/10 flex items-center">
-                      <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Play Store" className="h-[36px]" />
+                      <Image src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Play Store" width={122} height={36} className="h-[36px] w-auto" unoptimized />
                     </a>
                   )}
                 </div>

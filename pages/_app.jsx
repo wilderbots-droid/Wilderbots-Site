@@ -9,14 +9,16 @@ import CustomCursor from '../views/components/CustomCursor'
 import Logo from '../views/components/Logo'
 
 export default function App({ Component, pageProps }) {
+  const isProduction = process.env.NODE_ENV === 'production'
   const router = useRouter()
+  const { events, isReady, pathname, replace } = router
   const [maintenanceChecked, setMaintenanceChecked] = useState(false)
 
   // Check maintenance mode on route change
   useEffect(() => {
     const checkMaintenance = async () => {
       // Skip check for admin routes and maintenance page itself
-      if (router.pathname.startsWith('/admin') || router.pathname === '/maintenance') {
+      if (pathname.startsWith('/admin') || pathname === '/maintenance') {
         setMaintenanceChecked(true)
         return
       }
@@ -27,8 +29,8 @@ export default function App({ Component, pageProps }) {
           const data = await response.json()
           if (data.maintenance?.isActive) {
             // Redirect to maintenance page if not already there
-            if (router.pathname !== '/maintenance') {
-              router.replace('/maintenance')
+            if (pathname !== '/maintenance') {
+              replace('/maintenance')
             }
           }
         }
@@ -39,10 +41,10 @@ export default function App({ Component, pageProps }) {
       }
     }
 
-    if (router.isReady) {
+    if (isReady) {
       checkMaintenance()
     }
-  }, [router.pathname, router.isReady])
+  }, [isReady, pathname, replace])
 
   useEffect(() => {
     // Smooth scroll animation observer
@@ -83,7 +85,7 @@ export default function App({ Component, pageProps }) {
     }
 
     // Listen to route change events
-    router.events.on('routeChangeComplete', handleRouteChangeComplete)
+    events.on('routeChangeComplete', handleRouteChangeComplete)
     
     // Also listen to route change start to reset animations if needed
     const handleRouteChangeStart = () => {
@@ -96,15 +98,15 @@ export default function App({ Component, pageProps }) {
       })
     }
     
-    router.events.on('routeChangeStart', handleRouteChangeStart)
+    events.on('routeChangeStart', handleRouteChangeStart)
 
     return () => {
       clearTimeout(initialTimeout)
-      router.events.off('routeChangeComplete', handleRouteChangeComplete)
-      router.events.off('routeChangeStart', handleRouteChangeStart)
+      events.off('routeChangeComplete', handleRouteChangeComplete)
+      events.off('routeChangeStart', handleRouteChangeStart)
       observer.disconnect()
     }
-  }, [router.events])
+  }, [events])
 
   // Additional effect to observe elements when component updates (for client-side navigation)
   useEffect(() => {
@@ -181,8 +183,8 @@ export default function App({ Component, pageProps }) {
     <AuthProvider>
       <CustomCursor />
       <Component {...pageProps} />
-      <Analytics />
-      <SpeedInsights />
+      {isProduction && <Analytics />}
+      {isProduction && <SpeedInsights />}
     </AuthProvider>
   )
 }

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Save, Building2, Mail, Phone, MapPin, Clock, Plus, X, CreditCard, Eye, EyeOff, Wrench, Power } from 'lucide-react'
+import { Save, Building2, Mail, Phone, MapPin, Plus, X, CreditCard, Eye, EyeOff, Wrench, Power } from 'lucide-react'
 
 export default function AdminSettings() {
   const [companyInfo, setCompanyInfo] = useState(null)
@@ -9,14 +9,8 @@ export default function AdminSettings() {
     name: '',
     email: '',
     phone: '',
-    address: {
-      street: '',
-      city: '',
-      state: '',
-      zipCode: '',
-      country: ''
-    },
-    businessHours: '',
+    mapUrl: '',
+    mapEmbedUrl: '',
     timezone: '',
     departments: [],
     socialMedia: {
@@ -69,14 +63,8 @@ export default function AdminSettings() {
           name: data.companyInfo.name || '',
           email: data.companyInfo.email || '',
           phone: data.companyInfo.phone || '',
-          address: data.companyInfo.address || {
-            street: '',
-            city: '',
-            state: '',
-            zipCode: '',
-            country: ''
-          },
-          businessHours: data.companyInfo.businessHours || '',
+          mapUrl: data.companyInfo.mapUrl || '',
+          mapEmbedUrl: data.companyInfo.mapEmbedUrl || '',
           timezone: data.companyInfo.timezone || '',
           departments: data.companyInfo.departments || [],
           socialMedia: data.companyInfo.socialMedia || {
@@ -269,7 +257,7 @@ export default function AdminSettings() {
           Company Settings
         </h2>
         <p className="text-sm text-gray-400 mt-1">
-          Manage company information, address, and contact details
+          Manage company information, map links, and contact details
         </p>
       </div>
 
@@ -306,15 +294,6 @@ export default function AdminSettings() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Business Hours</label>
-              <input
-                type="text"
-                value={formData.businessHours}
-                onChange={(e) => setFormData({ ...formData, businessHours: e.target.value })}
-                className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">Timezone</label>
               <input
                 type="text"
@@ -326,69 +305,34 @@ export default function AdminSettings() {
           </div>
         </div>
 
-        {/* Address */}
+        {/* Map Settings */}
         <div>
-          <h3 className="text-lg font-semibold text-white mb-4">Address</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-300 mb-2">Street</label>
+          <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+            <MapPin className="w-5 h-5 mr-2 text-blue-400" />
+            Map Settings
+          </h3>
+          <div className="grid grid-cols-1 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Map Link</label>
               <input
-                type="text"
-                value={formData.address.street}
-                onChange={(e) => setFormData({
-                  ...formData,
-                  address: { ...formData.address, street: e.target.value }
-                })}
+                type="url"
+                value={formData.mapUrl}
+                onChange={(e) => setFormData({ ...formData, mapUrl: e.target.value })}
+                placeholder="https://www.google.com/maps/place/..."
                 className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
+              <p className="text-xs text-gray-500 mt-1">Used for the public "Open Map" link.</p>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">City</label>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Embed Map Link</label>
               <input
-                type="text"
-                value={formData.address.city}
-                onChange={(e) => setFormData({
-                  ...formData,
-                  address: { ...formData.address, city: e.target.value }
-                })}
+                type="url"
+                value={formData.mapEmbedUrl}
+                onChange={(e) => setFormData({ ...formData, mapEmbedUrl: e.target.value })}
+                placeholder="https://www.google.com/maps?q=...&output=embed"
                 className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">State</label>
-              <input
-                type="text"
-                value={formData.address.state}
-                onChange={(e) => setFormData({
-                  ...formData,
-                  address: { ...formData.address, state: e.target.value }
-                })}
-                className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Zip Code</label>
-              <input
-                type="text"
-                value={formData.address.zipCode}
-                onChange={(e) => setFormData({
-                  ...formData,
-                  address: { ...formData.address, zipCode: e.target.value }
-                })}
-                className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Country</label>
-              <input
-                type="text"
-                value={formData.address.country}
-                onChange={(e) => setFormData({
-                  ...formData,
-                  address: { ...formData.address, country: e.target.value }
-                })}
-                className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+              <p className="text-xs text-gray-500 mt-1">Used for the visible map on the contact page.</p>
             </div>
           </div>
         </div>
@@ -757,4 +701,3 @@ export default function AdminSettings() {
     </div>
   )
 }
-

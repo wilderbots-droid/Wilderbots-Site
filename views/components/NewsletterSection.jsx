@@ -20,7 +20,6 @@ export default function NewsletterSection() {
     setMessage('')
 
     try {
-      console.log('Sending subscription request...')
       const response = await fetch('/api/subscribe', {
         method: 'POST',
         headers: {
@@ -28,17 +27,13 @@ export default function NewsletterSection() {
         },
         body: JSON.stringify({ email }),
       })
-
-      console.log('Response status:', response.status)
       
       const data = await response.json()
-      console.log('Subscribe response:', response.status, data)
 
       if (response.ok || response.status === 200 || response.status === 201) {
         setStatus('success')
         setMessage(data.message || 'Thank you for subscribing!')
         setEmail('')
-        console.log('✅ Subscription successful')
         setTimeout(() => {
           setStatus(null)
           setMessage('')
@@ -46,14 +41,14 @@ export default function NewsletterSection() {
       } else {
         setStatus('error')
         setMessage(data.error || 'Something went wrong. Please try again.')
-        console.error('❌ Subscribe error response:', response.status, data)
+        console.error('Subscribe error response:', response.status, data)
         setTimeout(() => {
           setStatus(null)
           setMessage('')
         }, 5000)
       }
     } catch (error) {
-      console.error('❌ Subscription fetch error:', error)
+      console.error('Subscription fetch error:', error)
       setStatus('error')
       setMessage('Failed to subscribe. Please try again later.')
       setTimeout(() => {
@@ -107,4 +102,3 @@ export default function NewsletterSection() {
     </section>
   )
 }
-

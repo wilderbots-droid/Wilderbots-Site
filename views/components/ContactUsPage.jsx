@@ -1,8 +1,28 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowLeft, Mail, Phone, MapPin, Clock, Send, MessageSquare, Briefcase, GraduationCap, Package, Linkedin, Github, Twitter, Instagram, Youtube } from 'lucide-react'
+import { ArrowLeft, Mail, Phone, MapPin, Clock, Send, MessageSquare, Briefcase, GraduationCap, Package, Linkedin, Github, Twitter, Instagram, Youtube, ExternalLink } from 'lucide-react'
 import Logo from './Logo'
 import { useAuth } from '../../contexts/AuthContext'
+
+const DEFAULT_MAP_URL = 'https://www.google.com/maps/place/WILDERBOTS+TECHNOLOGIES+PRIVATE+LIMITED/data=!4m2!3m1!1s0x3bae1707ff3e16a3:0x2e482c0f5dfa5a53?hl=en&trk=https%3A%2F%2Fc.gle%2FAOExmq1S2OsXyCFYzXTGVpyV32ZqWBNcFPW5PPXFO01rhc6xOueoVKv7RSbyjLPTqzIlirA_xxyyuY-yMqasamfalCKtIjQhHAemh8bsjGoQegUa8O-JMVzYGke50nkTnOxCDkc'
+const DEFAULT_MAP_EMBED_URL = 'https://www.google.com/maps?q=WILDERBOTS%20TECHNOLOGIES%20PRIVATE%20LIMITED&z=15&output=embed'
+const DEFAULT_COMPANY_INFO = {
+  name: 'Wilderbots',
+  email: 'hello@wilderbots.com',
+  phone: '+1 (555) 123-4567',
+  mapUrl: DEFAULT_MAP_URL,
+  mapEmbedUrl: DEFAULT_MAP_EMBED_URL,
+  timezone: 'Pacific Standard Time',
+  departments: [],
+  socialMedia: {}
+}
+const DEFAULT_EMAIL_ADDRESS = {
+  label: 'General inquiries',
+  email: 'hello@wilderbots.com',
+  purpose: 'general',
+  description: 'General inquiries',
+  isPrimary: true
+}
 
 const iconMap = {
   Package,
@@ -13,9 +33,8 @@ const iconMap = {
 
 export default function ContactUsPage({ onBack }) {
   const { user } = useAuth()
-  const [companyInfo, setCompanyInfo] = useState(null)
+  const [companyInfo, setCompanyInfo] = useState(DEFAULT_COMPANY_INFO)
   const [emailAddresses, setEmailAddresses] = useState([])
-  const [loading, setLoading] = useState(true)
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -40,21 +59,23 @@ export default function ContactUsPage({ onBack }) {
 
   const fetchCompanyInfo = async () => {
     try {
-      const response = await fetch('/api/company-info')
+      const response = await fetch('/api/company-info', {
+        cache: 'no-store'
+      })
       if (response.ok) {
         const data = await response.json()
-        setCompanyInfo(data.companyInfo)
+        setCompanyInfo(data.companyInfo || DEFAULT_COMPANY_INFO)
       }
     } catch (error) {
       console.error('Error fetching company info:', error)
-    } finally {
-      setLoading(false)
     }
   }
 
   const fetchEmailAddresses = async () => {
     try {
-      const response = await fetch('/api/email-addresses')
+      const response = await fetch('/api/email-addresses', {
+        cache: 'no-store'
+      })
       if (response.ok) {
         const data = await response.json()
         setEmailAddresses(data.emailAddresses || [])
@@ -77,7 +98,6 @@ export default function ContactUsPage({ onBack }) {
     setSubmitStatus(null)
 
     try {
-      console.log('Submitting contact form...')
       const token = localStorage.getItem('wilderbots_token')
       const headers = {
         'Content-Type': 'application/json',
@@ -86,20 +106,15 @@ export default function ContactUsPage({ onBack }) {
         headers['Authorization'] = `Bearer ${token}`
       }
 
-      console.log('Form data:', formData)
-
       const response = await fetch('/api/contact', {
         method: 'POST',
         headers,
         body: JSON.stringify(formData),
       })
 
-      console.log('Response status:', response.status)
       const data = await response.json()
-      console.log('Response data:', data)
 
       if (response.ok || response.status === 201) {
-        console.log('✅ Contact submitted successfully')
         setSubmitStatus('success')
         setFormData({
           name: user?.name || '',
@@ -114,14 +129,14 @@ export default function ContactUsPage({ onBack }) {
           setSubmitStatus(null)
         }, 5000)
       } else {
-        console.error('❌ Contact submission failed:', response.status, data)
+        console.error('Contact submission failed:', response.status, data)
         setSubmitStatus('error')
         setTimeout(() => {
           setSubmitStatus(null)
         }, 5000)
       }
     } catch (error) {
-      console.error('❌ Error submitting contact form:', error)
+      console.error('Error submitting contact form:', error)
       setSubmitStatus('error')
       setTimeout(() => {
         setSubmitStatus(null)
@@ -131,16 +146,18 @@ export default function ContactUsPage({ onBack }) {
     }
   }
 
+  const getMapLink = () => {
+    return companyInfo?.mapUrl || DEFAULT_COMPANY_INFO.mapUrl
+  }
+
+  const getMapEmbedLink = () => {
+    return companyInfo?.mapEmbedUrl || DEFAULT_COMPANY_INFO.mapEmbedUrl
+  }
+
   const getContactInfo = () => {
-    if (!companyInfo) return []
-    const address = companyInfo.address
-    const addressStr = address 
-      ? `${address.street}, ${address.city}, ${address.state} ${address.zipCode}`
-      : '123 Innovation Drive, Tech Valley, CA 94025'
-    
     // Get primary email or first active email
-    const primaryEmail = emailAddresses.find(ea => ea.isPrimary) || emailAddresses[0]
-    const displayEmail = primaryEmail?.email || companyInfo.email || "hello@wilderbots.com"
+    const primaryEmail = emailAddresses.find((ea) => ea.isPrimary) || emailAddresses[0] || DEFAULT_EMAIL_ADDRESS
+    const displayEmail = primaryEmail.email || companyInfo.email || DEFAULT_COMPANY_INFO.email
     
     return [
       {
@@ -153,23 +170,9 @@ export default function ContactUsPage({ onBack }) {
       {
         icon: Phone,
         label: "Phone",
-        value: companyInfo.phone || "+1 (555) 123-4567",
+        value: companyInfo.phone || DEFAULT_COMPANY_INFO.phone,
         link: `tel:${companyInfo.phone?.replace(/\D/g, '') || '15551234567'}`,
         description: "Mon-Fri, 9AM-6PM EST"
-      },
-      {
-        icon: MapPin,
-        label: "Address",
-        value: addressStr,
-        link: null,
-        description: "Headquarters"
-      },
-      {
-        icon: Clock,
-        label: "Business Hours",
-        value: companyInfo.businessHours || "Monday - Friday: 9:00 AM - 6:00 PM",
-        link: null,
-        description: companyInfo.timezone || "Pacific Standard Time"
       }
     ]
   }
@@ -216,8 +219,8 @@ export default function ContactUsPage({ onBack }) {
     }
 
     // Default fallback
-    const primaryEmail = emailAddresses.find(ea => ea.isPrimary) || emailAddresses[0]
-    const defaultEmail = primaryEmail?.email || companyInfo?.email || "hello@wilderbots.com"
+    const primaryEmail = emailAddresses.find((ea) => ea.isPrimary) || emailAddresses[0] || DEFAULT_EMAIL_ADDRESS
+    const defaultEmail = primaryEmail.email || companyInfo.email || DEFAULT_COMPANY_INFO.email
     
     return [
       {
@@ -297,7 +300,7 @@ export default function ContactUsPage({ onBack }) {
       {/* Contact Form & Info Section */}
       <section className="py-24 px-6 bg-neutral-900">
         <div className="max-w-7xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-12">
+          <div className="grid items-stretch gap-8 lg:grid-cols-2 xl:gap-10">
             {/* Contact Form */}
             <motion.div
               initial={{ opacity: 0, x: -30 }}
@@ -305,108 +308,119 @@ export default function ContactUsPage({ onBack }) {
               viewport={{ once: true }}
               transition={{ duration: 0.7 }}
             >
-              <h2 className="text-3xl font-bold mb-6">Send us a Message</h2>
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid md:grid-cols-2 gap-4">
+              <div className="flex h-full flex-col rounded-[28px] border border-white/10 bg-black/40 p-6 shadow-[0_24px_80px_rgba(0,0,0,0.35)] md:p-8">
+                <div className="mb-8">
+                  <p className="text-sm uppercase tracking-[0.22em] text-gray-500">Direct message</p>
+                  <h2 className="mt-3 text-3xl font-bold text-white">Send us a Message</h2>
+                  <p className="mt-3 max-w-xl text-gray-400">
+                    Tell us what you&apos;re building, what you need help with, or where you want to collaborate.
+                  </p>
+                </div>
+                <form onSubmit={handleSubmit} className="flex flex-col space-y-6">
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div>
+                      <label htmlFor="name" className="mb-2 block text-sm font-medium text-gray-300">Name *</label>
+                      <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleChange}
+                        required
+                        className="w-full rounded-xl border border-white/10 bg-neutral-950 px-4 py-3 text-white outline-none transition-colors focus:border-purple-500"
+                        placeholder="Your name"
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="email" className="mb-2 block text-sm font-medium text-gray-300">Email *</label>
+                      <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        required
+                        className="w-full rounded-xl border border-white/10 bg-neutral-950 px-4 py-3 text-white outline-none transition-colors focus:border-purple-500"
+                        placeholder="your@email.com"
+                      />
+                    </div>
+                  </div>
+
                   <div>
-                    <label htmlFor="name" className="block text-sm font-medium mb-2">Name *</label>
+                    <label htmlFor="category" className="mb-2 block text-sm font-medium text-gray-300">Category *</label>
+                    <select
+                      id="category"
+                      name="category"
+                      value={formData.category}
+                      onChange={handleChange}
+                      required
+                      className="w-full rounded-xl border border-white/10 bg-neutral-950 px-4 py-3 text-white outline-none transition-colors focus:border-purple-500"
+                    >
+                      <option value="general">General Inquiry</option>
+                      <option value="product">Product Support</option>
+                      <option value="services">IT Services</option>
+                      <option value="education">Education & Neureck</option>
+                      <option value="partnership">Partnership</option>
+                      <option value="careers">Careers</option>
+                      <option value="media">Media & Press</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label htmlFor="subject" className="mb-2 block text-sm font-medium text-gray-300">Subject *</label>
                     <input
                       type="text"
-                      id="name"
-                      name="name"
-                      value={formData.name}
+                      id="subject"
+                      name="subject"
+                      value={formData.subject}
                       onChange={handleChange}
                       required
-                      className="w-full bg-black border border-white/10 rounded-lg px-4 py-3 focus:border-purple-500 outline-none transition-colors"
-                      placeholder="Your name"
+                      className="w-full rounded-xl border border-white/10 bg-neutral-950 px-4 py-3 text-white outline-none transition-colors focus:border-purple-500"
+                      placeholder="What's this about?"
                     />
                   </div>
+
                   <div>
-                    <label htmlFor="email" className="block text-sm font-medium mb-2">Email *</label>
-                    <input
-                      type="email"
-                      id="email"
-                      name="email"
-                      value={formData.email}
+                    <label htmlFor="message" className="mb-2 block text-sm font-medium text-gray-300">Message *</label>
+                    <textarea
+                      id="message"
+                      name="message"
+                      value={formData.message}
                       onChange={handleChange}
                       required
-                      className="w-full bg-black border border-white/10 rounded-lg px-4 py-3 focus:border-purple-500 outline-none transition-colors"
-                      placeholder="your@email.com"
-                    />
+                      rows={7}
+                      className="w-full resize-none rounded-xl border border-white/10 bg-neutral-950 px-4 py-3 text-white outline-none transition-colors focus:border-purple-500"
+                      placeholder="Tell us more about your inquiry..."
+                    ></textarea>
                   </div>
-                </div>
 
-                <div>
-                  <label htmlFor="category" className="block text-sm font-medium mb-2">Category *</label>
-                  <select
-                    id="category"
-                    name="category"
-                    value={formData.category}
-                    onChange={handleChange}
-                    required
-                    className="w-full bg-black border border-white/10 rounded-lg px-4 py-3 focus:border-purple-500 outline-none transition-colors"
-                  >
-                    <option value="general">General Inquiry</option>
-                    <option value="product">Product Support</option>
-                    <option value="services">IT Services</option>
-                    <option value="education">Education & Neureck</option>
-                    <option value="partnership">Partnership</option>
-                    <option value="careers">Careers</option>
-                    <option value="media">Media & Press</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label htmlFor="subject" className="block text-sm font-medium mb-2">Subject *</label>
-                  <input
-                    type="text"
-                    id="subject"
-                    name="subject"
-                    value={formData.subject}
-                    onChange={handleChange}
-                    required
-                    className="w-full bg-black border border-white/10 rounded-lg px-4 py-3 focus:border-purple-500 outline-none transition-colors"
-                    placeholder="What's this about?"
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="message" className="block text-sm font-medium mb-2">Message *</label>
-                  <textarea
-                    id="message"
-                    name="message"
-                    value={formData.message}
-                    onChange={handleChange}
-                    required
-                    rows={6}
-                    className="w-full bg-black border border-white/10 rounded-lg px-4 py-3 focus:border-purple-500 outline-none transition-colors resize-none"
-                    placeholder="Tell us more about your inquiry..."
-                  ></textarea>
-                </div>
-
-                {submitStatus === 'success' && (
-                  <div className="p-4 bg-green-500/10 border border-green-500/20 rounded-lg text-green-400">
-                    Thank you! Your message has been sent. We'll get back to you soon.
-                  </div>
-                )}
-                {submitStatus === 'error' && (
-                  <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400">
-                    There was an error sending your message. Please try again later.
-                  </div>
-                )}
-
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="w-full bg-purple-500 hover:bg-purple-400 text-white font-bold py-4 rounded-full transition-all transform hover:scale-[1.01] flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
-                >
-                  {isSubmitting ? (
-                    <>Sending... <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div></>
-                  ) : (
-                    <>Send Message <Send size={18} /></>
+                  {submitStatus === 'success' && (
+                    <div className="rounded-xl border border-green-500/20 bg-green-500/10 p-4 text-green-400">
+                      Thank you! Your message has been sent. We&apos;ll get back to you soon.
+                    </div>
                   )}
-                </button>
-              </form>
+                  {submitStatus === 'error' && (
+                    <div className="rounded-xl border border-red-500/20 bg-red-500/10 p-4 text-red-400">
+                      There was an error sending your message. Please try again later.
+                    </div>
+                  )}
+
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="flex w-full items-center justify-center gap-2 rounded-full bg-purple-500 py-4 font-bold text-white transition-all hover:scale-[1.01] hover:bg-purple-400 disabled:cursor-not-allowed disabled:opacity-70"
+                  >
+                    {isSubmitting ? (
+                      <>Sending... <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white"></div></>
+                    ) : (
+                      <>Send Message <Send size={18} /></>
+                    )}
+                  </button>
+                </form>
+                <div className="mt-6 border-t border-white/10 pt-5 text-sm text-gray-500">
+                  Most inquiries get a response within 1 to 2 business days.
+                </div>
+              </div>
             </motion.div>
 
             {/* Contact Information */}
@@ -415,87 +429,136 @@ export default function ContactUsPage({ onBack }) {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.7, delay: 0.1 }}
+              className="h-full"
             >
-              <h2 className="text-3xl font-bold mb-6">Get in Touch</h2>
-              <div className="space-y-6 mb-12">
-                {getContactInfo().map((info, index) => (
-                  <div key={index} className="flex gap-4">
-                    <div className="w-12 h-12 bg-purple-500/10 rounded-xl flex items-center justify-center border border-purple-500/20 flex-shrink-0">
-                      <info.icon className="text-purple-400 w-6 h-6" />
-                    </div>
-                    <div>
-                      <h3 className="font-bold mb-1">{info.label}</h3>
+              <div className="flex h-full flex-col rounded-[28px] border border-white/10 bg-black/30 p-6 shadow-[0_24px_80px_rgba(0,0,0,0.28)] md:p-8">
+                <div>
+                  <p className="text-sm uppercase tracking-[0.22em] text-gray-500">Reach us</p>
+                  <h2 className="mt-3 text-3xl font-bold text-white">Get in Touch</h2>
+                  <p className="mt-3 max-w-lg text-gray-400">
+                    Prefer email, a quick call, or directions to the office? Everything you need is organized here.
+                  </p>
+                </div>
+
+                <div className="mt-8 grid gap-4 sm:grid-cols-2">
+                  {getContactInfo().map((info, index) => (
+                    <div key={index} className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+                      <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl border border-purple-500/20 bg-purple-500/10">
+                        <info.icon className="h-5 w-5 text-purple-400" />
+                      </div>
+                      <h3 className="font-bold text-white">{info.label}</h3>
                       {info.link ? (
-                        <a href={info.link} className="text-gray-300 hover:text-white transition-colors">
+                        <a href={info.link} className="mt-2 block break-words text-gray-200 transition-colors hover:text-white">
                           {info.value}
                         </a>
                       ) : (
-                        <p className="text-gray-300">{info.value}</p>
+                        <p className="mt-2 text-gray-200">{info.value}</p>
                       )}
-                      <p className="text-sm text-gray-500 mt-1">{info.description}</p>
+                      <p className="mt-2 text-sm text-gray-500">{info.description}</p>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-6 flex flex-1 flex-col overflow-hidden rounded-[24px] border border-white/10 bg-neutral-950">
+                  <div className="relative min-h-[280px] flex-1 overflow-hidden">
+                    <iframe
+                      title="Wilderbots location map"
+                      src={getMapEmbedLink()}
+                      className="h-full w-full"
+                      loading="lazy"
+                      referrerPolicy="no-referrer-when-downgrade"
+                    />
+                    <a
+                      href={getMapLink()}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group absolute right-4 top-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-black/75 px-4 py-2 text-sm font-medium text-white backdrop-blur-sm transition-colors hover:bg-black/90"
+                    >
+                      Open Map
+                      <ExternalLink className="h-4 w-4 text-purple-300 transition-transform group-hover:translate-x-0.5" />
+                    </a>
+                  </div>
+                  <a
+                    href={getMapLink()}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block border-t border-white/10 px-6 py-5 transition-colors hover:bg-white/5"
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <p className="text-sm uppercase tracking-[0.24em] text-gray-400">Visit us</p>
+                        <h3 className="mt-3 text-2xl font-bold text-white">Map View</h3>
+                        <p className="mt-2 max-w-md text-gray-300">
+                          Open the Wilderbots location in your preferred maps app.
+                        </p>
+                      </div>
+                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-purple-500/30 bg-purple-500/10">
+                        <MapPin className="h-5 w-5 text-purple-300" />
+                      </div>
+                    </div>
+                  </a>
+                </div>
+
+                {/* Social Links */}
+                {companyInfo?.socialMedia && Object.values(companyInfo.socialMedia).some(url => url) && (
+                  <div className="mt-6 border-t border-white/10 pt-6">
+                    <h3 className="mb-2 text-xl font-bold text-white">Follow Us</h3>
+                    <p className="mb-6 text-gray-400">Keep up with launches, updates, and what the team is building next.</p>
+                    <div className="flex gap-4 flex-wrap">
+                      {companyInfo.socialMedia.linkedin && (
+                        <a
+                          href={companyInfo.socialMedia.linkedin}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center hover:bg-white/10 transition-colors border border-white/10"
+                        >
+                          <Linkedin size={20} className="text-gray-400" />
+                        </a>
+                      )}
+                      {companyInfo.socialMedia.github && (
+                        <a
+                          href={companyInfo.socialMedia.github}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center hover:bg-white/10 transition-colors border border-white/10"
+                        >
+                          <Github size={20} className="text-gray-400" />
+                        </a>
+                      )}
+                      {companyInfo.socialMedia.twitter && (
+                        <a
+                          href={companyInfo.socialMedia.twitter}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center hover:bg-white/10 transition-colors border border-white/10"
+                        >
+                          <Twitter size={20} className="text-gray-400" />
+                        </a>
+                      )}
+                      {companyInfo.socialMedia.instagram && (
+                        <a
+                          href={companyInfo.socialMedia.instagram}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center hover:bg-white/10 transition-colors border border-white/10"
+                        >
+                          <Instagram size={20} className="text-gray-400" />
+                        </a>
+                      )}
+                      {companyInfo.socialMedia.youtube && (
+                        <a
+                          href={companyInfo.socialMedia.youtube}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center hover:bg-white/10 transition-colors border border-white/10"
+                        >
+                          <Youtube size={20} className="text-gray-400" />
+                        </a>
+                      )}
                     </div>
                   </div>
-                ))}
+                )}
               </div>
-
-              {/* Social Links */}
-              {companyInfo?.socialMedia && Object.values(companyInfo.socialMedia).some(url => url) && (
-                <div className="border-t border-white/10 pt-8">
-                  <h3 className="font-bold mb-4">Follow Us</h3>
-                  <div className="flex gap-4 flex-wrap">
-                    {companyInfo.socialMedia.linkedin && (
-                      <a
-                        href={companyInfo.socialMedia.linkedin}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center hover:bg-white/10 transition-colors border border-white/10"
-                      >
-                        <Linkedin size={20} className="text-gray-400" />
-                      </a>
-                    )}
-                    {companyInfo.socialMedia.github && (
-                      <a
-                        href={companyInfo.socialMedia.github}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center hover:bg-white/10 transition-colors border border-white/10"
-                      >
-                        <Github size={20} className="text-gray-400" />
-                      </a>
-                    )}
-                    {companyInfo.socialMedia.twitter && (
-                      <a
-                        href={companyInfo.socialMedia.twitter}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center hover:bg-white/10 transition-colors border border-white/10"
-                      >
-                        <Twitter size={20} className="text-gray-400" />
-                      </a>
-                    )}
-                    {companyInfo.socialMedia.instagram && (
-                      <a
-                        href={companyInfo.socialMedia.instagram}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center hover:bg-white/10 transition-colors border border-white/10"
-                      >
-                        <Instagram size={20} className="text-gray-400" />
-                      </a>
-                    )}
-                    {companyInfo.socialMedia.youtube && (
-                      <a
-                        href={companyInfo.socialMedia.youtube}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center hover:bg-white/10 transition-colors border border-white/10"
-                      >
-                        <Youtube size={20} className="text-gray-400" />
-                      </a>
-                    )}
-                  </div>
-                </div>
-              )}
             </motion.div>
           </div>
         </div>
@@ -556,4 +619,3 @@ export default function ContactUsPage({ onBack }) {
     </div>
   )
 }
-

@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "clean": "node -e \"const fs=require('fs'); const path=require('path'); const nextDir=path.join(process.cwd(), '.next'); if(fs.existsSync(nextDir)) { fs.rmSync(nextDir, {recursive:true}); console.log('✓ Cleaned .next folder'); }\"",
-    "dev": "npm run clean && node server.js",
+    "dev": "next dev -H 0.0.0.0",
     "build": "npm run clean && next build",
     "start": "NODE_ENV=production node server.js",
     "lint": "next lint"
@@ -34,5 +34,9 @@
     "react-dom": "^18.2.0",
     "tailwindcss": "^3.3.6",
     "typescript": "^5.3.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.1",
+    "eslint-config-next": "^14.2.33"
   }
 }

@@ -101,7 +101,7 @@ export default function MaintenancePage() {
             <div className="bg-gray-900/50 backdrop-blur-sm rounded-2xl border border-gray-800 p-8">
               <div className="flex items-center justify-center gap-2 mb-6">
                 <Clock className="w-6 h-6 text-purple-400" />
-                <h2 className="text-2xl font-semibold text-white">We'll be back in</h2>
+                <h2 className="text-2xl font-semibold text-white">We&apos;ll be back in</h2>
               </div>
               
               <div className="flex items-center justify-center gap-4 flex-wrap">
@@ -148,7 +148,7 @@ export default function MaintenancePage() {
           {/* Additional Info */}
           <div className="pt-8">
             <p className="text-gray-400 text-sm">
-              Thank you for your patience. We're working hard to improve your experience.
+              Thank you for your patience. We&apos;re working hard to improve your experience.
             </p>
           </div>
         </div>
@@ -156,4 +156,3 @@ export default function MaintenancePage() {
     </>
   )
 }
-
