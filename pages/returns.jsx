@@ -1,10 +1,6 @@
 import { useState, useEffect } from 'react'
 import Head from 'next/head'
-import Navigation from '../views/components/Navigation'
-import Footer from '../views/components/Footer'
-import Logo from '../views/components/Logo'
-import { ArrowLeft } from 'lucide-react'
-import Link from 'next/link'
+import PublicPageShell from '../views/components/PublicPageShell'
 
 const DEFAULT_CONTENT = `
 <section class="mb-8">
@@ -56,37 +52,21 @@ export default function ReturnsAndDelivery() {
         <meta name="description" content="Wilderbots Returns & Delivery Policy - Learn about our return policy, shipping, and delivery information." />
         <link rel="icon" href="/logo-alone.png" type="image/png" />
       </Head>
-      <div className="min-h-screen bg-black text-white font-sans selection:bg-purple-500 selection:text-white overflow-x-hidden">
-        <Navigation />
-        
-        {/* Header */}
-        <div className="border-b border-white/10 p-6">
-          <div className="max-w-4xl mx-auto flex items-center gap-4">
-            <Link href="/" className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors">
-              <ArrowLeft size={20} /> Back
-            </Link>
-            <div className="flex items-center gap-2 ml-auto">
-              <Logo size={35} showText={false} />
-              <span className="font-bold">{title}</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Content */}
-        <section className="py-16 px-6">
-          <div className="max-w-4xl mx-auto prose prose-invert prose-lg">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">{title}</h1>
-            <p className="text-gray-400 mb-8">Last updated: {lastUpdated}</p>
-
-            <div 
-              className="space-y-8 text-gray-300 leading-relaxed"
+      <PublicPageShell
+        onBack={() => window.history.back()}
+        eyebrow="Policy"
+        title={title}
+        description={`Last updated: ${lastUpdated}`}
+      >
+        <section className="rounded-[2rem] border border-white/10 bg-zinc-950/35 px-6 py-12 backdrop-blur-xl">
+          <div className="prose prose-invert prose-lg mx-auto max-w-4xl">
+            <div
+              className="space-y-8 text-zinc-300 leading-relaxed"
               dangerouslySetInnerHTML={{ __html: content }}
             />
           </div>
         </section>
-
-        <Footer />
-      </div>
+      </PublicPageShell>
     </>
   )
 }

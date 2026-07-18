@@ -4,7 +4,7 @@ const EducationContentSchema = new mongoose.Schema({
   badgeText: { type: String, default: 'Education Sector' },
   title: { type: String, default: 'Learn like Never Before.' },
   titleGradient: { type: String, default: 'Never Before.' },
-  description: { type: String, default: "We don't just build hardware. We build minds. Explore our dedicated educational platform where technology meets pedagogy." },
+  description: { type: String, default: "We build learning experiences that make advanced technology easier to understand, teach, and apply." },
   features: [{
     icon: { type: String, default: 'Aperture' },
     text: { type: String, default: 'Interactive AI-driven modules' }

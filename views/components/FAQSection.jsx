@@ -26,13 +26,13 @@ export default function FAQSection() {
       console.error('Error fetching FAQs:', error)
       // Fallback to default FAQs
       setMainFaqs([
-        { 
-          q: "Is the Wilder Watch Dev Kit pre-assembled?", 
-          a: "No, it ships as a DIY kit. We believe the best way to understand technology is to build it. A detailed 3D interactive guide makes assembly easy for everyone—no soldering required. The kit includes all necessary components: PCB, display, sensors, battery, and chassis." 
+        {
+          q: "What kind of work does Wilderbots take on?",
+          a: "We focus on AI systems, software delivery, workflow automation, product strategy, and interactive education experiences."
         },
-        { 
-          q: "What programming languages does the Wilder Watch support?", 
-          a: "The Wilder Watch natively supports MicroPython and C++ (Arduino/ESP-IDF). It's perfect for both beginners learning embedded programming and advanced developers building custom applications. The device also supports our open-source OS with pre-built watch faces and features." 
+        {
+          q: "Can Wilderbots work with an existing stack?",
+          a: "Yes. We regularly plug into current tools, APIs, internal dashboards, and operating workflows instead of forcing a full rebuild."
         },
         { 
           q: "How long does shipping take?", 

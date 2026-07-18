@@ -4,9 +4,9 @@ export class HomeModel {
     this.data = {
       testimonials: [
         {
-          quote: "The Wilder Watch is a game-changer for my training. The data accuracy is incredible, and it looks stunning.",
+          quote: "Wilderbots helped us turn a messy manual workflow into a system our team can actually trust every day.",
           name: "Alex R.",
-          role: "Pro Athlete",
+          role: "Operations Lead",
           avatar: "https://i.pravatar.cc/150?img=11"
         },
         {
@@ -24,12 +24,12 @@ export class HomeModel {
       ],
       faqs: [
         {
-          q: "Is the Wilder Watch compatible with iOS and Android?",
-          a: "Yes, the Wilder Watch connects seamlessly via Bluetooth 5.3 to both ecosystems, offering full functionality across devices."
+          q: "Do you work with existing business tools?",
+          a: "Yes. Wilderbots builds around the systems you already use, including web apps, mobile apps, CRMs, internal dashboards, and AI tooling."
         },
         {
-          q: "Can I access Neureck courses without the watch?",
-          a: "Absolutely. Neureck is a standalone web platform accessible from any browser, though owning a Wilder Watch unlocks exclusive biometric learning data."
+          q: "Can I access Neureck without buying anything else?",
+          a: "Absolutely. Neureck is a standalone web platform that can be used independently for learning, training, and curriculum delivery."
         },
         {
           q: "What kind of AI services do you offer?",
@@ -50,13 +50,13 @@ export class HomeModel {
         {
           step: "02",
           title: "Engineering",
-          description: "Precision is our language. Using advanced prototyping and titanium milling, we craft hardware that feels indestructible yet invisible on the wrist.",
+          description: "Precision is our language. We turn complex business and education requirements into software systems people can actually use."
           icon: "Wrench"
         },
         {
           step: "03",
           title: "Deployment",
-          description: "Shipping is just the beginning. We continuously update our firmware and educational modules via OTA updates, keeping your tech fresher than the day you bought it.",
+          description: "Launch is just the beginning. We iterate on workflows, product experience, and learning modules so each release keeps getting stronger."
           icon: "CheckCircle"
         }
       ]
@@ -75,5 +75,4 @@ export class HomeModel {
     return this.data.process
   }
 }
-
 

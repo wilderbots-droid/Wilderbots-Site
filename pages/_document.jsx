@@ -7,7 +7,7 @@ export default function Document() {
         <link rel="icon" href="/logo-alone.png" type="image/png" />
         <link rel="apple-touch-icon" href="/logo-alone.png" />
         <meta name="theme-color" content="#000000" />
-        <meta name="description" content="Pioneering the next generation of wearable tech and interactive education. Product. Service. Education." />
+        <meta name="description" content="Wilderbots delivers AI systems, software services, and interactive education experiences." />
       </Head>
       <body>
         <Main />
@@ -16,4 +16,3 @@ export default function Document() {
     </Html>
   )
 }
-

@@ -35,7 +35,7 @@ async function seed() {
       badgeText: 'Education Sector',
       title: 'Learn like Never Before.',
       titleGradient: 'Never Before.',
-      description: "We don't just build hardware. We build minds. Explore our dedicated educational platform where technology meets pedagogy.",
+      description: "We build learning experiences that make advanced technology easier to understand, teach, and apply.",
       features: [
         { icon: 'Aperture', text: 'Interactive AI-driven modules' },
         { icon: 'Globe', text: 'Global community of learners' }

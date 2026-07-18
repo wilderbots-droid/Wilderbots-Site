@@ -18,7 +18,7 @@ export default function AdminProducts() {
     detailedOverview: '',
     features: [],
     price: 0,
-    image: '/kit.png',
+    image: '/logo.png',
     isActive: true,
     isPrimary: false,
     ctaText: 'Learn More',
@@ -298,7 +298,7 @@ export default function AdminProducts() {
                       type="text"
                       value={formData.subtitle}
                       onChange={(e) => setFormData({ ...formData, subtitle: e.target.value })}
-                      placeholder="e.g., The Wilder Watch Development Kit..."
+                      placeholder="e.g., Wilderbots Launch Package..."
                       className="w-full px-4 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-gray-500"
                     />
                   </div>
@@ -349,7 +349,7 @@ export default function AdminProducts() {
                             alt="Product preview"
                             className="w-full h-full object-contain"
                             onError={(e) => {
-                              e.target.src = '/kit.png'
+                              e.target.src = '/logo.png'
                             }}
                           />
                         ) : (
@@ -381,7 +381,7 @@ export default function AdminProducts() {
                               setFormData({ ...formData, image: e.target.value })
                               setImagePreview(e.target.value)
                             }}
-                            placeholder="/kit.png"
+                            placeholder="/logo.png"
                             className="w-full px-4 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-gray-500 text-sm"
                           />
                         </div>

@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { ArrowRight, Wrench } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import Spline from '@splinetool/react-spline'
 
 export default function Hero({ onOrderClick }) {
@@ -53,7 +53,7 @@ export default function Hero({ onOrderClick }) {
           transition={{ duration: 0.6, delay: 0.5 }}
           className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed drop-shadow-lg"
         >
-          Pioneering the next generation of wearable tech and interactive education.
+          Building AI systems, modern software, and interactive education experiences.
           We are Wilderbots.
         </motion.p>
         <motion.div
@@ -71,7 +71,7 @@ export default function Hero({ onOrderClick }) {
             className="px-8 py-4 bg-white text-black font-bold rounded-full hover:bg-gray-100 transition-all transform hover:scale-105 flex items-center justify-center gap-2 cursor-pointer relative z-50 pointer-events-auto shadow-[0_0_20px_rgba(255,255,255,0.3)]"
             type="button"
           >
-            Pre-order Kit <Wrench size={18} />
+            Start a Project <ArrowRight size={18} />
           </button>
           <a
             href="https://neureck.com"
@@ -92,4 +92,3 @@ export default function Hero({ onOrderClick }) {
     </section>
   )
 }
-

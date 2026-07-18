@@ -15,6 +15,17 @@ const iconMap = {
   Package: Package
 }
 
+const prioritizeServices = (services) => {
+  const rankService = (service) => {
+    const title = (service?.title || '').toLowerCase()
+    if (title.includes('application') || title.includes('app')) return 0
+    if (title.includes('web')) return 1
+    return 2
+  }
+
+  return [...services].sort((a, b) => rankService(a) - rankService(b))
+}
+
 export default function ServicesSection() {
   const [mainServices, setMainServices] = useState([])
   const [loading, setLoading] = useState(true)
@@ -28,12 +39,12 @@ export default function ServicesSection() {
       const response = await fetch('/api/services')
       if (response.ok) {
         const data = await response.json()
-        setMainServices(data.services || [])
+        setMainServices(prioritizeServices(data.services || []))
       }
     } catch (error) {
       console.error('Error fetching services:', error)
       // Fallback to default services
-      setMainServices([
+      setMainServices(prioritizeServices([
         {
           icon: Smartphone,
           title: "Application Development",
@@ -55,7 +66,7 @@ export default function ServicesSection() {
           color: "purple",
           features: ["Generative AI Models", "Chatbots & Agents", "Data Analytics"]
         }
-      ])
+      ]))
     } finally {
       setLoading(false)
     }
@@ -118,7 +129,7 @@ export default function ServicesSection() {
             <Code size={14} /> IT Solutions
           </div>
           <h2 className="text-4xl md:text-6xl font-bold tracking-tight">Digital <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500">Alchemy.</span></h2>
-          <p className="text-xl text-gray-400 max-w-2xl mx-auto">Transforming ideas into digital reality through cutting-edge development, AI integration, and creative solutions.</p>
+          <p className="text-xl text-gray-400 max-w-2xl mx-auto">Application and web services lead the lineup, followed by the rest of your live digital offerings.</p>
         </div>
         {loading ? (
           <div className="text-center py-12 text-gray-400">Loading services...</div>

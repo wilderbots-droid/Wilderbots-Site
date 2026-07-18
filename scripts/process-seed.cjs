@@ -49,14 +49,14 @@ async function seed() {
     const steps = [
       {
         title: "Consult & Strategize",
-        description: "We partner with you to understand your unique challenges. Our experts map out a tailored strategy that leverages AI and hardware to drive your vision forward.",
+        description: "We partner with you to understand your unique challenges. Our experts map out a tailored strategy that leverages AI and software delivery to drive your vision forward.",
         icon: "Layers",
         order: 1,
         isActive: true
       },
       {
         title: "Design & Engineer",
-        description: "Precision meets creativity. We architect robust solutions, from custom PCB design to advanced AI models, ensuring every component is optimized for performance.",
+        description: "Precision meets creativity. We architect robust solutions, from scalable software platforms to advanced AI models, ensuring every system is optimized for performance.",
         icon: "Wrench",
         order: 2,
         isActive: true

@@ -305,12 +305,12 @@ export default function DashboardPage({ onBack }) {
                 <div className="text-center py-16 bg-neutral-900 rounded-3xl border border-white/10">
                   <Package className="mx-auto text-gray-400 mb-4" size={48} />
                   <h3 className="text-xl font-bold mb-2">No orders yet</h3>
-                  <p className="text-gray-400 mb-6">Start your journey with the Wilder Watch Dev Kit</p>
+                  <p className="text-gray-400 mb-6">Start your next project with Wilderbots</p>
                   <a
-                    href="/?view=devkit"
+                    href="/contact"
                     className="inline-block px-6 py-3 bg-white text-black font-bold rounded-full hover:bg-gray-200 transition-all"
                   >
-                    Browse Products
+                    Contact Wilderbots
                   </a>
                 </div>
               ) : (
@@ -340,7 +340,7 @@ export default function DashboardPage({ onBack }) {
                           )}
                         </div>
                         <div className="mt-3">
-                          <p className="font-medium">Wilder Watch Dev Kit</p>
+                          <p className="font-medium">{order.items?.[0]?.name || 'Wilderbots Project Launch'}</p>
                           <p className="text-sm text-gray-400">Rs 299.00</p>
                         </div>
                       </div>
@@ -780,4 +780,3 @@ export default function DashboardPage({ onBack }) {
     </div>
   )
 }
-

@@ -1,9 +1,10 @@
 import { useState } from 'react'
-import { ArrowLeft, Mail, Lock, User, UserPlus, AlertCircle, Phone } from 'lucide-react'
+import Link from 'next/link'
+import { Mail, Lock, User, UserPlus, AlertCircle, Phone } from 'lucide-react'
 import { useAuth } from '../../contexts/AuthContext'
-import Logo from './Logo'
 import { useRouter } from 'next/router'
 import { signInWithGooglePopup } from '../../lib/firebaseClient'
+import PublicPageShell from './PublicPageShell'
 
 // OAuth provider icons (using Unicode and SVG alternatives)
 
@@ -150,25 +151,17 @@ export default function SignupPage({ onBack }) {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white font-sans selection:bg-purple-500 selection:text-white overflow-x-hidden">
-      {/* Header */}
-      <div className="border-b border-white/10 p-6 flex items-center justify-between sticky top-0 bg-black/90 backdrop-blur-md z-50">
-        <button onClick={onBack} className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors">
-          <ArrowLeft size={20} /> Back
-        </button>
-        <div className="flex items-center gap-2">
-          <Logo size={35} showText={false} />
-          <span className="font-bold">Sign Up</span>
-        </div>
-        <div className="w-16"></div>
-      </div>
-
-      {/* Signup Form */}
-      <section className="py-24 px-6">
+    <PublicPageShell
+      onBack={onBack}
+      eyebrow="Create Account"
+      title={<>Join the<span className="block bg-gradient-to-r from-sky-400 to-indigo-500 bg-clip-text italic text-transparent">Wilderbots network</span></>}
+      description="Create your account to follow projects, manage activity, and stay connected to the Wilderbots ecosystem."
+    >
+      <section className="rounded-[2rem] border border-white/10 bg-zinc-950/35 px-6 py-12 backdrop-blur-xl">
         <div className="max-w-md mx-auto">
           <div className="text-center mb-12">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">Join Wilderbots</h1>
-            <p className="text-gray-400">Create an account to track orders and access exclusive content</p>
+            <h2 className="mb-4 font-serif-custom text-4xl font-normal text-white md:text-5xl">Create account</h2>
+            <p className="text-zinc-400">Set up your account to manage projects and access Wilderbots updates.</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -189,7 +182,7 @@ export default function SignupPage({ onBack }) {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   required
-                  className="w-full bg-black border border-white/10 rounded-xl pl-12 pr-4 py-4 focus:border-purple-500 outline-none transition-colors"
+                  className="w-full rounded-xl border border-white/10 bg-[#06080d] pl-12 pr-4 py-4 outline-none transition-colors focus:border-sky-500"
                   placeholder="Enter your name"
                 />
               </div>
@@ -205,7 +198,7 @@ export default function SignupPage({ onBack }) {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="w-full bg-black border border-white/10 rounded-xl pl-12 pr-4 py-4 focus:border-purple-500 outline-none transition-colors"
+                  className="w-full rounded-xl border border-white/10 bg-[#06080d] pl-12 pr-4 py-4 outline-none transition-colors focus:border-sky-500"
                   placeholder="Enter your email"
                 />
               </div>
@@ -222,7 +215,7 @@ export default function SignupPage({ onBack }) {
                   onChange={(e) => setMobile(e.target.value.replace(/\D/g, '').slice(0, 10))}
                   required
                   maxLength={10}
-                  className="w-full bg-black border border-white/10 rounded-xl pl-12 pr-4 py-4 focus:border-purple-500 outline-none transition-colors"
+                  className="w-full rounded-xl border border-white/10 bg-[#06080d] pl-12 pr-4 py-4 outline-none transition-colors focus:border-sky-500"
                   placeholder="Enter your number"
                 />
               </div>
@@ -242,7 +235,7 @@ export default function SignupPage({ onBack }) {
                   }}
                   required
                   minLength={6}
-                  className="w-full bg-black border border-white/10 rounded-xl pl-12 pr-4 py-4 focus:border-purple-500 outline-none transition-colors"
+                  className="w-full rounded-xl border border-white/10 bg-[#06080d] pl-12 pr-4 py-4 outline-none transition-colors focus:border-sky-500"
                   placeholder="At least 6 characters"
                 />
               </div>
@@ -250,7 +243,7 @@ export default function SignupPage({ onBack }) {
               {/* Password Strength Indicator */}
               {password && (
                 <div className="mt-2 space-y-1">
-                  <div className="text-xs text-gray-400">Password must contain:</div>
+                  <div className="text-xs text-zinc-400">Password must contain:</div>
                   <div className="flex flex-wrap gap-2">
                     <div className={`text-xs px-2 py-1 rounded ${passwordStrength?.hasUpperCase ? 'bg-green-500/20 text-green-400' : 'bg-white/5 text-gray-400'}`}>
                       {passwordStrength?.hasUpperCase ? '✓' : '✗'} Uppercase letter
@@ -276,7 +269,7 @@ export default function SignupPage({ onBack }) {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
-                  className="w-full bg-black border border-white/10 rounded-xl pl-12 pr-4 py-4 focus:border-purple-500 outline-none transition-colors"
+                  className="w-full rounded-xl border border-white/10 bg-[#06080d] pl-12 pr-4 py-4 outline-none transition-colors focus:border-sky-500"
                   placeholder="Confirm your password"
                 />
               </div>
@@ -285,11 +278,11 @@ export default function SignupPage({ onBack }) {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-white text-black font-bold py-4 rounded-full hover:bg-gray-200 transition-all transform hover:scale-[1.01] flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+              className="flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#2f6df6] to-[#2452d9] py-4 font-semibold text-white shadow-[0_12px_40px_rgba(37,99,235,0.35)] transition-transform hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-70"
             >
               {loading ? (
                 <>
-                  <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
+                  <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white"></div>
                   Creating account...
                 </>
               ) : (
@@ -304,7 +297,7 @@ export default function SignupPage({ onBack }) {
                 <div className="w-full border-t border-white/10"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-black text-gray-400">Or sign up with</span>
+                <span className="bg-[#0b0f17] px-2 text-zinc-400">Or sign up with</span>
               </div>
             </div>
 
@@ -335,16 +328,15 @@ export default function SignupPage({ onBack }) {
           </form>
 
           <div className="mt-8 text-center">
-            <p className="text-gray-400">
+            <p className="text-zinc-400">
               Already have an account?{' '}
-              <a href="/login" className="text-purple-400 hover:text-purple-300 font-semibold transition-colors">
+              <Link href="/login" className="font-semibold text-sky-300 transition-colors hover:text-sky-200">
                 Sign in
-              </a>
+              </Link>
             </p>
           </div>
         </div>
       </section>
-    </div>
+    </PublicPageShell>
   )
 }
-

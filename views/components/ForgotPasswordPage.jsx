@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import { ArrowLeft, Mail, ArrowRight, CheckCircle, AlertCircle } from 'lucide-react'
-import Logo from './Logo'
+import Link from 'next/link'
+import { Mail, ArrowRight, CheckCircle, AlertCircle } from 'lucide-react'
+import PublicPageShell from './PublicPageShell'
 
 export default function ForgotPasswordPage({ onBack }) {
   const [email, setEmail] = useState('')
@@ -49,41 +50,33 @@ export default function ForgotPasswordPage({ onBack }) {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white font-sans selection:bg-purple-500 selection:text-white overflow-x-hidden">
-      {/* Header */}
-      <div className="border-b border-white/10 p-6 flex items-center justify-between sticky top-0 bg-black/90 backdrop-blur-md z-50">
-        <button onClick={onBack} className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors">
-          <ArrowLeft size={20} /> Back
-        </button>
-        <div className="flex items-center gap-2">
-          <Logo size={35} showText={false} />
-          <span className="font-bold">Reset Password</span>
-        </div>
-        <div className="w-16"></div>
-      </div>
-
-      {/* Form */}
-      <section className="py-24 px-6">
+    <PublicPageShell
+      onBack={onBack}
+      eyebrow="Password Reset"
+      title={<>Reset your<span className="block bg-gradient-to-r from-sky-400 to-indigo-500 bg-clip-text italic text-transparent">Wilderbots access</span></>}
+      description="Enter your email and we’ll send a secure reset link so you can get back into your account."
+    >
+      <section className="rounded-[2rem] border border-white/10 bg-zinc-950/35 px-6 py-12 backdrop-blur-xl">
         <div className="max-w-md mx-auto">
           {success ? (
             <div className="text-center">
               <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
                 <CheckCircle className="text-green-400" size={40} />
               </div>
-              <h1 className="text-4xl md:text-5xl font-bold mb-4">Check Your Email</h1>
-              <p className="text-gray-400 mb-2">
-                We've sent a password reset link to <span className="text-white font-semibold">{email}</span>
+              <h2 className="mb-4 font-serif-custom text-4xl font-normal text-white md:text-5xl">Check Your Email</h2>
+              <p className="mb-2 text-zinc-400">
+                We&apos;ve sent a password reset link to <span className="text-white font-semibold">{email}</span>
               </p>
-              <p className="text-sm text-gray-500 mb-8">
-                The email will be sent from <span className="text-purple-400">support@wilderbots.com</span>
+              <p className="mb-8 text-sm text-zinc-500">
+                The email will be sent from <span className="text-sky-300">support@wilderbots.com</span>
               </p>
-              <p className="text-sm text-gray-400 mb-8">
+              <p className="mb-8 text-sm text-zinc-400">
                 Click the link in the email to reset your password. The link will expire in 1 hour.
               </p>
               <div className="space-y-4">
                 <button
                   onClick={onBack}
-                  className="w-full bg-white text-black font-bold py-4 rounded-full hover:bg-gray-200 transition-all transform hover:scale-[1.01] flex items-center justify-center gap-2"
+                  className="flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#2f6df6] to-[#2452d9] py-4 font-semibold text-white shadow-[0_12px_40px_rgba(37,99,235,0.35)] transition-transform hover:scale-[1.01]"
                 >
                   Back to Login <ArrowRight size={18} />
                 </button>
@@ -92,7 +85,7 @@ export default function ForgotPasswordPage({ onBack }) {
                     setSuccess(false)
                     setEmail('')
                   }}
-                  className="w-full bg-transparent border border-white/20 text-white font-bold py-4 rounded-full hover:bg-white/10 transition-all"
+                  className="w-full rounded-full border border-white/15 bg-white/[0.03] py-4 font-semibold text-white transition-colors hover:bg-white/[0.06]"
                 >
                   Resend Email
                 </button>
@@ -101,9 +94,9 @@ export default function ForgotPasswordPage({ onBack }) {
           ) : (
             <>
               <div className="text-center mb-12">
-                <h1 className="text-4xl md:text-5xl font-bold mb-4">Forgot Password?</h1>
-                <p className="text-gray-400">
-                  Enter your email address and we'll send you a link to reset your password.
+                <h2 className="mb-4 font-serif-custom text-4xl font-normal text-white md:text-5xl">Forgot Password?</h2>
+                <p className="text-zinc-400">
+                  Enter your email address and we&apos;ll send you a link to reset your password.
                 </p>
               </div>
 
@@ -125,7 +118,7 @@ export default function ForgotPasswordPage({ onBack }) {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
-                      className="w-full bg-black border border-white/10 rounded-xl pl-12 pr-4 py-4 focus:border-purple-500 outline-none transition-colors"
+                      className="w-full rounded-xl border border-white/10 bg-[#06080d] pl-12 pr-4 py-4 outline-none transition-colors focus:border-sky-500"
                       placeholder="your@email.com"
                     />
                   </div>
@@ -134,11 +127,11 @@ export default function ForgotPasswordPage({ onBack }) {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-white text-black font-bold py-4 rounded-full hover:bg-gray-200 transition-all transform hover:scale-[1.01] flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                  className="flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#2f6df6] to-[#2452d9] py-4 font-semibold text-white shadow-[0_12px_40px_rgba(37,99,235,0.35)] transition-transform hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-70"
                 >
                   {loading ? (
                     <>
-                      <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
+                      <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white"></div>
                       Sending...
                     </>
                   ) : (
@@ -150,16 +143,16 @@ export default function ForgotPasswordPage({ onBack }) {
               </form>
 
               <div className="mt-8 text-center">
-                <p className="text-gray-400">
+                <p className="text-zinc-400">
                   Remember your password?{' '}
-                  <a href="/login" className="text-purple-400 hover:text-purple-300 font-semibold transition-colors">
+                  <Link href="/login" className="font-semibold text-sky-300 transition-colors hover:text-sky-200">
                     Sign in
-                  </a>
+                  </Link>
                 </p>
               </div>
 
-              <div className="mt-6 p-4 bg-blue-500/10 border border-blue-500/20 rounded-xl">
-                <p className="text-sm text-blue-400 text-center">
+              <div className="mt-6 rounded-xl border border-sky-500/20 bg-sky-500/10 p-4">
+                <p className="text-center text-sm text-sky-300">
                   <Mail className="inline mr-2" size={16} />
                   Reset emails are sent from <span className="font-semibold">support@wilderbots.com</span>
                 </p>
@@ -168,7 +161,6 @@ export default function ForgotPasswordPage({ onBack }) {
           )}
         </div>
       </section>
-    </div>
+    </PublicPageShell>
   )
 }
-

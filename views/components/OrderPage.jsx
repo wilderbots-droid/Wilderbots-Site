@@ -175,7 +175,7 @@ export default function OrderPage({ onBack }) {
       // Prepare order data
       const orderData = {
         items: [{
-          name: 'Wilder Watch Dev Kit',
+          name: 'Wilderbots Project Launch',
           quantity: 1,
           price: 299.00
         }],
@@ -239,7 +239,7 @@ export default function OrderPage({ onBack }) {
         amount: razorpayData.order.amount,
         currency: razorpayData.order.currency,
         name: 'Wilderbots',
-        description: 'Wilder Watch Dev Kit',
+        description: 'Wilderbots Project Launch',
         order_id: razorpayData.order.id,
         handler: async function (response) {
           // Payment successful, verify on backend
@@ -290,7 +290,7 @@ export default function OrderPage({ onBack }) {
               // Save to localStorage for backward compatibility
               const localStorageOrder = {
                 id: createdOrderId,
-                product: 'Wilder Watch Dev Kit',
+                product: 'Wilderbots Project Launch',
                 amount: 299.00,
                 userId: user?.id || null,
                 status: 'confirmed',
@@ -348,14 +348,14 @@ export default function OrderPage({ onBack }) {
         </div>
         <h2 className="text-4xl font-bold mb-4">Payment Confirmed!</h2>
         <p className="text-xl text-gray-400 mb-8 max-w-lg">
-          Thank you for joining the revolution. Your Wilder Watch Dev Kit order has been secured.
+          Thank you. Your Wilderbots project request has been secured.
         </p>
         <div className="bg-neutral-900 border border-white/10 p-6 rounded-2xl mb-8 max-w-md w-full">
           <div className="flex items-start gap-4 mb-4">
             <Truck className="text-blue-400 flex-shrink-0" />
             <div className="text-left">
               <h4 className="font-bold">Estimated Delivery</h4>
-              <p className="text-gray-400 text-sm">Your kit will ship in exactly 10 business days.</p>
+              <p className="text-gray-400 text-sm">Our team will review your request and follow up with the next steps.</p>
             </div>
           </div>
           <div className="flex items-start gap-4">
@@ -431,29 +431,29 @@ export default function OrderPage({ onBack }) {
         {/* Left Col: Product Info */}
         <div className="space-y-8">
           <div className="bg-neutral-900 rounded-3xl p-8 border border-white/10">
-            <div className="inline-block px-3 py-1 bg-green-500/10 text-green-400 text-xs font-bold rounded-full mb-4">IN STOCK</div>
-            <h1 className="text-3xl font-bold mb-2">Wilder Watch Dev Kit</h1>
-            <p className="text-gray-400 mb-6">Complete Edition • Onyx Black PCB</p>
+            <div className="inline-block px-3 py-1 bg-green-500/10 text-green-400 text-xs font-bold rounded-full mb-4">OPEN FOR NEW WORK</div>
+            <h1 className="text-3xl font-bold mb-2">Wilderbots Project Launch</h1>
+            <p className="text-gray-400 mb-6">Strategy • Delivery • Ongoing support</p>
             
             <div className="aspect-video bg-black rounded-xl overflow-hidden mb-6 relative group">
               <Image 
-                src="/kit.png"
-                alt="Wilder Watch Dev Kit" 
+                src="/logo.png"
+                alt="Wilderbots Project Launch"
                 fill
                 className="object-cover opacity-80"
                 unoptimized
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-6">
                 <div className="flex gap-4 text-xs font-mono text-green-400">
-                  <span>[W1-CHIP]</span>
-                  <span>[ESP32-S3]</span>
-                  <span>[LIPO-350]</span>
+                  <span>[DISCOVERY]</span>
+                  <span>[BUILD]</span>
+                  <span>[LAUNCH]</span>
                 </div>
               </div>
             </div>
             <div className="flex justify-between items-center text-xl font-bold border-t border-white/10 pt-4">
               <span>Total</span>
-              <span>Rs 299.00</span>
+              <span>Custom scope</span>
             </div>
           </div>
           <div className="bg-blue-900/10 border border-blue-500/20 rounded-2xl p-6 flex gap-4">
@@ -461,7 +461,7 @@ export default function OrderPage({ onBack }) {
             <div>
               <h4 className="font-bold mb-1 text-blue-100">Pre-Payment Only</h4>
               <p className="text-sm text-blue-200/60">
-                To secure your hardware allocation, full payment is required upfront. We do not support Cash on Delivery (COD) for Development Kits.
+                This request flow is for confirmed project starts and scoped engagements. Our team will align on billing terms after review.
               </p>
             </div>
           </div>
@@ -637,4 +637,3 @@ export default function OrderPage({ onBack }) {
     </div>
   )
 }
-

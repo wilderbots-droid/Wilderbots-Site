@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowLeft, Mail, Phone, MapPin, Clock, Send, MessageSquare, Briefcase, GraduationCap, Package, Linkedin, Github, Twitter, Instagram, Youtube, ExternalLink } from 'lucide-react'
-import Logo from './Logo'
+import { Mail, Phone, MapPin, Send, MessageSquare, Briefcase, GraduationCap, Package, Linkedin, Github, Twitter, Instagram, Youtube, ExternalLink } from 'lucide-react'
+import Link from 'next/link'
+import PublicPageShell from './PublicPageShell'
 import { useAuth } from '../../contexts/AuthContext'
 
 const DEFAULT_MAP_URL = 'https://www.google.com/maps/place/WILDERBOTS+TECHNOLOGIES+PRIVATE+LIMITED/data=!4m2!3m1!1s0x3bae1707ff3e16a3:0x2e482c0f5dfa5a53?hl=en&trk=https%3A%2F%2Fc.gle%2FAOExmq1S2OsXyCFYzXTGVpyV32ZqWBNcFPW5PPXFO01rhc6xOueoVKv7RSbyjLPTqzIlirA_xxyyuY-yMqasamfalCKtIjQhHAemh8bsjGoQegUa8O-JMVzYGke50nkTnOxCDkc'
@@ -49,11 +50,11 @@ export default function ContactUsPage({ onBack }) {
     fetchCompanyInfo()
     fetchEmailAddresses()
     if (user) {
-      setFormData({
-        ...formData,
+      setFormData((current) => ({
+        ...current,
         name: user.name || '',
         email: user.email || ''
-      })
+      }))
     }
   }, [user])
 
@@ -227,7 +228,7 @@ export default function ContactUsPage({ onBack }) {
         icon: Package,
         title: "Product Support",
         email: emailAddresses.find(ea => ea.purpose === 'support')?.email || defaultEmail,
-        description: "Questions about the Wilder Watch Dev Kit, shipping, or technical support"
+        description: "Questions about delivery, support, or current Wilderbots offerings"
       },
       {
         icon: Briefcase,
@@ -251,54 +252,21 @@ export default function ContactUsPage({ onBack }) {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white font-sans selection:bg-purple-500 selection:text-white overflow-x-hidden">
-      {/* Header */}
-      <div className="border-b border-white/10 p-6 flex items-center justify-between sticky top-0 bg-black/90 backdrop-blur-md z-50">
-        <button onClick={onBack} className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors">
-          <ArrowLeft size={20} /> Back
-        </button>
-        <div className="flex items-center gap-2">
-          <Logo size={35} showText={false} />
-          <span className="font-bold">Contact Us</span>
-        </div>
-        <div className="w-16"></div>
-      </div>
-
-      {/* Hero Section */}
-      <motion.section
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.6 }}
-        className="relative py-24 px-6 overflow-hidden"
-      >
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-purple-600/20 rounded-full blur-[120px] animate-pulse"></div>
-        
-        <div className="max-w-7xl mx-auto relative z-10">
-          <div className="text-center max-w-4xl mx-auto space-y-8">
-            <motion.h1
-              initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.1 }}
-              className="text-5xl md:text-7xl font-bold leading-tight"
-            >
-              Let&apos;s Build <br/>
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-500">Something Together</span>
-            </motion.h1>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.25 }}
-              className="text-xl text-gray-300 leading-relaxed"
-            >
-              Whether you&apos;re interested in our products, need IT services, want to explore educational partnerships, 
-              or just have a question—we&apos;re here to help. Reach out and let&apos;s start a conversation.
-            </motion.p>
-          </div>
-        </div>
-      </motion.section>
-
-      {/* Contact Form & Info Section */}
-      <section className="py-24 px-6 bg-neutral-900">
+    <PublicPageShell
+      onBack={onBack}
+      eyebrow="Contact Wilderbots"
+      title={
+        <>
+          Start the conversation
+          <span className="block bg-gradient-to-r from-sky-400 to-indigo-500 bg-clip-text italic text-transparent">
+            around your next build
+          </span>
+        </>
+      }
+      description="Whether you need application development, web delivery, education support, or a direct project conversation, this page now follows the same darker glass system as the homepage."
+      contentClassName="space-y-8"
+    >
+      <section className="rounded-[2rem] border border-white/10 bg-zinc-950/35 px-6 py-12 backdrop-blur-xl md:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="grid items-stretch gap-8 lg:grid-cols-2 xl:gap-10">
             {/* Contact Form */}
@@ -308,18 +276,18 @@ export default function ContactUsPage({ onBack }) {
               viewport={{ once: true }}
               transition={{ duration: 0.7 }}
             >
-              <div className="flex h-full flex-col rounded-[28px] border border-white/10 bg-black/40 p-6 shadow-[0_24px_80px_rgba(0,0,0,0.35)] md:p-8">
+              <div className="flex h-full flex-col rounded-[28px] border border-white/10 bg-[linear-gradient(180deg,rgba(18,24,38,0.88)_0%,rgba(8,11,18,0.96)_100%)] p-6 shadow-[0_24px_80px_rgba(0,0,0,0.35)] md:p-8">
                 <div className="mb-8">
-                  <p className="text-sm uppercase tracking-[0.22em] text-gray-500">Direct message</p>
-                  <h2 className="mt-3 text-3xl font-bold text-white">Send us a Message</h2>
-                  <p className="mt-3 max-w-xl text-gray-400">
+                  <p className="text-sm uppercase tracking-[0.22em] text-zinc-500">Direct message</p>
+                  <h2 className="mt-3 font-serif-custom text-3xl font-normal text-white">Send us a Message</h2>
+                  <p className="mt-3 max-w-xl text-zinc-400">
                     Tell us what you&apos;re building, what you need help with, or where you want to collaborate.
                   </p>
                 </div>
                 <form onSubmit={handleSubmit} className="flex flex-col space-y-6">
                   <div className="grid gap-4 md:grid-cols-2">
                     <div>
-                      <label htmlFor="name" className="mb-2 block text-sm font-medium text-gray-300">Name *</label>
+                      <label htmlFor="name" className="mb-2 block text-sm font-medium text-zinc-300">Name *</label>
                       <input
                         type="text"
                         id="name"
@@ -327,12 +295,12 @@ export default function ContactUsPage({ onBack }) {
                         value={formData.name}
                         onChange={handleChange}
                         required
-                        className="w-full rounded-xl border border-white/10 bg-neutral-950 px-4 py-3 text-white outline-none transition-colors focus:border-purple-500"
+                        className="w-full rounded-xl border border-white/10 bg-[#06080d] px-4 py-3 text-white outline-none transition-colors focus:border-sky-500"
                         placeholder="Your name"
                       />
                     </div>
                     <div>
-                      <label htmlFor="email" className="mb-2 block text-sm font-medium text-gray-300">Email *</label>
+                      <label htmlFor="email" className="mb-2 block text-sm font-medium text-zinc-300">Email *</label>
                       <input
                         type="email"
                         id="email"
@@ -340,21 +308,21 @@ export default function ContactUsPage({ onBack }) {
                         value={formData.email}
                         onChange={handleChange}
                         required
-                        className="w-full rounded-xl border border-white/10 bg-neutral-950 px-4 py-3 text-white outline-none transition-colors focus:border-purple-500"
+                        className="w-full rounded-xl border border-white/10 bg-[#06080d] px-4 py-3 text-white outline-none transition-colors focus:border-sky-500"
                         placeholder="your@email.com"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label htmlFor="category" className="mb-2 block text-sm font-medium text-gray-300">Category *</label>
+                    <label htmlFor="category" className="mb-2 block text-sm font-medium text-zinc-300">Category *</label>
                     <select
                       id="category"
                       name="category"
                       value={formData.category}
                       onChange={handleChange}
                       required
-                      className="w-full rounded-xl border border-white/10 bg-neutral-950 px-4 py-3 text-white outline-none transition-colors focus:border-purple-500"
+                      className="w-full rounded-xl border border-white/10 bg-[#06080d] px-4 py-3 text-white outline-none transition-colors focus:border-sky-500"
                     >
                       <option value="general">General Inquiry</option>
                       <option value="product">Product Support</option>
@@ -367,7 +335,7 @@ export default function ContactUsPage({ onBack }) {
                   </div>
 
                   <div>
-                    <label htmlFor="subject" className="mb-2 block text-sm font-medium text-gray-300">Subject *</label>
+                    <label htmlFor="subject" className="mb-2 block text-sm font-medium text-zinc-300">Subject *</label>
                     <input
                       type="text"
                       id="subject"
@@ -375,13 +343,13 @@ export default function ContactUsPage({ onBack }) {
                       value={formData.subject}
                       onChange={handleChange}
                       required
-                      className="w-full rounded-xl border border-white/10 bg-neutral-950 px-4 py-3 text-white outline-none transition-colors focus:border-purple-500"
+                      className="w-full rounded-xl border border-white/10 bg-[#06080d] px-4 py-3 text-white outline-none transition-colors focus:border-sky-500"
                       placeholder="What's this about?"
                     />
                   </div>
 
                   <div>
-                    <label htmlFor="message" className="mb-2 block text-sm font-medium text-gray-300">Message *</label>
+                    <label htmlFor="message" className="mb-2 block text-sm font-medium text-zinc-300">Message *</label>
                     <textarea
                       id="message"
                       name="message"
@@ -389,7 +357,7 @@ export default function ContactUsPage({ onBack }) {
                       onChange={handleChange}
                       required
                       rows={7}
-                      className="w-full resize-none rounded-xl border border-white/10 bg-neutral-950 px-4 py-3 text-white outline-none transition-colors focus:border-purple-500"
+                      className="w-full resize-none rounded-xl border border-white/10 bg-[#06080d] px-4 py-3 text-white outline-none transition-colors focus:border-sky-500"
                       placeholder="Tell us more about your inquiry..."
                     ></textarea>
                   </div>
@@ -408,7 +376,7 @@ export default function ContactUsPage({ onBack }) {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="flex w-full items-center justify-center gap-2 rounded-full bg-purple-500 py-4 font-bold text-white transition-all hover:scale-[1.01] hover:bg-purple-400 disabled:cursor-not-allowed disabled:opacity-70"
+                    className="flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#2f6df6] to-[#2452d9] py-4 font-semibold text-white shadow-[0_12px_40px_rgba(37,99,235,0.35)] transition-transform hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-70"
                   >
                     {isSubmitting ? (
                       <>Sending... <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white"></div></>
@@ -417,7 +385,7 @@ export default function ContactUsPage({ onBack }) {
                     )}
                   </button>
                 </form>
-                <div className="mt-6 border-t border-white/10 pt-5 text-sm text-gray-500">
+                <div className="mt-6 border-t border-white/10 pt-5 text-sm text-zinc-500">
                   Most inquiries get a response within 1 to 2 business days.
                 </div>
               </div>
@@ -431,11 +399,11 @@ export default function ContactUsPage({ onBack }) {
               transition={{ duration: 0.7, delay: 0.1 }}
               className="h-full"
             >
-              <div className="flex h-full flex-col rounded-[28px] border border-white/10 bg-black/30 p-6 shadow-[0_24px_80px_rgba(0,0,0,0.28)] md:p-8">
+              <div className="flex h-full flex-col rounded-[28px] border border-white/10 bg-black/30 p-6 shadow-[0_24px_80px_rgba(0,0,0,0.28)] backdrop-blur-xl md:p-8">
                 <div>
-                  <p className="text-sm uppercase tracking-[0.22em] text-gray-500">Reach us</p>
-                  <h2 className="mt-3 text-3xl font-bold text-white">Get in Touch</h2>
-                  <p className="mt-3 max-w-lg text-gray-400">
+                  <p className="text-sm uppercase tracking-[0.22em] text-zinc-500">Reach us</p>
+                  <h2 className="mt-3 font-serif-custom text-3xl font-normal text-white">Get in Touch</h2>
+                  <p className="mt-3 max-w-lg text-zinc-400">
                     Prefer email, a quick call, or directions to the office? Everything you need is organized here.
                   </p>
                 </div>
@@ -443,23 +411,23 @@ export default function ContactUsPage({ onBack }) {
                 <div className="mt-8 grid gap-4 sm:grid-cols-2">
                   {getContactInfo().map((info, index) => (
                     <div key={index} className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
-                      <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl border border-purple-500/20 bg-purple-500/10">
-                        <info.icon className="h-5 w-5 text-purple-400" />
+                      <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl border border-sky-500/20 bg-sky-500/10">
+                        <info.icon className="h-5 w-5 text-sky-300" />
                       </div>
                       <h3 className="font-bold text-white">{info.label}</h3>
                       {info.link ? (
-                        <a href={info.link} className="mt-2 block break-words text-gray-200 transition-colors hover:text-white">
+                        <a href={info.link} className="mt-2 block break-words text-zinc-200 transition-colors hover:text-white">
                           {info.value}
                         </a>
                       ) : (
-                        <p className="mt-2 text-gray-200">{info.value}</p>
+                        <p className="mt-2 text-zinc-200">{info.value}</p>
                       )}
-                      <p className="mt-2 text-sm text-gray-500">{info.description}</p>
+                      <p className="mt-2 text-sm text-zinc-500">{info.description}</p>
                     </div>
                   ))}
                 </div>
 
-                <div className="mt-6 flex flex-1 flex-col overflow-hidden rounded-[24px] border border-white/10 bg-neutral-950">
+                <div className="mt-6 flex flex-1 flex-col overflow-hidden rounded-[24px] border border-white/10 bg-[#06080d]">
                   <div className="relative min-h-[280px] flex-1 overflow-hidden">
                     <iframe
                       title="Wilderbots location map"
@@ -475,7 +443,7 @@ export default function ContactUsPage({ onBack }) {
                       className="group absolute right-4 top-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-black/75 px-4 py-2 text-sm font-medium text-white backdrop-blur-sm transition-colors hover:bg-black/90"
                     >
                       Open Map
-                      <ExternalLink className="h-4 w-4 text-purple-300 transition-transform group-hover:translate-x-0.5" />
+                      <ExternalLink className="h-4 w-4 text-sky-300 transition-transform group-hover:translate-x-0.5" />
                     </a>
                   </div>
                   <a
@@ -486,14 +454,14 @@ export default function ContactUsPage({ onBack }) {
                   >
                     <div className="flex items-start justify-between gap-4">
                       <div>
-                        <p className="text-sm uppercase tracking-[0.24em] text-gray-400">Visit us</p>
-                        <h3 className="mt-3 text-2xl font-bold text-white">Map View</h3>
-                        <p className="mt-2 max-w-md text-gray-300">
+                        <p className="text-sm uppercase tracking-[0.24em] text-zinc-400">Visit us</p>
+                        <h3 className="mt-3 font-serif-custom text-2xl font-normal text-white">Map View</h3>
+                        <p className="mt-2 max-w-md text-zinc-300">
                           Open the Wilderbots location in your preferred maps app.
                         </p>
                       </div>
-                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-purple-500/30 bg-purple-500/10">
-                        <MapPin className="h-5 w-5 text-purple-300" />
+                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-sky-500/30 bg-sky-500/10">
+                        <MapPin className="h-5 w-5 text-sky-300" />
                       </div>
                     </div>
                   </a>
@@ -502,8 +470,8 @@ export default function ContactUsPage({ onBack }) {
                 {/* Social Links */}
                 {companyInfo?.socialMedia && Object.values(companyInfo.socialMedia).some(url => url) && (
                   <div className="mt-6 border-t border-white/10 pt-6">
-                    <h3 className="mb-2 text-xl font-bold text-white">Follow Us</h3>
-                    <p className="mb-6 text-gray-400">Keep up with launches, updates, and what the team is building next.</p>
+                    <h3 className="mb-2 text-xl font-semibold text-white">Follow Us</h3>
+                    <p className="mb-6 text-zinc-400">Keep up with launches, updates, and what the team is building next.</p>
                     <div className="flex gap-4 flex-wrap">
                       {companyInfo.socialMedia.linkedin && (
                         <a
@@ -512,7 +480,7 @@ export default function ContactUsPage({ onBack }) {
                           rel="noopener noreferrer"
                           className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center hover:bg-white/10 transition-colors border border-white/10"
                         >
-                          <Linkedin size={20} className="text-gray-400" />
+                          <Linkedin size={20} className="text-zinc-400" />
                         </a>
                       )}
                       {companyInfo.socialMedia.github && (
@@ -522,7 +490,7 @@ export default function ContactUsPage({ onBack }) {
                           rel="noopener noreferrer"
                           className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center hover:bg-white/10 transition-colors border border-white/10"
                         >
-                          <Github size={20} className="text-gray-400" />
+                          <Github size={20} className="text-zinc-400" />
                         </a>
                       )}
                       {companyInfo.socialMedia.twitter && (
@@ -532,7 +500,7 @@ export default function ContactUsPage({ onBack }) {
                           rel="noopener noreferrer"
                           className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center hover:bg-white/10 transition-colors border border-white/10"
                         >
-                          <Twitter size={20} className="text-gray-400" />
+                          <Twitter size={20} className="text-zinc-400" />
                         </a>
                       )}
                       {companyInfo.socialMedia.instagram && (
@@ -542,7 +510,7 @@ export default function ContactUsPage({ onBack }) {
                           rel="noopener noreferrer"
                           className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center hover:bg-white/10 transition-colors border border-white/10"
                         >
-                          <Instagram size={20} className="text-gray-400" />
+                          <Instagram size={20} className="text-zinc-400" />
                         </a>
                       )}
                       {companyInfo.socialMedia.youtube && (
@@ -552,7 +520,7 @@ export default function ContactUsPage({ onBack }) {
                           rel="noopener noreferrer"
                           className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center hover:bg-white/10 transition-colors border border-white/10"
                         >
-                          <Youtube size={20} className="text-gray-400" />
+                          <Youtube size={20} className="text-zinc-400" />
                         </a>
                       )}
                     </div>
@@ -565,11 +533,11 @@ export default function ContactUsPage({ onBack }) {
       </section>
 
       {/* Departments Section */}
-      <section className="py-24 px-6 bg-black">
+      <section className="rounded-[2rem] border border-white/10 bg-black/30 px-6 py-16 backdrop-blur-xl md:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">Contact by Department</h2>
-            <p className="text-xl text-gray-400">Reach out to the right team for faster response</p>
+            <h2 className="mb-4 font-serif-custom text-4xl font-normal text-white md:text-5xl">Contact by Department</h2>
+            <p className="text-xl text-zinc-400">Reach out to the right team for faster response</p>
           </div>
           <div className="grid md:grid-cols-2 gap-6">
             {getDepartments().map((dept, index) => (
@@ -579,16 +547,16 @@ export default function ContactUsPage({ onBack }) {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: (index % 2) * 0.1 }}
-                className="bg-neutral-900 rounded-3xl p-8 border border-white/10 hover:border-purple-500/50 transition-all"
+                className="rounded-[1.75rem] border border-white/10 bg-[linear-gradient(180deg,rgba(18,24,38,0.88)_0%,rgba(8,11,18,0.96)_100%)] p-8 transition-all hover:border-white/20"
               >
-                <div className="w-16 h-16 bg-purple-500/10 rounded-2xl flex items-center justify-center mb-6 border border-purple-500/20">
-                  <dept.icon className="text-purple-400 w-8 h-8" />
+                <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl border border-sky-500/20 bg-sky-500/10">
+                  <dept.icon className="h-8 w-8 text-sky-300" />
                 </div>
-                <h3 className="text-2xl font-bold mb-2">{dept.title}</h3>
-                <p className="text-gray-400 mb-4">{dept.description}</p>
+                <h3 className="mb-2 font-serif-custom text-2xl font-normal text-white">{dept.title}</h3>
+                <p className="mb-4 text-zinc-400">{dept.description}</p>
                 <a
                   href={`mailto:${dept.email}`}
-                  className="text-purple-400 hover:text-purple-300 font-semibold flex items-center gap-2 transition-colors"
+                  className="flex items-center gap-2 font-semibold text-sky-300 transition-colors hover:text-sky-200"
                 >
                   <Mail size={16} />
                   {dept.email}
@@ -600,22 +568,22 @@ export default function ContactUsPage({ onBack }) {
       </section>
 
       {/* FAQ CTA Section */}
-      <section className="py-24 px-6 bg-neutral-900 border-t border-white/10">
+      <section className="rounded-[2rem] border border-white/10 bg-zinc-950/35 px-6 py-16 text-center backdrop-blur-xl">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6">Have Questions?</h2>
-          <p className="text-xl text-gray-400 mb-10">
+          <h2 className="mb-6 font-serif-custom text-4xl font-normal text-white md:text-5xl">Have Questions?</h2>
+          <p className="mb-10 text-xl text-zinc-400">
             Check out our FAQ section for quick answers to common questions.
           </p>
           <div className="flex justify-center">
-            <a
+            <Link
               href="/faq"
-              className="px-8 py-4 bg-white text-black font-bold rounded-full hover:bg-gray-200 transition-all"
+              className="rounded-full bg-gradient-to-r from-[#2f6df6] to-[#2452d9] px-8 py-4 font-semibold text-white shadow-[0_12px_40px_rgba(37,99,235,0.35)] transition-transform hover:scale-[1.01]"
             >
               View FAQ
-            </a>
+            </Link>
           </div>
         </div>
       </section>
-    </div>
+    </PublicPageShell>
   )
 }

@@ -71,7 +71,7 @@ export default function NewsletterSection() {
       >
         <h2 className="text-3xl md:text-5xl font-bold mb-6">Join the Wild Side.</h2>
         <p className="text-gray-400 mb-10 text-lg">
-          Stay updated on the Wilder Watch release dates and new courses on Neureck.
+          Stay updated on Wilderbots launches, service updates, and new courses on Neureck.
           No spam, just future.
         </p>
         <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">

@@ -248,7 +248,7 @@ async function seedData() {
         department: 'Design',
         type: 'Full-time',
         location: 'Remote / Hybrid',
-        description: 'Design intuitive, beautiful interfaces for web, mobile, and wearable devices.',
+        description: 'Design intuitive, beautiful interfaces for web, mobile, and modern software products.',
         requirements: ['4+ years design experience', 'Figma expertise', 'Portfolio required', 'User research'],
         isActive: true
       },
@@ -286,15 +286,15 @@ async function seedData() {
     console.log('\nSeeding FAQs...')
     const faqs = [
       // Product Questions
-      { question: "Is the Wilder Watch Dev Kit pre-assembled?", answer: "No, it ships as a DIY kit. We believe the best way to understand technology is to build it. A detailed 3D interactive guide makes assembly easy for everyone—no soldering required. The kit includes all necessary components: PCB, display, sensors, battery, and chassis.", category: "Product", order: 1 },
-      { question: "What programming languages does the Wilder Watch support?", answer: "The Wilder Watch natively supports MicroPython and C++ (Arduino/ESP-IDF). It's perfect for both beginners learning embedded programming and advanced developers building custom applications. The device also supports our open-source OS with pre-built watch faces and features.", category: "Product", order: 2 },
-      { question: "Can I use the Wilder Watch as a regular smartwatch?", answer: "Absolutely! Once assembled and flashed with our default OS, it functions as a fully-featured smartwatch with notifications, health tracking, timekeeping, and connectivity features. You can also customize it with your own code or choose from our community-created watch faces.", category: "Product", order: 3 },
-      { question: "What's included in the Dev Kit?", answer: "The complete kit includes: ESP32-S3 microcontroller, 1.69\" IPS LCD touchscreen, 350mAh LiPo battery, modular PCB with all sensors, chassis components, USB-C cable for programming, and comprehensive assembly guide. Everything you need to build your watch is included.", category: "Product", order: 4 },
-      { question: "Is the Wilder Watch open source?", answer: "Yes! Our firmware, hardware designs, and software are open source. You can find our code on GitHub, modify it, and contribute to the community. We encourage makers to share their custom watch faces, health algorithms, and projects with the community.", category: "Product", order: 5 },
+      { question: "What kind of work does Wilderbots take on?", answer: "Wilderbots focuses on AI systems, software products, workflow automation, and interactive education experiences.", category: "Services", order: 1 },
+      { question: "Can Wilderbots work with our existing tools?", answer: "Yes. We typically integrate with your current stack, data, and workflows instead of forcing a full rebuild.", category: "Services", order: 2 },
+      { question: "How do projects usually start?", answer: "Most engagements start with a discovery phase where we map scope, constraints, milestones, and the best path to delivery.", category: "Services", order: 3 },
+      { question: "Do you support ongoing iteration after launch?", answer: "Yes. Wilderbots can continue with support, feature work, optimization, and rollout help after the initial launch.", category: "Services", order: 4 },
+      { question: "Do you build custom AI systems?", answer: "Yes. We build applied AI workflows, internal copilots, automation layers, and product-facing intelligent experiences.", category: "Services", order: 5 },
       // Ordering & Shipping
       { question: "How long does shipping take?", answer: "Orders are processed immediately, but due to high demand and quality assurance checks, shipping commences 10 business days after order confirmation. We ship to over 35 countries worldwide. International shipping typically takes 5-10 additional business days depending on your location.", category: "Ordering & Shipping", order: 1 },
-      { question: "Do you accept Cash on Delivery (COD)?", answer: "No, we require full pre-payment for all Development Kit orders. This ensures we can secure your hardware allocation and maintain our quality standards. We accept all major credit and debit cards through our secure checkout process.", category: "Ordering & Shipping", order: 2 },
-      { question: "What is the price of the Wilder Watch Dev Kit?", answer: "The Wilder Watch Dev Kit is priced at $299.00. This includes all components, assembly guide, and access to our open-source firmware. Shipping costs may vary by location and will be calculated at checkout.", category: "Ordering & Shipping", order: 3 },
+      { question: "How does billing work?", answer: "Billing depends on the engagement. Some projects are fixed-fee, while others are milestone-based or monthly retainers.", category: "Ordering & Shipping", order: 2 },
+      { question: "Do you work internationally?", answer: "Yes. Wilderbots works with remote teams and international clients depending on project fit and scheduling.", category: "Ordering & Shipping", order: 3 },
       { question: "Do you ship internationally?", answer: "Yes, we ship to over 35 countries worldwide. Shipping times vary by location but typically range from 5-10 business days after the 10-day processing period. You can check shipping availability and costs during checkout.", category: "Ordering & Shipping", order: 4 },
       // IT Services
       { question: "What IT services does Wilderbots offer?", answer: "We offer comprehensive IT services including: Application Development (iOS & Android), Web Development, Software Development (Desktop & Cloud), AI & Machine Learning (LLM Finetuning, Custom AI Models, Chatbots), Computer Vision, UI/UX Design, Data Analysis, 3D/AR/VR Projects, Video Editing, and Digital Marketing. Visit our Services page for complete details.", category: "IT Services", order: 1 },
@@ -302,13 +302,13 @@ async function seedData() {
       { question: "Do you provide AI and machine learning services?", answer: "Yes! We specialize in AI solutions including LLM finetuning, custom AI model development, NLP solutions, continued pre-training, agent chatbot development, multi-modal agents, and speech recognition systems. Our team has extensive experience in deploying AI solutions for various industries.", category: "IT Services", order: 3 },
       // Education & Neureck
       { question: "What is Neureck?", answer: "Neureck is our dedicated educational platform that revolutionizes STEM learning. It features interactive AI-driven modules, hands-on projects, and a global community of learners. Neureck makes complex technology concepts accessible and engaging for students, educators, and professionals.", category: "Education & Neureck", order: 1 },
-      { question: "Can I access Neureck without buying the Wilder Watch?", answer: "Absolutely! Neureck is a standalone web platform accessible from any browser at neureck.com. While owning a Wilder Watch unlocks exclusive biometric learning data and hands-on projects, the platform itself is free to explore and use.", category: "Education & Neureck", order: 2 },
+      { question: "Can I access Neureck independently?", answer: "Absolutely! Neureck is a standalone web platform accessible from any browser at neureck.com.", category: "Education & Neureck", order: 2 },
       { question: "Is Neureck suitable for schools and universities?", answer: "Yes! Neureck is designed for educational institutions. We offer special programs for schools and universities, including curriculum integration, teacher training, and bulk licensing options. Contact education@wilderbots.com for institutional partnerships.", category: "Education & Neureck", order: 3 },
       // Technical Support
       { question: "What technical support do you provide?", answer: "We provide comprehensive support through multiple channels: email support (support@wilderbots.com), detailed documentation, GitHub community forums, and video tutorials. For IT services clients, we offer dedicated support packages tailored to your needs.", category: "Technical Support", order: 1 },
-      { question: "What are the technical specifications of the Wilder Watch?", answer: "The Dev Kit features: ESP32-S3 Dual Core microcontroller with AI acceleration, 1.69\" IPS LCD touchscreen, 350mAh LiPo battery (user replaceable), modular PCB design fitting 22mm straps, USB-C debugging, OTA update support, and I2C/UART/SPI expansion pads for custom sensors.", category: "Technical Support", order: 2 },
+      { question: "What kind of technical support do you provide?", answer: "We provide build support, launch support, documentation help, and ongoing iteration depending on the engagement and support plan.", category: "Technical Support", order: 2 },
       // Company
-      { question: "What type of company is Wilderbots?", answer: "Wilderbots operates as three integrated businesses: a Product Company (designing and manufacturing the Wilder Watch Dev Kit), a Service Company (providing comprehensive IT services), and an Ed-Tech Company (through the Neureck platform). We're uniquely positioned at the intersection of hardware, software, and education.", category: "Company", order: 1 },
+      { question: "What type of company is Wilderbots?", answer: "Wilderbots operates across software services, AI systems, and education experiences. We help teams ship useful products and learning platforms with strong technical execution.", category: "Company", order: 1 },
       { question: "How can I stay updated on new products and features?", answer: "Subscribe to our newsletter on the homepage, follow us on social media (LinkedIn, GitHub, Twitter), or join our community on GitHub. We regularly announce new features, firmware updates, and educational content through these channels.", category: "Company", order: 2 }
     ]
 
@@ -326,7 +326,7 @@ async function seedData() {
     console.log('\nSeeding Reviews...')
     const reviews = [
       {
-        quote: "Building my own watch felt like magic. I programmed it to unlock my smart door lock. Best weekend project ever.",
+        quote: "Wilderbots cleaned up our workflow and shipped faster than the agencies we had tried before.",
         name: "Alex R.",
         role: "Maker & Student",
         avatar: "https://i.pravatar.cc/150?img=11",
@@ -353,7 +353,7 @@ async function seedData() {
         order: 3
       },
       {
-        quote: "The Wilder Watch is a game-changer for my training. The data accuracy is incredible, and it looks stunning.",
+        quote: "Wilderbots helped us turn an early concept into a launch-ready system with far less operational friction.",
         name: "Alex R.",
         role: "Pro Athlete",
         avatar: "https://i.pravatar.cc/150?img=11",
@@ -388,7 +388,7 @@ async function seedData() {
       {
         name: 'Alex Chen',
         role: 'CEO & Co-Founder',
-        bio: 'Former hardware engineer at leading tech companies. Passionate about making technology accessible through education.',
+        bio: 'Former product engineer at leading tech companies. Passionate about making technology accessible through education.',
         avatar: 'https://i.pravatar.cc/150?img=12',
         social: {
           linkedin: 'https://linkedin.com',
@@ -401,7 +401,7 @@ async function seedData() {
       {
         name: 'Sarah Martinez',
         role: 'CTO & Co-Founder',
-        bio: 'Embedded systems expert with 10+ years in wearable tech. Led development of the W1 chip architecture.',
+        bio: 'Systems architect with 10+ years across product engineering, platform design, and AI-driven delivery.',
         avatar: 'https://i.pravatar.cc/150?img=5',
         social: {
           linkedin: 'https://linkedin.com',
@@ -427,7 +427,7 @@ async function seedData() {
       {
         name: 'Emma Wilson',
         role: 'Lead Product Designer',
-        bio: 'Industrial designer specializing in wearable devices. Designs products that feel as good as they function.',
+        bio: 'Product designer specializing in high-clarity digital experiences. Designs systems that feel as good as they function.',
         avatar: 'https://i.pravatar.cc/150?img=47',
         social: {
           linkedin: 'https://linkedin.com',
@@ -440,7 +440,7 @@ async function seedData() {
       {
         name: 'Michael Torres',
         role: 'Head of Engineering',
-        bio: 'Full-stack developer and open-source advocate. Maintains the Wilder Watch firmware and developer tools.',
+        bio: 'Full-stack developer and open-source advocate. Maintains internal tooling, shared systems, and developer workflows.',
         avatar: 'https://i.pravatar.cc/150?img=15',
         social: {
           linkedin: 'https://linkedin.com',
@@ -453,7 +453,7 @@ async function seedData() {
       {
         name: 'Priya Patel',
         role: 'Head of Operations',
-        bio: 'Supply chain and logistics expert. Ensures every kit reaches our community on time, every time.',
+        bio: 'Operations leader who keeps client delivery, communications, and internal workflows running smoothly.',
         avatar: 'https://i.pravatar.cc/150?img=20',
         social: {
           linkedin: 'https://linkedin.com',
@@ -496,7 +496,7 @@ async function seedData() {
           {
             title: 'Product Support',
             email: 'support@wilderbots.com',
-            description: 'Questions about the Wilder Watch Dev Kit, shipping, or technical support'
+            description: 'Questions about delivery, support, or current Wilderbots offerings'
           },
           {
             title: 'Business & Services',
@@ -808,4 +808,3 @@ async function seedData() {
 }
 
 seedData()
-

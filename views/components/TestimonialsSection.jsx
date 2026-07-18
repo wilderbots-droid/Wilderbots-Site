@@ -22,9 +22,9 @@ export default function TestimonialsSection() {
       // Fallback to default testimonials
       setTestimonials([
         {
-          quote: "Building my own watch felt like magic. I programmed it to unlock my smart door lock. Best weekend project ever.",
+          quote: "Wilderbots cleaned up our workflow and shipped faster than the agencies we had tried before.",
           name: "Alex R.",
-          role: "Maker & Student",
+          role: "Operations Manager",
           avatar: "https://i.pravatar.cc/150?img=11"
         },
         {
@@ -34,9 +34,9 @@ export default function TestimonialsSection() {
           avatar: "https://i.pravatar.cc/150?img=5"
         },
         {
-          quote: "The open API allowed our research team to collect raw accelerometer data for our gait analysis study. Invaluable tool.",
+          quote: "Their team translated a messy product idea into a clear system, rollout plan, and launch-ready software.",
           name: "Dr. David L.",
-          role: "Research Scientist",
+          role: "Program Lead",
           avatar: "https://i.pravatar.cc/150?img=33"
         }
       ])

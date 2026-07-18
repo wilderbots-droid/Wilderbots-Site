@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowLeft, ChevronRight, HelpCircle } from 'lucide-react'
-import Logo from './Logo'
+import Link from 'next/link'
+import { ChevronRight, HelpCircle } from 'lucide-react'
+import PublicPageShell from './PublicPageShell'
 
 export default function FAQPage({ onBack }) {
   const [activeAccordion, setActiveAccordion] = useState(null)
@@ -23,8 +24,8 @@ export default function FAQPage({ onBack }) {
       console.error('Error fetching FAQs:', error)
       // Fallback to default FAQs
       setFaqs([
-        { category: "Product", q: "Is the Wilder Watch Dev Kit pre-assembled?", a: "No, it ships as a DIY kit." },
-        { category: "Product", q: "What programming languages does the Wilder Watch support?", a: "The Wilder Watch natively supports MicroPython and C++." },
+        { category: "Services", q: "What kind of work does Wilderbots do?", a: "We design AI systems, software products, automation workflows, and education experiences." },
+        { category: "Services", q: "Can Wilderbots work with our existing tools?", a: "Yes, we usually build around your current stack and operations." },
         { category: "Ordering & Shipping", q: "How long does shipping take?", a: "Orders are processed immediately, but shipping commences 10 business days after order confirmation." },
         { category: "IT Services", q: "What IT services does Wilderbots offer?", a: "We offer comprehensive IT services including Application Development, Web Development, AI & Machine Learning, and more." }
       ])
@@ -38,31 +39,20 @@ export default function FAQPage({ onBack }) {
   }
 
   const defaultFaqs = [
-    // Product Questions
-    { 
-      category: "Product",
-      q: "Is the Wilder Watch Dev Kit pre-assembled?", 
-      a: "No, it ships as a DIY kit. We believe the best way to understand technology is to build it. A detailed 3D interactive guide makes assembly easy for everyone—no soldering required. The kit includes all necessary components: PCB, display, sensors, battery, and chassis." 
+    {
+      category: "Services",
+      q: "What kind of work does Wilderbots do?",
+      a: "We design AI systems, software products, internal tools, workflow automations, and education experiences."
     },
-    { 
-      category: "Product",
-      q: "What programming languages does the Wilder Watch support?", 
-      a: "The Wilder Watch natively supports MicroPython and C++ (Arduino/ESP-IDF). It's perfect for both beginners learning embedded programming and advanced developers building custom applications. The device also supports our open-source OS with pre-built watch faces and features." 
+    {
+      category: "Services",
+      q: "Can Wilderbots work with our existing tools?",
+      a: "Yes. We usually integrate with your current products, processes, data sources, and APIs rather than replacing everything at once."
     },
-    { 
-      category: "Product",
-      q: "Can I use the Wilder Watch as a regular smartwatch?", 
-      a: "Absolutely! Once assembled and flashed with our default OS, it functions as a fully-featured smartwatch with notifications, health tracking, timekeeping, and connectivity features. You can also customize it with your own code or choose from our community-created watch faces." 
-    },
-    { 
-      category: "Product",
-      q: "What's included in the Dev Kit?", 
-      a: "The complete kit includes: ESP32-S3 microcontroller, 1.69\" IPS LCD touchscreen, 350mAh LiPo battery, modular PCB with all sensors, chassis components, USB-C cable for programming, and comprehensive assembly guide. Everything you need to build your watch is included." 
-    },
-    { 
-      category: "Product",
-      q: "Is the Wilder Watch open source?", 
-      a: "Yes! Our firmware, hardware designs, and software are open source. You can find our code on GitHub, modify it, and contribute to the community. We encourage makers to share their custom watch faces, health algorithms, and projects with the community." 
+    {
+      category: "Services",
+      q: "Do you work with startups and larger teams?",
+      a: "Yes. We support founders, schools, product teams, and growing businesses that need hands-on technical delivery."
     },
     
     // Ordering & Shipping
@@ -73,13 +63,8 @@ export default function FAQPage({ onBack }) {
     },
     { 
       category: "Ordering & Shipping",
-      q: "Do you accept Cash on Delivery (COD)?", 
-      a: "No, we require full pre-payment for all Development Kit orders. This ensures we can secure your hardware allocation and maintain our quality standards. We accept all major credit and debit cards through our secure checkout process." 
-    },
-    { 
-      category: "Ordering & Shipping",
-      q: "What is the price of the Wilder Watch Dev Kit?", 
-      a: "The Wilder Watch Dev Kit is priced at Rs 299.00. This includes all components, assembly guide, and access to our open-source firmware. Shipping costs may vary by location and will be calculated at checkout." 
+      q: "How does billing work?", 
+      a: "Billing depends on the scope. Some engagements are fixed-fee, while longer-term builds are milestone-based or monthly retainers." 
     },
     { 
       category: "Ordering & Shipping",
@@ -112,8 +97,8 @@ export default function FAQPage({ onBack }) {
     },
     { 
       category: "Education & Neureck",
-      q: "Can I access Neureck without buying the Wilder Watch?", 
-      a: "Absolutely! Neureck is a standalone web platform accessible from any browser at neureck.com. While owning a Wilder Watch unlocks exclusive biometric learning data and hands-on projects, the platform itself is free to explore and use." 
+      q: "Can I access Neureck independently?", 
+      a: "Absolutely. Neureck is a standalone learning platform that can be used on its own for training, curriculum, and interactive exploration." 
     },
     { 
       category: "Education & Neureck",
@@ -129,15 +114,15 @@ export default function FAQPage({ onBack }) {
     },
     { 
       category: "Technical Support",
-      q: "What are the technical specifications of the Wilder Watch?", 
-      a: "The Dev Kit features: ESP32-S3 Dual Core microcontroller with AI acceleration, 1.69\" IPS LCD touchscreen, 350mAh LiPo battery (user replaceable), modular PCB design fitting 22mm straps, USB-C debugging, OTA update support, and I2C/UART/SPI expansion pads for custom sensors." 
+      q: "What kind of technical support do you provide?", 
+      a: "We provide build support, launch support, documentation help, and ongoing iteration based on the engagement and support plan." 
     },
     
     // Company
     { 
       category: "Company",
       q: "What type of company is Wilderbots?", 
-      a: "Wilderbots operates as three integrated businesses: a Product Company (designing and manufacturing the Wilder Watch Dev Kit), a Service Company (providing comprehensive IT services), and an Ed-Tech Company (through the Neureck platform). We're uniquely positioned at the intersection of hardware, software, and education." 
+      a: "Wilderbots operates across software services, AI systems, and education experiences. We help teams ship useful products and learning platforms with strong technical execution." 
     },
     { 
       category: "Company",
@@ -165,65 +150,23 @@ export default function FAQPage({ onBack }) {
   const categories = Object.keys(faqsByCategory)
 
   return (
-    <div className="min-h-screen bg-black text-white font-sans selection:bg-purple-500 selection:text-white overflow-x-hidden">
-      {/* Header */}
-      <div className="border-b border-white/10 p-6 flex items-center justify-between sticky top-0 bg-black/90 backdrop-blur-md z-50">
-        <button onClick={onBack} className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors">
-          <ArrowLeft size={20} /> Back
-        </button>
-        <div className="flex items-center gap-2">
-          <Logo size={35} showText={false} />
-          <span className="font-bold">FAQ</span>
-        </div>
-        <div className="w-16"></div>
-      </div>
-
-      {/* Hero Section */}
-      <motion.section
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.6 }}
-        className="relative py-24 px-6 overflow-hidden"
-      >
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-purple-600/20 rounded-full blur-[120px] animate-pulse"></div>
-        
-        <div className="max-w-7xl mx-auto relative z-10">
-          <div className="text-center max-w-4xl mx-auto space-y-8">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 font-bold tracking-wider text-xs uppercase"
-            >
-              <HelpCircle size={14} /> Frequently Asked Questions
-            </motion.div>
-            <motion.h1
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.2 }}
-              className="text-5xl md:text-7xl font-bold leading-tight"
-            >
-              Got Questions? <br/>
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-500">We&apos;ve Got Answers.</span>
-            </motion.h1>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.35 }}
-              className="text-xl text-gray-300 leading-relaxed"
-            >
-              Find answers to common questions about our products, services, education platform, and more. 
-              Can&apos;t find what you&apos;re looking for? Contact us and we&apos;ll be happy to help.
-            </motion.p>
-          </div>
-        </div>
-      </motion.section>
-
-      {/* FAQs by Category */}
-      <section className="py-24 px-6 bg-neutral-900">
-        <div className="max-w-4xl mx-auto">
+    <PublicPageShell
+      onBack={onBack}
+      eyebrow="FAQ"
+      title={
+        <>
+          Clear answers for
+          <span className="block bg-gradient-to-r from-sky-400 to-indigo-500 bg-clip-text italic text-transparent">
+            teams considering Wilderbots
+          </span>
+        </>
+      }
+      description="Find the key details around services, delivery, education, and support in the same new interface system used on the homepage."
+    >
+      <section className="rounded-[2rem] border border-white/10 bg-zinc-950/35 p-6 backdrop-blur-xl md:p-8">
+        <div className="mx-auto max-w-4xl">
           {loading ? (
-            <div className="text-center py-12 text-gray-400">Loading FAQs...</div>
+            <div className="py-12 text-center text-zinc-400">Loading FAQs...</div>
           ) : categories.length > 0 ? (
             categories.map((category, categoryIndex) => (
               <motion.div
@@ -234,21 +177,21 @@ export default function FAQPage({ onBack }) {
                 transition={{ duration: 0.5, delay: categoryIndex * 0.05 }}
                 className="mb-16"
               >
-                <h2 className="text-3xl font-bold mb-8 text-center">{category}</h2>
+                <h2 className="mb-8 text-center font-serif-custom text-3xl font-normal text-white">{category}</h2>
                 <div className="space-y-4">
                   {faqsByCategory[category].map((item, index) => {
                     const globalIndex = transformedFaqs.findIndex(f => f === item)
                     return (
-                      <div key={index} className="border border-white/10 rounded-2xl overflow-hidden bg-black/50">
+                      <div key={index} className="overflow-hidden rounded-[1.5rem] border border-white/10 bg-[linear-gradient(180deg,rgba(18,24,38,0.88)_0%,rgba(8,11,18,0.96)_100%)]">
                         <button 
                           onClick={() => toggleAccordion(globalIndex)}
-                          className="w-full flex justify-between items-center p-6 text-left hover:bg-white/5 transition-colors"
+                          className="flex w-full items-center justify-between p-6 text-left transition-colors hover:bg-white/5"
                         >
-                          <span className="font-bold text-lg pr-4">{item.q}</span>
+                          <span className="pr-4 text-lg font-medium text-white">{item.q}</span>
                           <ChevronRight className={`transition-transform duration-300 flex-shrink-0 ${activeAccordion === globalIndex ? 'rotate-90' : ''}`} />
                         </button>
                         <div className={`overflow-hidden transition-all duration-300 ${activeAccordion === globalIndex ? 'max-h-96' : 'max-h-0'}`}>
-                          <div className="p-6 pt-0 text-gray-400 leading-relaxed">
+                          <div className="p-6 pt-0 leading-relaxed text-zinc-400">
                             {item.a}
                           </div>
                         </div>
@@ -259,27 +202,25 @@ export default function FAQPage({ onBack }) {
               </motion.div>
             ))
           ) : (
-            <div className="text-center py-12 text-gray-400">No FAQs available at the moment.</div>
+            <div className="py-12 text-center text-zinc-400">No FAQs available at the moment.</div>
           )}
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-24 px-6 bg-black border-t border-white/10">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6">Still Have Questions?</h2>
-          <p className="text-xl text-gray-400 mb-10">
-            Can't find the answer you're looking for? Our team is here to help.
+      <section className="mt-8 rounded-[2rem] border border-white/10 bg-black/35 px-6 py-16 text-center backdrop-blur-xl">
+        <div className="mx-auto max-w-4xl">
+          <h2 className="mb-6 font-serif-custom text-4xl font-normal text-white md:text-5xl">Still need help?</h2>
+          <p className="mb-10 text-lg font-light leading-relaxed text-zinc-400">
+            If the answer is not here, we can walk through your workflow, product goals, or project scope directly.
           </p>
-          <a
+          <Link
             href="/contact"
-            className="inline-block px-8 py-4 bg-purple-500 text-white font-bold rounded-full hover:bg-purple-400 transition-all transform hover:scale-105"
+            className="inline-flex items-center rounded-full bg-gradient-to-r from-[#2f6df6] to-[#2452d9] px-8 py-4 font-semibold text-white shadow-[0_12px_40px_rgba(37,99,235,0.35)] transition-transform hover:scale-[1.01]"
           >
             Contact Us
-          </a>
+          </Link>
         </div>
       </section>
-    </div>
+    </PublicPageShell>
   )
 }
-

@@ -53,7 +53,7 @@ export default async function handler(req, res) {
       trackingNumber,
       status: 'pending', // Set to pending until payment is confirmed
       items: items.map(item => ({
-        name: item.name || item.product || 'Wilder Watch Dev Kit',
+        name: item.name || item.product || 'Wilderbots Project Launch',
         quantity: item.quantity || 1,
         price: item.price || totalAmount
       })),
@@ -94,4 +94,3 @@ export default async function handler(req, res) {
     res.status(500).json({ error: 'Failed to create order. Please try again.' })
   }
 }
-

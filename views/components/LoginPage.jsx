@@ -1,9 +1,10 @@
 import { useState } from 'react'
-import { ArrowLeft, Mail, Lock, LogIn, AlertCircle, Phone } from 'lucide-react'
+import Link from 'next/link'
+import { Mail, Lock, LogIn, AlertCircle } from 'lucide-react'
 import { useAuth } from '../../contexts/AuthContext'
-import Logo from './Logo'
 import { useRouter } from 'next/router'
 import { signInWithGooglePopup } from '../../lib/firebaseClient'
+import PublicPageShell from './PublicPageShell'
 
 // OAuth provider icons (using Unicode and SVG alternatives)
 
@@ -92,25 +93,17 @@ export default function LoginPage({ onBack }) {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white font-sans selection:bg-purple-500 selection:text-white overflow-x-hidden">
-      {/* Header */}
-      <div className="border-b border-white/10 p-6 flex items-center justify-between sticky top-0 bg-black/90 backdrop-blur-md z-50">
-        <button onClick={onBack} className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors">
-          <ArrowLeft size={20} /> Back
-        </button>
-        <div className="flex items-center gap-2">
-          <Logo size={35} showText={false} />
-          <span className="font-bold">Login</span>
-        </div>
-        <div className="w-16"></div>
-      </div>
-
-      {/* Login Form */}
-      <section className="py-24 px-6">
+    <PublicPageShell
+      onBack={onBack}
+      eyebrow="Account Access"
+      title={<>Welcome back to<span className="block bg-gradient-to-r from-sky-400 to-indigo-500 bg-clip-text italic text-transparent">Wilderbots</span></>}
+      description="Sign in to manage your account, review project details, and continue from where you left off."
+    >
+      <section className="rounded-[2rem] border border-white/10 bg-zinc-950/35 px-6 py-12 backdrop-blur-xl">
         <div className="max-w-md mx-auto">
           <div className="text-center mb-12">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">Welcome Back</h1>
-            <p className="text-gray-400">Sign in to track your orders and manage your account</p>
+            <h2 className="mb-4 font-serif-custom text-4xl font-normal text-white md:text-5xl">Sign in</h2>
+            <p className="text-zinc-400">Track your activity and manage your account.</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -131,7 +124,7 @@ export default function LoginPage({ onBack }) {
                   value={emailOrMobile}
                   onChange={(e) => setEmailOrMobile(e.target.value)}
                   required
-                  className="w-full bg-black border border-white/10 rounded-xl pl-12 pr-4 py-4 focus:border-purple-500 outline-none transition-colors"
+                  className="w-full rounded-xl border border-white/10 bg-[#06080d] pl-12 pr-4 py-4 outline-none transition-colors focus:border-sky-500"
                   placeholder="Enter your email or mobile number"
                 />
               </div>
@@ -147,7 +140,7 @@ export default function LoginPage({ onBack }) {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="w-full bg-black border border-white/10 rounded-xl pl-12 pr-4 py-4 focus:border-purple-500 outline-none transition-colors"
+                  className="w-full rounded-xl border border-white/10 bg-[#06080d] pl-12 pr-4 py-4 outline-none transition-colors focus:border-sky-500"
                   placeholder="Enter your password"
                 />
               </div>
@@ -156,21 +149,21 @@ export default function LoginPage({ onBack }) {
             <div className="flex items-center justify-between">
               <label className="flex items-center gap-2 cursor-pointer">
                 <input type="checkbox" className="w-4 h-4 rounded bg-black border-white/10" />
-                <span className="text-sm text-gray-400">Remember me</span>
+                <span className="text-sm text-zinc-400">Remember me</span>
               </label>
-              <a href="/forgot-password" className="text-sm text-purple-400 hover:text-purple-300 transition-colors">
+              <Link href="/forgot-password" className="text-sm text-sky-300 transition-colors hover:text-sky-200">
                 Forgot password?
-              </a>
+              </Link>
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-white text-black font-bold py-4 rounded-full hover:bg-gray-200 transition-all transform hover:scale-[1.01] flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+              className="flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#2f6df6] to-[#2452d9] py-4 font-semibold text-white shadow-[0_12px_40px_rgba(37,99,235,0.35)] transition-transform hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-70"
             >
               {loading ? (
                 <>
-                  <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
+                  <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white"></div>
                   Signing in...
                 </>
               ) : (
@@ -180,14 +173,14 @@ export default function LoginPage({ onBack }) {
               )}
             </button>
 
-            <div className="relative my-8">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-white/10"></div>
+              <div className="relative my-8">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-white/10"></div>
+                </div>
+                <div className="relative flex justify-center text-sm">
+                <span className="bg-[#0b0f17] px-2 text-zinc-400">Or sign in with</span>
+                </div>
               </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-black text-gray-400">Or sign in with</span>
-              </div>
-            </div>
 
             <div className="grid grid-cols-2 gap-4">
               <button
@@ -216,16 +209,15 @@ export default function LoginPage({ onBack }) {
           </form>
 
           <div className="mt-8 text-center">
-            <p className="text-gray-400">
-              Don't have an account?{' '}
-              <a href="/signup" className="text-purple-400 hover:text-purple-300 font-semibold transition-colors">
+            <p className="text-zinc-400">
+              Don&apos;t have an account?{' '}
+              <Link href="/signup" className="font-semibold text-sky-300 transition-colors hover:text-sky-200">
                 Sign up
-              </a>
+              </Link>
             </p>
           </div>
         </div>
       </section>
-    </div>
+    </PublicPageShell>
   )
 }
-

@@ -202,8 +202,8 @@ export default function OrderTrackerPage({ onBack }) {
                 <div className="space-y-4">
                   <div className="flex justify-between items-center pb-4 border-b border-white/10">
                     <div>
-                      <p className="font-bold">Wilder Watch Dev Kit</p>
-                      <p className="text-sm text-gray-400">Complete Edition • Onyx Black PCB</p>
+                      <p className="font-bold">{order.items?.[0]?.name || 'Wilderbots Project Launch'}</p>
+                      <p className="text-sm text-gray-400">Confirmed engagement</p>
                     </div>
                     <p className="font-bold">Rs 299.00</p>
                   </div>
@@ -242,4 +242,3 @@ export default function OrderTrackerPage({ onBack }) {
     </div>
   )
 }
-

@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowLeft, ArrowRight, Code, Smartphone, Bot, GraduationCap, Package, Briefcase, Heart, Zap, Users, Globe, Coffee, TrendingUp, Award, Clock, X, Upload, FileText, Mail, AlertCircle } from 'lucide-react'
+import { ArrowRight, Code, Smartphone, Bot, GraduationCap, Package, Briefcase, Heart, Zap, Users, Globe, Coffee, TrendingUp, Award, Clock, X, Upload, FileText, Mail, AlertCircle } from 'lucide-react'
 import Link from 'next/link'
-import Logo from './Logo'
 import { useAuth } from '../../contexts/AuthContext'
 import { useRouter } from 'next/router'
+import PublicPageShell from './PublicPageShell'
 
 export default function CareersPage({ onBack }) {
   const { user } = useAuth()
@@ -299,54 +299,20 @@ export default function CareersPage({ onBack }) {
   ]
 
   return (
-    <div className="min-h-screen bg-black text-white font-sans selection:bg-purple-500 selection:text-white overflow-x-hidden">
-      {/* Header */}
-      <div className="border-b border-white/10 p-6 flex items-center justify-between sticky top-0 bg-black/90 backdrop-blur-md z-50">
-        <button onClick={onBack} className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors">
-          <ArrowLeft size={20} /> Back
-        </button>
-        <div className="flex items-center gap-2">
-          <Logo size={35} showText={false} />
-          <span className="font-bold">Careers</span>
-        </div>
-        <div className="w-16"></div>
-      </div>
-
-      {/* Hero Section */}
-      <motion.section
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.6 }}
-        className="relative py-24 px-6 text-center overflow-hidden"
-      >
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 via-blue-500/20 to-pink-500/20 blur-3xl"></div>
-        <div className="max-w-4xl mx-auto relative z-10 space-y-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 font-bold tracking-wider text-xs uppercase"
-          >
-            <Users size={14} /> Join Our Team
-          </motion.div>
-          <motion.h1
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.2 }}
-            className="text-5xl md:text-7xl font-bold leading-tight"
-          >
-            Build the <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500">Future.</span>
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.35 }}
-            className="text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed"
-          >
-            Join a team that&apos;s revolutionizing wearable tech, education, and digital innovation. Work on meaningful projects that impact thousands of users worldwide.
-          </motion.p>
-        </div>
-      </motion.section>
+    <PublicPageShell
+      onBack={onBack}
+      eyebrow="Careers"
+      title={
+        <>
+          Build the future
+          <span className="block bg-gradient-to-r from-sky-400 to-indigo-500 bg-clip-text italic text-transparent">
+            with Wilderbots
+          </span>
+        </>
+      }
+      description="Join a team building AI systems, education experiences, and digital products that solve real problems for real teams."
+      contentClassName="space-y-8"
+    >
 
       {/* Why Work Here */}
       <section className="py-16 px-6 bg-neutral-900 border-t border-white/5">
@@ -474,9 +440,9 @@ export default function CareersPage({ onBack }) {
       {/* Don't See Your Role */}
       <section className="py-16 px-6 bg-black border-t border-white/10">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6">Don't See Your Role?</h2>
+          <h2 className="text-4xl md:text-5xl font-bold mb-6">Don&apos;t See Your Role?</h2>
           <p className="text-xl text-gray-400 mb-10 max-w-2xl mx-auto">
-            We're always looking for talented individuals. Even if you don't see a perfect match, we'd love to hear from you.
+            We&apos;re always looking for talented individuals. Even if you don&apos;t see a perfect match, we&apos;d love to hear from you.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
             <button
@@ -533,7 +499,7 @@ export default function CareersPage({ onBack }) {
                     <ArrowRight className="text-green-400 rotate-[-45deg]" size={32} />
                   </div>
                   <h3 className="text-2xl font-bold mb-2">Application Submitted!</h3>
-                  <p className="text-gray-400">We'll review your application and get back to you soon.</p>
+                  <p className="text-gray-400">We&apos;ll review your application and get back to you soon.</p>
                 </div>
               ) : (
                 <>
@@ -739,6 +705,6 @@ export default function CareersPage({ onBack }) {
           </div>
         </div>
       )}
-    </div>
+    </PublicPageShell>
   )
 }

@@ -9,8 +9,8 @@ import connectDB from '../lib/mongodb.js'
 const ProductSchema = new mongoose.Schema({
   title: { type: String, required: true },
   subtitle: { type: String, required: true },
-  edition: { type: String, default: 'Development Kit Edition' },
-  engineeredBy: { type: String, default: 'Engineered by <br/>You.' },
+  edition: { type: String, default: 'Launch Edition' },
+  engineeredBy: { type: String, default: 'Built by <br/>Wilderbots.' },
   description: { type: String, required: true },
   price: { type: Number, required: true },
   image: { type: String, required: true },
@@ -34,13 +34,13 @@ async function seedProduct() {
 
     // Create default product
     const defaultProduct = new Product({
-      title: 'Not just a Watch.<br/>It\'s a Workshop.',
-      subtitle: 'The Wilder Watch Development Kit. You don\'t just buy it. You build it.',
-      edition: 'Development Kit Edition',
-      engineeredBy: 'Engineered by <br/>You.',
-      description: 'The Wilder Watch arrives as a modular kit. Follow our interactive guides to assemble the PCB, display, and battery. Then, flash your own code or use our open-source OS to customize every watch face, gesture, and AI feature.',
+      title: 'Wilderbots Launch Package',
+      subtitle: 'A structured path from discovery to delivery for teams building serious digital systems.',
+      edition: 'Launch Edition',
+      engineeredBy: 'Built by <br/>Wilderbots.',
+      description: 'Start with a guided discovery phase, move into architecture and delivery, and launch with a clear rollout plan supported by the Wilderbots team.',
       price: 299,
-      image: '/kit.png',
+      image: '/logo.png',
       isActive: true
     })
 

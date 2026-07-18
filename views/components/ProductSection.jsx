@@ -35,6 +35,10 @@ export default function ProductSection() {
   const gridProducts = products.filter(p => !p.title.toLowerCase().includes('valueshift'))
   const valueShiftProduct = products.find(p => p.title.toLowerCase().includes('valueshift'))
 
+  if (products.length === 0) {
+    return null
+  }
+
   return (
     <section id="products" className="py-32 px-6 bg-black relative">
       <div className="max-w-7xl mx-auto">
@@ -52,7 +56,7 @@ export default function ProductSection() {
             Wilder Products.
           </h2>
           <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-            From wearable hardware to transformative nightlife platforms. 
+            From software platforms to AI-enabled systems for teams and learning programs.
             Explore the Wilderbots product lineup.
           </p>
         </motion.div>

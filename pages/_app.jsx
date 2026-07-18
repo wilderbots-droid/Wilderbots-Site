@@ -5,7 +5,6 @@ import { AuthProvider } from '../contexts/AuthContext'
 import { Analytics } from "@vercel/analytics/next"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { motion } from 'framer-motion'
-import CustomCursor from '../views/components/CustomCursor'
 import Logo from '../views/components/Logo'
 
 export default function App({ Component, pageProps }) {
@@ -169,7 +168,7 @@ export default function App({ Component, pageProps }) {
                 y: { duration: 3, repeat: Infinity, ease: "easeInOut" },
                 rotateY: { duration: 6, repeat: Infinity, ease: "linear" }
               }}
-              className="relative group cursor-none"
+              className="relative group"
             >
               <Logo size={140} showText={false} className="bg-transparent" />
             </motion.div>
@@ -181,7 +180,6 @@ export default function App({ Component, pageProps }) {
 
   return (
     <AuthProvider>
-      <CustomCursor />
       <Component {...pageProps} />
       {isProduction && <Analytics />}
       {isProduction && <SpeedInsights />}

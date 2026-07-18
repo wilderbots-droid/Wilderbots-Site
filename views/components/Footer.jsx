@@ -64,7 +64,7 @@ export default function Footer() {
       }, 300)
     } else {
       // If on home page but view is not landing, reset to landing first
-      if (router.query.view && (router.query.view === 'devkit' || router.query.view === 'order')) {
+      if (router.query.view === 'order') {
         router.replace(`/#${id}`, undefined, { shallow: true })
         setTimeout(() => {
           const element = document.getElementById(id)
@@ -95,7 +95,7 @@ export default function Footer() {
             <Logo size={55} showText={true} />
           </div>
           <p className="text-gray-500 mb-4">
-            Innovating at the intersection of hardware, software, and education. 
+            Building across software, AI systems, and education experiences.
             Product. Service. Education.
           </p>
           <div className="flex gap-4 flex-wrap">
