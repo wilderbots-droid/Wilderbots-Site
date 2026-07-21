@@ -1,9 +1,6 @@
 import connectDB from '../../lib/mongodb'
 import JobApplication from '../../models/JobApplication'
-import jwt from 'jsonwebtoken'
 import mongoose from 'mongoose'
-
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production'
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -47,24 +44,10 @@ export default async function handler(req, res) {
       }
     }
 
-    // Require authentication - user must be logged in
-    const token = req.headers.authorization?.replace('Bearer ', '')
-    if (!token) {
-      return res.status(401).json({ error: 'Authentication required. Please login to submit your application.' })
-    }
-
-    let userId = null
-    try {
-      const decoded = jwt.verify(token, JWT_SECRET)
-      userId = decoded.userId
-    } catch (error) {
-      return res.status(401).json({ error: 'Invalid or expired token. Please login again.' })
-    }
-
     // Create job application
     const now = Date.now()
     const application = new JobApplication({
-      userId: userId || null,
+      userId: null,
       careerId: validCareerId || null,
       name: trimmedName,
       email: trimmedEmail,
@@ -113,4 +96,3 @@ export default async function handler(req, res) {
     })
   }
 }
-

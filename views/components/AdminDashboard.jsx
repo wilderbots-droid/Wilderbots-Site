@@ -1,18 +1,11 @@
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/router'
 import { 
   LayoutDashboard, 
-  Users, 
-  ShoppingBag, 
   LogOut, 
   TrendingUp, 
   Package, 
-  UserCheck,
-  Clock,
-  CheckCircle,
-  XCircle,
-  Truck,
-  DollarSign,
+  ShoppingBag,
+  Users,
   Activity,
   Briefcase,
   FileText,
@@ -25,8 +18,6 @@ import {
   Layers,
   BookOpen
 } from 'lucide-react'
-import AdminUsers from './AdminUsers'
-import AdminOrders from './AdminOrders'
 import AdminServices from './AdminServices'
 import AdminProducts from './AdminProducts'
 import AdminCareers from './AdminCareers'
@@ -37,7 +28,6 @@ import AdminAccountSettings from './AdminAccountSettings'
 import AdminFAQs from './AdminFAQs'
 import AdminReviews from './AdminReviews'
 import AdminTeam from './AdminTeam'
-import AdminSubscriptions from './AdminSubscriptions'
 import AdminPolicies from './AdminPolicies'
 import AdminEmailAddresses from './AdminEmailAddresses'
 import AdminEmailManagement from './AdminEmailManagement'
@@ -46,7 +36,6 @@ import AdminStats from './AdminStats'
 import AdminEducation from './AdminEducation'
 
 export default function AdminDashboard({ admin, onLogout }) {
-  const router = useRouter()
   const [activeTab, setActiveTab] = useState('dashboard')
   const [stats, setStats] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -86,37 +75,6 @@ export default function AdminDashboard({ admin, onLogout }) {
     }
   }
 
-  const getStatusIcon = (status) => {
-    switch (status) {
-      case 'delivered': return <CheckCircle className="w-4 h-4" />
-      case 'pending': return <Clock className="w-4 h-4" />
-      case 'shipped': return <Truck className="w-4 h-4" />
-      case 'cancelled': return <XCircle className="w-4 h-4" />
-      default: return <Package className="w-4 h-4" />
-    }
-  }
-
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'delivered': return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
-      case 'pending': return 'bg-amber-500/10 text-amber-400 border-amber-500/20'
-      case 'shipped': return 'bg-blue-500/10 text-blue-400 border-blue-500/20'
-      case 'processing': return 'bg-purple-500/10 text-purple-400 border-purple-500/20'
-      case 'confirmed': return 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20'
-      case 'cancelled': return 'bg-red-500/10 text-red-400 border-red-500/20'
-      default: return 'bg-gray-500/10 text-gray-400 border-gray-500/20'
-    }
-  }
-
-  const ordersByStatusMap = stats?.ordersByStatus?.reduce((acc, item) => {
-    acc[item._id] = item.count
-    return acc
-  }, {}) || {}
-
-  const totalOrders = stats?.stats?.totalOrders || 0
-  const deliveredOrders = ordersByStatusMap['delivered'] || 0
-  const conversionRate = totalOrders > 0 ? ((deliveredOrders / totalOrders) * 100).toFixed(1) : 0
-
   return (
     <div className="h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950 overflow-hidden">
       {/* Sidebar */}
@@ -147,28 +105,6 @@ export default function AdminDashboard({ admin, onLogout }) {
             >
               <LayoutDashboard className="w-5 h-5" />
               <span className="font-medium">Dashboard</span>
-            </button>
-            <button
-              onClick={() => setActiveTab('users')}
-              className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all ${
-                activeTab === 'users'
-                  ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg shadow-blue-500/25'
-                  : 'text-gray-400 hover:bg-gray-800 hover:text-white'
-              }`}
-            >
-              <Users className="w-5 h-5" />
-              <span className="font-medium">Users</span>
-            </button>
-            <button
-              onClick={() => setActiveTab('orders')}
-              className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all ${
-                activeTab === 'orders'
-                  ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg shadow-blue-500/25'
-                  : 'text-gray-400 hover:bg-gray-800 hover:text-white'
-              }`}
-            >
-              <ShoppingBag className="w-5 h-5" />
-              <span className="font-medium">Orders</span>
             </button>
             <button
               onClick={() => setActiveTab('services')}
@@ -257,17 +193,6 @@ export default function AdminDashboard({ admin, onLogout }) {
             >
               <MessageSquare className="w-5 h-5" />
               <span className="font-medium">Contacts</span>
-            </button>
-            <button
-              onClick={() => setActiveTab('subscriptions')}
-              className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all ${
-                activeTab === 'subscriptions'
-                  ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg shadow-blue-500/25'
-                  : 'text-gray-400 hover:bg-gray-800 hover:text-white'
-              }`}
-            >
-              <Mail className="w-5 h-5" />
-              <span className="font-medium">Subscriptions</span>
             </button>
             <button
               onClick={() => setActiveTab('faqs')}
@@ -384,14 +309,11 @@ export default function AdminDashboard({ admin, onLogout }) {
               <div>
                 <h2 className="text-2xl font-bold text-white">
                   {activeTab === 'dashboard' && 'Dashboard Overview'}
-                  {activeTab === 'users' && 'User Management'}
-                  {activeTab === 'orders' && 'Order Management'}
                   {activeTab === 'services' && 'Services Management'}
                   {activeTab === 'products' && 'Products Management'}
                   {activeTab === 'careers' && 'Careers Management'}
                   {activeTab === 'applications' && 'Job Applications'}
                   {activeTab === 'contacts' && 'Contact Messages'}
-                  {activeTab === 'subscriptions' && 'Newsletter Subscriptions'}
                   {activeTab === 'faqs' && 'FAQs Management'}
                   {activeTab === 'reviews' && 'Reviews & Testimonials'}
                   {activeTab === 'team' && 'Team Management'}
@@ -406,14 +328,11 @@ export default function AdminDashboard({ admin, onLogout }) {
                 </h2>
                 <p className="text-sm text-gray-400 mt-1">
                   {activeTab === 'dashboard' && 'Welcome back, here\'s what\'s happening'}
-                  {activeTab === 'users' && 'Manage all registered users'}
-                  {activeTab === 'orders' && 'Track and manage all orders'}
                   {activeTab === 'services' && 'Manage your services and offerings'}
                   {activeTab === 'products' && 'Manage products and featured items'}
                   {activeTab === 'careers' && 'Manage job listings and positions'}
                   {activeTab === 'applications' && 'Review and manage job applications'}
                   {activeTab === 'contacts' && 'Manage contact form submissions'}
-                  {activeTab === 'subscriptions' && 'Manage newsletter subscriptions'}
                   {activeTab === 'faqs' && 'Manage frequently asked questions'}
                   {activeTab === 'reviews' && 'Manage customer reviews and testimonials'}
                   {activeTab === 'team' && 'Manage team members for the About page'}
@@ -451,80 +370,57 @@ export default function AdminDashboard({ admin, onLogout }) {
                     <div className="bg-gradient-to-br from-blue-600/10 to-blue-600/5 rounded-xl p-6 border border-blue-500/20 hover:border-blue-500/40 transition-all group">
                       <div className="flex items-center justify-between mb-4">
                         <div className="w-12 h-12 bg-blue-600/20 rounded-lg flex items-center justify-center group-hover:bg-blue-600/30 transition">
-                          <Users className="w-6 h-6 text-blue-400" />
+                          <MessageSquare className="w-6 h-6 text-blue-400" />
                         </div>
                         <TrendingUp className="w-5 h-5 text-blue-400" />
                       </div>
-                      <div className="text-3xl font-bold text-white mb-1">{stats?.stats?.totalUsers || 0}</div>
-                      <div className="text-sm text-gray-400">Total Users</div>
+                      <div className="text-3xl font-bold text-white mb-1">{stats?.stats?.totalContacts || 0}</div>
+                      <div className="text-sm text-gray-400">Contact Messages</div>
                     </div>
 
                     <div className="bg-gradient-to-br from-purple-600/10 to-purple-600/5 rounded-xl p-6 border border-purple-500/20 hover:border-purple-500/40 transition-all group">
                       <div className="flex items-center justify-between mb-4">
                         <div className="w-12 h-12 bg-purple-600/20 rounded-lg flex items-center justify-center group-hover:bg-purple-600/30 transition">
-                          <ShoppingBag className="w-6 h-6 text-purple-400" />
+                          <FileText className="w-6 h-6 text-purple-400" />
                         </div>
                         <TrendingUp className="w-5 h-5 text-purple-400" />
                       </div>
-                      <div className="text-3xl font-bold text-white mb-1">{stats?.stats?.totalOrders || 0}</div>
-                      <div className="text-sm text-gray-400">Total Orders</div>
+                      <div className="text-3xl font-bold text-white mb-1">{stats?.stats?.totalApplications || 0}</div>
+                      <div className="text-sm text-gray-400">Applications</div>
                     </div>
 
                     <div className="bg-gradient-to-br from-amber-600/10 to-amber-600/5 rounded-xl p-6 border border-amber-500/20 hover:border-amber-500/40 transition-all group">
                       <div className="flex items-center justify-between mb-4">
                         <div className="w-12 h-12 bg-amber-600/20 rounded-lg flex items-center justify-center group-hover:bg-amber-600/30 transition">
-                          <Clock className="w-6 h-6 text-amber-400" />
+                          <Package className="w-6 h-6 text-amber-400" />
                         </div>
                         <Activity className="w-5 h-5 text-amber-400" />
                       </div>
-                      <div className="text-3xl font-bold text-white mb-1">{stats?.stats?.pendingOrders || 0}</div>
-                      <div className="text-sm text-gray-400">Pending Orders</div>
+                      <div className="text-3xl font-bold text-white mb-1">{stats?.stats?.totalProducts || 0}</div>
+                      <div className="text-sm text-gray-400">Products</div>
                     </div>
 
                     <div className="bg-gradient-to-br from-emerald-600/10 to-emerald-600/5 rounded-xl p-6 border border-emerald-500/20 hover:border-emerald-500/40 transition-all group">
                       <div className="flex items-center justify-between mb-4">
                         <div className="w-12 h-12 bg-emerald-600/20 rounded-lg flex items-center justify-center group-hover:bg-emerald-600/30 transition">
-                          <CheckCircle className="w-6 h-6 text-emerald-400" />
+                          <Briefcase className="w-6 h-6 text-emerald-400" />
                         </div>
                         <TrendingUp className="w-5 h-5 text-emerald-400" />
                       </div>
-                      <div className="text-3xl font-bold text-white mb-1">{conversionRate}%</div>
-                      <div className="text-sm text-gray-400">Delivery Rate</div>
+                      <div className="text-3xl font-bold text-white mb-1">{stats?.stats?.totalServices || 0}</div>
+                      <div className="text-sm text-gray-400">Services</div>
                     </div>
                   </div>
 
-                  {/* Order Status Breakdown */}
-                  {stats?.ordersByStatus && stats.ordersByStatus.length > 0 && (
-                    <div className="bg-gray-900/50 backdrop-blur-sm rounded-xl border border-gray-800 p-6">
-                      <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
-                        <Package className="w-5 h-5 mr-2 text-gray-400" />
-                        Orders by Status
-                      </h3>
-                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-                        {stats.ordersByStatus.map((item) => (
-                          <div key={item._id} className="text-center p-4 bg-gray-800/50 rounded-lg border border-gray-700/50">
-                            <div className="flex items-center justify-center mb-2">
-                              <div className={`p-2 rounded-lg ${getStatusColor(item._id).split(' ')[0]}`}>
-                                {getStatusIcon(item._id)}
-                              </div>
-                            </div>
-                            <div className="text-2xl font-bold text-white mb-1">{item.count}</div>
-                            <div className="text-xs text-gray-400 capitalize">{item._id}</div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Recent Orders */}
+                  {/* Recent Applications */}
                   <div className="bg-gray-900/50 backdrop-blur-sm rounded-xl border border-gray-800 overflow-hidden">
                     <div className="px-6 py-4 border-b border-gray-800 flex items-center justify-between">
                       <h3 className="text-lg font-semibold text-white flex items-center">
-                        <ShoppingBag className="w-5 h-5 mr-2 text-gray-400" />
-                        Recent Orders
+                        <FileText className="w-5 h-5 mr-2 text-gray-400" />
+                        Recent Applications
                       </h3>
                       <button
-                        onClick={() => setActiveTab('orders')}
+                        onClick={() => setActiveTab('applications')}
                         className="text-sm text-blue-400 hover:text-blue-300 transition"
                       >
                         View all →
@@ -534,45 +430,28 @@ export default function AdminDashboard({ admin, onLogout }) {
                       <table className="w-full">
                         <thead className="bg-gray-800/50">
                           <tr>
-                            <th className="px-6 py-4 text-left text-xs font-semibold text-gray-300 uppercase tracking-wider">Tracking #</th>
-                            <th className="px-6 py-4 text-left text-xs font-semibold text-gray-300 uppercase tracking-wider">Customer</th>
-                            <th className="px-6 py-4 text-left text-xs font-semibold text-gray-300 uppercase tracking-wider">Amount</th>
-                            <th className="px-6 py-4 text-left text-xs font-semibold text-gray-300 uppercase tracking-wider">Status</th>
+                            <th className="px-6 py-4 text-left text-xs font-semibold text-gray-300 uppercase tracking-wider">Applicant</th>
+                            <th className="px-6 py-4 text-left text-xs font-semibold text-gray-300 uppercase tracking-wider">Role</th>
+                            <th className="px-6 py-4 text-left text-xs font-semibold text-gray-300 uppercase tracking-wider">Email</th>
                             <th className="px-6 py-4 text-left text-xs font-semibold text-gray-300 uppercase tracking-wider">Date</th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-800">
-                          {stats?.recentOrders?.length > 0 ? (
-                            stats.recentOrders.map((order) => (
-                              <tr key={order._id} className="hover:bg-gray-800/30 transition">
-                                <td className="px-6 py-4 whitespace-nowrap">
-                                  <div className="text-sm font-medium text-white">{order.trackingNumber}</div>
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap">
-                                  <div className="text-sm text-white">{order.userId?.name || 'N/A'}</div>
-                                  <div className="text-xs text-gray-400">{order.userId?.email || ''}</div>
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap">
-                                  <div className="flex items-center text-sm font-semibold text-white">
-                                    <DollarSign className="w-4 h-4 mr-1" />
-                                    {order.totalAmount?.toFixed(2) || '0.00'}
-                                  </div>
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap">
-                                  <span className={`inline-flex items-center space-x-1 px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(order.status)}`}>
-                                    {getStatusIcon(order.status)}
-                                    <span className="capitalize">{order.status}</span>
-                                  </span>
-                                </td>
+                          {stats?.recentApplications?.length > 0 ? (
+                            stats.recentApplications.map((application) => (
+                              <tr key={application._id} className="hover:bg-gray-800/30 transition">
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-white">{application.name}</td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{application.position}</td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{application.email}</td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
-                                  {new Date(order.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                  {new Date(application.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                                 </td>
                               </tr>
                             ))
                           ) : (
                             <tr>
-                              <td colSpan="5" className="px-6 py-12 text-center text-gray-400">
-                                No orders found
+                              <td colSpan="4" className="px-6 py-12 text-center text-gray-400">
+                                No applications found
                               </td>
                             </tr>
                           )}
@@ -581,15 +460,15 @@ export default function AdminDashboard({ admin, onLogout }) {
                     </div>
                   </div>
 
-                  {/* Recent Users */}
+                  {/* Recent Contacts */}
                   <div className="bg-gray-900/50 backdrop-blur-sm rounded-xl border border-gray-800 overflow-hidden">
                     <div className="px-6 py-4 border-b border-gray-800 flex items-center justify-between">
                       <h3 className="text-lg font-semibold text-white flex items-center">
-                        <UserCheck className="w-5 h-5 mr-2 text-gray-400" />
-                        Recent Users
+                        <MessageSquare className="w-5 h-5 mr-2 text-gray-400" />
+                        Recent Contacts
                       </h3>
                       <button
-                        onClick={() => setActiveTab('users')}
+                        onClick={() => setActiveTab('contacts')}
                         className="text-sm text-blue-400 hover:text-blue-300 transition"
                       >
                         View all →
@@ -601,33 +480,26 @@ export default function AdminDashboard({ admin, onLogout }) {
                           <tr>
                             <th className="px-6 py-4 text-left text-xs font-semibold text-gray-300 uppercase tracking-wider">Name</th>
                             <th className="px-6 py-4 text-left text-xs font-semibold text-gray-300 uppercase tracking-wider">Email</th>
-                            <th className="px-6 py-4 text-left text-xs font-semibold text-gray-300 uppercase tracking-wider">Joined</th>
+                            <th className="px-6 py-4 text-left text-xs font-semibold text-gray-300 uppercase tracking-wider">Category</th>
+                            <th className="px-6 py-4 text-left text-xs font-semibold text-gray-300 uppercase tracking-wider">Date</th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-800">
-                          {stats?.recentUsers?.length > 0 ? (
-                            stats.recentUsers.map((user) => (
-                              <tr key={user._id} className="hover:bg-gray-800/30 transition">
-                                <td className="px-6 py-4 whitespace-nowrap">
-                                  <div className="flex items-center">
-                                    <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center mr-3">
-                                      <span className="text-white text-xs font-semibold">
-                                        {user.name?.charAt(0).toUpperCase() || 'U'}
-                                      </span>
-                                    </div>
-                                    <div className="text-sm font-medium text-white">{user.name}</div>
-                                  </div>
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{user.email}</td>
+                          {stats?.recentContacts?.length > 0 ? (
+                            stats.recentContacts.map((contact) => (
+                              <tr key={contact._id} className="hover:bg-gray-800/30 transition">
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-white">{contact.name}</td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{contact.email}</td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300 capitalize">{contact.category || 'general'}</td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
-                                  {new Date(user.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                  {new Date(contact.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                                 </td>
                               </tr>
                             ))
                           ) : (
                             <tr>
-                              <td colSpan="3" className="px-6 py-12 text-center text-gray-400">
-                                No users found
+                              <td colSpan="4" className="px-6 py-12 text-center text-gray-400">
+                                No contact messages found
                               </td>
                             </tr>
                           )}
@@ -635,19 +507,40 @@ export default function AdminDashboard({ admin, onLogout }) {
                       </table>
                     </div>
                   </div>
+
+                  {/* Newsletter Snapshot */}
+                  {typeof stats?.stats?.totalSubscriptions === 'number' ? (
+                    <div className="bg-gray-900/50 backdrop-blur-sm rounded-xl border border-gray-800 p-6">
+                      <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+                        <Mail className="w-5 h-5 mr-2 text-gray-400" />
+                        Newsletter Snapshot
+                      </h3>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="rounded-lg border border-gray-700/50 bg-gray-800/50 p-4">
+                          <div className="text-2xl font-bold text-white mb-1">{stats.stats.totalSubscriptions}</div>
+                          <div className="text-xs text-gray-400">Active subscribers</div>
+                        </div>
+                        <div className="rounded-lg border border-gray-700/50 bg-gray-800/50 p-4">
+                          <div className="text-2xl font-bold text-white mb-1">{stats.stats.totalProducts || 0}</div>
+                          <div className="text-xs text-gray-400">Published products</div>
+                        </div>
+                        <div className="rounded-lg border border-gray-700/50 bg-gray-800/50 p-4">
+                          <div className="text-2xl font-bold text-white mb-1">{stats.stats.totalServices || 0}</div>
+                          <div className="text-xs text-gray-400">Active services</div>
+                        </div>
+                      </div>
+                    </div>
+                  ) : null}
                 </div>
               )}
             </div>
           )}
 
-        {activeTab === 'users' && <AdminUsers />}
-        {activeTab === 'orders' && <AdminOrders />}
         {activeTab === 'services' && <AdminServices />}
         {activeTab === 'products' && <AdminProducts />}
         {activeTab === 'careers' && <AdminCareers />}
         {activeTab === 'applications' && <AdminJobApplications />}
         {activeTab === 'contacts' && <AdminContacts />}
-        {activeTab === 'subscriptions' && <AdminSubscriptions />}
         {activeTab === 'faqs' && <AdminFAQs />}
         {activeTab === 'reviews' && <AdminReviews />}
         {activeTab === 'team' && <AdminTeam />}
@@ -668,4 +561,3 @@ export default function AdminDashboard({ admin, onLogout }) {
     </div>
   )
 }
-

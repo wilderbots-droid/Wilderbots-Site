@@ -32,10 +32,6 @@ const productSchema = new mongoose.Schema(
         icon: String
       }
     ],
-    price: {
-      type: Number,
-      required: true
-    },
     image: {
       type: String,
       required: true
@@ -62,10 +58,6 @@ const productSchema = new mongoose.Schema(
       type: String
     },
     showCta: {
-      type: Boolean,
-      default: true
-    },
-    showPrice: {
       type: Boolean,
       default: true
     }

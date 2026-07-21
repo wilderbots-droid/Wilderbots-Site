@@ -52,10 +52,8 @@ export default function Footer() {
   }
 
   const scrollToSection = (id) => {
-    // If not on home page, navigate to home page first (without query params)
     if (router.pathname !== '/') {
       router.push(`/#${id}`)
-      // Wait for page to load, then scroll
       setTimeout(() => {
         const element = document.getElementById(id)
         if (element) {
@@ -63,21 +61,9 @@ export default function Footer() {
         }
       }, 300)
     } else {
-      // If on home page but view is not landing, reset to landing first
-      if (router.query.view === 'order') {
-        router.replace(`/#${id}`, undefined, { shallow: true })
-        setTimeout(() => {
-          const element = document.getElementById(id)
-          if (element) {
-            element.scrollIntoView({ behavior: 'smooth' })
-          }
-        }, 100)
-      } else {
-        // Already on landing page, just scroll
-        const element = document.getElementById(id)
-        if (element) {
-          element.scrollIntoView({ behavior: 'smooth' })
-        }
+      const element = document.getElementById(id)
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' })
       }
     }
   }

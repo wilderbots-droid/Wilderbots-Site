@@ -17,7 +17,6 @@ export default function AdminProducts() {
     description: '',
     detailedOverview: '',
     features: [],
-    price: 0,
     image: '/logo.png',
     isActive: true,
     isPrimary: false,
@@ -25,8 +24,7 @@ export default function AdminProducts() {
     ctaLink: '',
     appStoreLink: '',
     playStoreLink: '',
-    showCta: true,
-    showPrice: true
+    showCta: true
   })
 
   const fileInputRef = useRef(null)
@@ -191,7 +189,6 @@ export default function AdminProducts() {
       description: '',
       detailedOverview: '',
       features: [],
-      price: '',
       image: '',
       isActive: true,
       isPrimary: false,
@@ -199,8 +196,7 @@ export default function AdminProducts() {
       ctaLink: '',
       appStoreLink: '',
       playStoreLink: '',
-      showCta: true,
-      showPrice: true
+      showCta: true
     })
     setImagePreview(null)
     setEditingId(null)
@@ -398,17 +394,7 @@ export default function AdminProducts() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-white font-semibold mb-2">Price (Rs)</label>
-                      <input
-                        type="number"
-                        value={formData.price}
-                        onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) })}
-                        className="w-full px-4 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-white"
-                      />
-                    </div>
-                    <div className="flex flex-col justify-end gap-2 pb-2">
+                  <div className="flex flex-col justify-end gap-2 pb-2">
                       <label className="flex items-center gap-2 cursor-pointer">
                         <input
                           type="checkbox"
@@ -436,16 +422,6 @@ export default function AdminProducts() {
                         />
                         <span className="text-white text-sm font-semibold">Show Main CTA</span>
                       </label>
-                      <label className="flex items-center gap-2 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={formData.showPrice}
-                          onChange={(e) => setFormData({ ...formData, showPrice: e.target.checked })}
-                          className="w-4 h-4 rounded border-neutral-700 bg-neutral-800 text-green-500"
-                        />
-                        <span className="text-white text-sm font-semibold">Show Price</span>
-                      </label>
-                    </div>
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
@@ -584,7 +560,6 @@ export default function AdminProducts() {
               <tr>
                 <th className="px-6 py-3 text-left text-white font-semibold">Title</th>
                 <th className="px-6 py-3 text-left text-white font-semibold">Subtitle</th>
-                <th className="px-6 py-3 text-left text-white font-semibold">Price</th>
                 <th className="px-6 py-3 text-left text-white font-semibold">Status</th>
                 <th className="px-6 py-3 text-left text-white font-semibold">Actions</th>
               </tr>
@@ -594,7 +569,6 @@ export default function AdminProducts() {
                 <tr key={product._id} className="hover:bg-neutral-800 transition-colors">
                   <td className="px-6 py-4 text-white">{product.title}</td>
                   <td className="px-6 py-4 text-gray-300 text-sm">{product.subtitle}</td>
-                  <td className="px-6 py-4 text-white font-semibold">Rs {product.price}</td>
                   <td className="px-6 py-4">
                     <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
                       product.isActive 

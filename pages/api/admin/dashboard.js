@@ -1,7 +1,9 @@
 import connectDB from '../../../lib/mongodb'
 import { getAdminFromRequest } from '../../../lib/adminAuth'
-import User from '../../../models/User'
-import Order from '../../../models/Order'
+import Contact from '../../../models/Contact'
+import JobApplication from '../../../models/JobApplication'
+import Product from '../../../models/Product'
+import Service from '../../../models/Service'
 import Subscription from '../../../models/Subscription'
 
 export default async function handler(req, res) {
@@ -17,46 +19,35 @@ export default async function handler(req, res) {
 
     await connectDB()
 
-    const totalUsers = await User.countDocuments()
-    const totalOrders = await Order.countDocuments()
-    const pendingOrders = await Order.countDocuments({ status: 'pending' })
+    const totalContacts = await Contact.countDocuments()
+    const totalApplications = await JobApplication.countDocuments()
+    const totalProducts = await Product.countDocuments()
+    const totalServices = await Service.countDocuments()
     const totalSubscriptions = await Subscription.countDocuments({ status: 'active' })
-    const recentOrders = await Order.find()
-      .populate('userId', 'name email')
+    const recentApplications = await JobApplication.find()
       .sort({ createdAt: -1 })
-      .limit(10)
+      .limit(8)
       .lean()
-
-    const ordersByStatus = await Order.aggregate([
-      {
-        $group: {
-          _id: '$status',
-          count: { $sum: 1 }
-        }
-      }
-    ])
-
-    const recentUsers = await User.find()
+    const recentContacts = await Contact.find()
       .sort({ createdAt: -1 })
-      .limit(10)
-      .select('name email createdAt')
+      .limit(8)
+      .select('name email category createdAt')
       .lean()
 
     res.status(200).json({
       success: true,
       stats: {
-        totalUsers,
-        totalOrders,
-        pendingOrders,
+        totalContacts,
+        totalApplications,
+        totalProducts,
+        totalServices,
         totalSubscriptions
       },
-      ordersByStatus,
-      recentOrders,
-      recentUsers
+      recentApplications,
+      recentContacts
     })
   } catch (error) {
     console.error('Dashboard error:', error)
     res.status(500).json({ error: 'Internal server error' })
   }
 }
-

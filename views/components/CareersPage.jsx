@@ -1,14 +1,63 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { ArrowRight, Code, Smartphone, Bot, GraduationCap, Package, Briefcase, Heart, Zap, Users, Globe, Coffee, TrendingUp, Award, Clock, X, Upload, FileText, Mail, AlertCircle } from 'lucide-react'
 import Link from 'next/link'
-import { useAuth } from '../../contexts/AuthContext'
-import { useRouter } from 'next/router'
 import PublicPageShell from './PublicPageShell'
 
+function MobileSnapCarousel({ items, activeIndex, setActiveIndex, renderItem, itemKey }) {
+  const containerRef = useRef(null)
+
+  const handleScroll = (event) => {
+    const { scrollLeft, clientWidth } = event.currentTarget
+    if (!clientWidth) return
+    const nextIndex = Math.round(scrollLeft / clientWidth)
+    if (nextIndex !== activeIndex) {
+      setActiveIndex(nextIndex)
+    }
+  }
+
+  const scrollToIndex = (index) => {
+    if (!containerRef.current) return
+    containerRef.current.scrollTo({
+      left: containerRef.current.clientWidth * index,
+      behavior: 'smooth'
+    })
+    setActiveIndex(index)
+  }
+
+  return (
+    <>
+      <div
+        ref={containerRef}
+        onScroll={handleScroll}
+        className="no-scrollbar -mx-6 flex snap-x snap-mandatory items-stretch overflow-x-auto overflow-y-hidden px-6 touch-pan-x md:hidden"
+      >
+        {items.map((item, index) => (
+          <div key={itemKey(item, index)} className="flex w-full shrink-0 snap-center">
+            {renderItem(item, index)}
+          </div>
+        ))}
+      </div>
+      {items.length > 1 ? (
+        <div className="mt-5 flex items-center justify-center gap-2 md:hidden">
+          {items.map((item, index) => (
+            <button
+              key={`${itemKey(item, index)}-dot`}
+              type="button"
+              onClick={() => scrollToIndex(index)}
+              className={`h-2.5 rounded-full transition-all ${
+                activeIndex === index ? 'w-6 bg-sky-400' : 'w-2.5 bg-white/20'
+              }`}
+              aria-label={`Go to slide ${index + 1}`}
+            />
+          ))}
+        </div>
+      ) : null}
+    </>
+  )
+}
+
 export default function CareersPage({ onBack }) {
-  const { user } = useAuth()
-  const router = useRouter()
   const [openPositions, setOpenPositions] = useState([])
   const [loading, setLoading] = useState(true)
   const [emailAddresses, setEmailAddresses] = useState([])
@@ -28,6 +77,8 @@ export default function CareersPage({ onBack }) {
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitStatus, setSubmitStatus] = useState(null)
+  const [valuesIndex, setValuesIndex] = useState(0)
+  const [benefitsIndex, setBenefitsIndex] = useState(0)
 
   useEffect(() => {
     fetchCareers()
@@ -88,14 +139,7 @@ export default function CareersPage({ onBack }) {
   const handleSubmit = async (e) => {
     e.preventDefault()
     e.stopPropagation()
-    
-    // Check if user is logged in
-    if (!user) {
-      alert('Please login to submit your application.')
-      router.push('/login?redirect=/careers')
-      return
-    }
-    
+
     console.log('Form submitted', formData)
     setIsSubmitting(true)
     setSubmitStatus(null)
@@ -131,14 +175,6 @@ export default function CareersPage({ onBack }) {
     }
 
     try {
-      const token = localStorage.getItem('wilderbots_token')
-      const headers = {
-        'Content-Type': 'application/json',
-      }
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`
-      }
-
       const requestBody = {
         careerId: selectedPosition?._id || null,
         name: formData.name.trim(),
@@ -155,7 +191,9 @@ export default function CareersPage({ onBack }) {
 
       const response = await fetch('/api/job-application', {
         method: 'POST',
-        headers,
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify(requestBody),
       })
 
@@ -207,18 +245,11 @@ export default function CareersPage({ onBack }) {
   }
 
   const openApplicationForm = (position) => {
-    // Check if user is logged in
-    if (!user) {
-      alert('Please login to apply for this position.')
-      router.push('/login?redirect=/careers')
-      return
-    }
-    
     setFormData({
       ...formData,
       position: position.title,
-      name: user?.name || '',
-      email: user?.email || ''
+      name: '',
+      email: ''
     })
     setSelectedPosition(position)
     setSubmitStatus(null)
@@ -315,12 +346,37 @@ export default function CareersPage({ onBack }) {
     >
 
       {/* Why Work Here */}
-      <section className="py-16 px-6 bg-neutral-900 border-t border-white/5">
+      <section className="border-t border-white/5 bg-neutral-900 px-5 py-10 md:px-6 md:py-16">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-4xl md:text-5xl font-bold mb-12 text-center">
+          <h2 className="mb-8 text-center text-3xl font-bold md:mb-12 md:text-5xl">
             Why <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">Wilderbots?</span>
           </h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <MobileSnapCarousel
+            items={values}
+            activeIndex={valuesIndex}
+            setActiveIndex={setValuesIndex}
+            itemKey={(value, index) => `${value.title}-${index}`}
+            renderItem={(value, index) => {
+              const Icon = value.icon
+              return (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: index * 0.08 }}
+                  className="mr-5 flex w-full flex-col rounded-2xl border border-white/10 bg-black p-6 transition-all hover:border-purple-500/50"
+                >
+                  <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-purple-500/20 to-blue-500/20">
+                    <Icon className="h-6 w-6 text-purple-400" />
+                  </div>
+                  <h3 className="mb-2 text-xl font-bold">{value.title}</h3>
+                  <p className="text-sm text-gray-400">{value.description}</p>
+                </motion.div>
+              )
+            }}
+          />
+          <div className="hidden gap-6 md:grid md:grid-cols-2 lg:grid-cols-4">
             {values.map((value, index) => {
               const Icon = value.icon
               return (
@@ -330,13 +386,13 @@ export default function CareersPage({ onBack }) {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: index * 0.08 }}
-                  className="bg-black border border-white/10 rounded-2xl p-6 hover:border-purple-500/50 transition-all"
+                  className="rounded-2xl border border-white/10 bg-black p-6 transition-all hover:border-purple-500/50"
                 >
-                  <div className="w-12 h-12 bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-xl flex items-center justify-center mb-4">
-                    <Icon className="text-purple-400 w-6 h-6" />
+                  <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-purple-500/20 to-blue-500/20">
+                    <Icon className="h-6 w-6 text-purple-400" />
                   </div>
-                  <h3 className="text-xl font-bold mb-2">{value.title}</h3>
-                  <p className="text-gray-400 text-sm">{value.description}</p>
+                  <h3 className="mb-2 text-xl font-bold">{value.title}</h3>
+                  <p className="text-sm text-gray-400">{value.description}</p>
                 </motion.div>
               )
             })}
@@ -345,11 +401,36 @@ export default function CareersPage({ onBack }) {
       </section>
 
       {/* Benefits */}
-      <section className="py-16 px-6 bg-black border-t border-white/10">
+      <section className="border-t border-white/10 bg-black px-5 py-10 md:px-6 md:py-16">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-4xl md:text-5xl font-bold mb-4 text-center">Benefits & Perks</h2>
-          <p className="text-center text-gray-400 mb-12 text-lg">We take care of our team</p>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <h2 className="mb-3 text-center text-3xl font-bold md:mb-4 md:text-5xl">Benefits & Perks</h2>
+          <p className="mb-8 text-center text-base text-gray-400 md:mb-12 md:text-lg">We take care of our team</p>
+          <MobileSnapCarousel
+            items={benefits}
+            activeIndex={benefitsIndex}
+            setActiveIndex={setBenefitsIndex}
+            itemKey={(benefit, index) => `${benefit.title}-${index}`}
+            renderItem={(benefit, index) => {
+              const Icon = benefit.icon
+              return (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: (index % 3) * 0.1 }}
+                  className="mr-5 flex w-full flex-col rounded-2xl border border-white/10 bg-neutral-900 p-6 transition-all hover:border-blue-500/50"
+                >
+                  <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500/20 to-purple-500/20">
+                    <Icon className="h-6 w-6 text-blue-400" />
+                  </div>
+                  <h3 className="mb-2 text-xl font-bold">{benefit.title}</h3>
+                  <p className="text-sm text-gray-400">{benefit.description}</p>
+                </motion.div>
+              )
+            }}
+          />
+          <div className="hidden gap-6 md:grid md:grid-cols-2 lg:grid-cols-3">
             {benefits.map((benefit, index) => {
               const Icon = benefit.icon
               return (
@@ -359,13 +440,13 @@ export default function CareersPage({ onBack }) {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: (index % 3) * 0.1 }}
-                  className="bg-neutral-900 border border-white/10 rounded-2xl p-6 hover:border-blue-500/50 transition-all"
+                  className="rounded-2xl border border-white/10 bg-neutral-900 p-6 transition-all hover:border-blue-500/50"
                 >
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-xl flex items-center justify-center mb-4">
-                    <Icon className="text-blue-400 w-6 h-6" />
+                  <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500/20 to-purple-500/20">
+                    <Icon className="h-6 w-6 text-blue-400" />
                   </div>
-                  <h3 className="text-xl font-bold mb-2">{benefit.title}</h3>
-                  <p className="text-gray-400 text-sm">{benefit.description}</p>
+                  <h3 className="mb-2 text-xl font-bold">{benefit.title}</h3>
+                  <p className="text-sm text-gray-400">{benefit.description}</p>
                 </motion.div>
               )
             })}
@@ -374,11 +455,11 @@ export default function CareersPage({ onBack }) {
       </section>
 
       {/* Open Positions */}
-      <section className="py-16 px-6 bg-neutral-900 border-t border-white/5">
+      <section className="border-t border-white/5 bg-neutral-900 px-5 py-10 md:px-6 md:py-16">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">Open Positions</h2>
-            <p className="text-gray-400 text-lg">Join us in building the next generation of technology</p>
+          <div className="mb-8 text-center md:mb-12">
+            <h2 className="mb-3 text-3xl font-bold md:mb-4 md:text-5xl">Open Positions</h2>
+            <p className="text-base text-gray-400 md:text-lg">Join us in building the next generation of technology</p>
           </div>
           {loading ? (
             <div className="text-center py-12 text-gray-400">Loading positions...</div>
@@ -391,12 +472,12 @@ export default function CareersPage({ onBack }) {
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: index * 0.06 }}
-                  className="bg-black border border-white/10 rounded-2xl p-6 hover:border-purple-500/50 transition-all group"
+                  className="group rounded-2xl border border-white/10 bg-black p-5 transition-all hover:border-purple-500/50 md:p-6"
                 >
                   <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                     <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <h3 className="text-2xl font-bold">{position.title}</h3>
+                      <div className="mb-2 flex flex-wrap items-center gap-3">
+                        <h3 className="text-xl font-bold md:text-2xl">{position.title}</h3>
                         <span className="px-3 py-1 bg-purple-500/10 border border-purple-500/20 text-purple-400 text-xs font-bold rounded-full">
                           {position.department}
                         </span>
@@ -409,7 +490,7 @@ export default function CareersPage({ onBack }) {
                           <Globe size={14} /> {position.location}
                         </span>
                       </div>
-                      <p className="text-gray-300 mb-4">{position.description}</p>
+                      <p className="mb-4 text-gray-300">{position.description}</p>
                       {position.requirements && position.requirements.length > 0 && (
                         <div className="flex flex-wrap gap-2">
                           {position.requirements.map((req, i) => (
@@ -438,10 +519,10 @@ export default function CareersPage({ onBack }) {
       </section>
 
       {/* Don't See Your Role */}
-      <section className="py-16 px-6 bg-black border-t border-white/10">
+      <section className="border-t border-white/10 bg-black px-5 py-10 md:px-6 md:py-16">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6">Don&apos;t See Your Role?</h2>
-          <p className="text-xl text-gray-400 mb-10 max-w-2xl mx-auto">
+          <h2 className="mb-5 text-3xl font-bold md:mb-6 md:text-5xl">Don&apos;t See Your Role?</h2>
+          <p className="mx-auto mb-8 max-w-2xl text-lg text-gray-400 md:mb-10 md:text-xl">
             We&apos;re always looking for talented individuals. Even if you don&apos;t see a perfect match, we&apos;d love to hear from you.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">

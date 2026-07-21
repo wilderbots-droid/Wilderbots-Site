@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { ArrowLeft, Github, Instagram, Linkedin, Mail, Twitter, Youtube } from 'lucide-react'
+import { ArrowLeft, Github, Instagram, Linkedin, Mail, Menu, Twitter, X, Youtube } from 'lucide-react'
 import Logo from './Logo'
 
 const DEFAULT_LINKS = [
@@ -22,6 +22,7 @@ export default function PublicPageShell({
   const [companyInfo, setCompanyInfo] = useState(null)
   const [emailAddresses, setEmailAddresses] = useState([])
   const [products, setProducts] = useState([])
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   useEffect(() => {
     const loadFooterData = async () => {
@@ -86,19 +87,36 @@ export default function PublicPageShell({
 
         <header className="relative z-20 border-b border-white/5 px-6 py-6 md:px-12 md:py-8">
           <div className="flex flex-col gap-5 lg:min-h-[72px] lg:justify-center">
-            <div className="flex items-center justify-between gap-4 lg:relative lg:block">
-              <div className="flex items-center justify-between gap-4 lg:absolute lg:left-0 lg:top-1/2 lg:w-auto lg:-translate-y-1/2 lg:justify-start">
+            <div className="flex items-center justify-between gap-3 lg:hidden">
+              <button type="button" onClick={onBack} className="flex items-center gap-2" aria-label="Go back">
+                <ArrowLeft className="h-5 w-5 text-zinc-300" />
+              </button>
+              <Link href="/" className="flex items-center">
+                <Logo size={44} showText={true} className="scale-[1.02]" />
+              </Link>
               <button
                 type="button"
-                onClick={onBack}
-                className="inline-flex h-14 items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-5 text-sm font-medium text-zinc-300 transition-colors hover:border-white/20 hover:bg-white/[0.06] hover:text-white"
+                className="text-zinc-400 transition-colors hover:text-white"
+                onClick={() => setMobileMenuOpen((value) => !value)}
+                aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
               >
-                <ArrowLeft className="h-4 w-4" />
-                Back
+                {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
               </button>
-              <Link href="/" className="inline-flex items-center">
-                <Logo size={52} showText={true} />
-              </Link>
+            </div>
+
+            <div className="hidden lg:relative lg:block">
+              <div className="flex items-center justify-between gap-4 lg:absolute lg:left-0 lg:top-1/2 lg:w-auto lg:-translate-y-1/2 lg:justify-start">
+                <button
+                  type="button"
+                  onClick={onBack}
+                  className="inline-flex h-14 items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-5 text-sm font-medium text-zinc-300 transition-colors hover:border-white/20 hover:bg-white/[0.06] hover:text-white"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                  Back
+                </button>
+                <Link href="/" className="inline-flex items-center">
+                  <Logo size={52} showText={true} />
+                </Link>
               </div>
 
               <div className="flex flex-wrap items-center gap-3 lg:absolute lg:left-1/2 lg:top-1/2 lg:-translate-x-1/2 lg:-translate-y-1/2 lg:justify-center">
@@ -114,16 +132,51 @@ export default function PublicPageShell({
               </div>
 
               <div className="flex justify-start lg:absolute lg:right-0 lg:top-1/2 lg:-translate-y-1/2 lg:justify-end">
-              <Link
-                href="/contact"
-                className="inline-flex h-14 items-center justify-center rounded-full bg-gradient-to-r from-[#2f6df6] to-[#2452d9] px-7 text-sm font-semibold text-white shadow-[0_12px_40px_rgba(37,99,235,0.35)] transition-transform hover:scale-[1.01]"
-              >
-                Book a Call
-              </Link>
+                <Link
+                  href="/contact"
+                  className="inline-flex h-14 items-center justify-center rounded-full bg-gradient-to-r from-[#2f6df6] to-[#2452d9] px-7 text-sm font-semibold text-white shadow-[0_12px_40px_rgba(37,99,235,0.35)] transition-transform hover:scale-[1.01]"
+                >
+                  Book a Call
+                </Link>
               </div>
             </div>
           </div>
         </header>
+
+        {mobileMenuOpen ? (
+          <div className="relative z-50 mx-6 mb-4 rounded-3xl border border-white/10 bg-[linear-gradient(180deg,rgba(31,35,44,0.78)_0%,rgba(10,12,18,0.82)_100%)] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_18px_45px_rgba(0,0,0,0.38)] backdrop-blur-[24px] md:hidden">
+            <div className="flex flex-col gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setMobileMenuOpen(false)
+                  onBack()
+                }}
+                className="flex items-center gap-2 rounded-2xl bg-white/5 px-4 py-3 text-sm text-white"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Back
+              </button>
+              {DEFAULT_LINKS.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="rounded-2xl bg-white/5 px-4 py-3 text-sm text-white"
+                >
+                  {link.label}
+                </Link>
+              ))}
+              <Link
+                href="/contact"
+                onClick={() => setMobileMenuOpen(false)}
+                className="mt-2 rounded-2xl bg-gradient-to-b from-blue-600 to-blue-700 px-4 py-3 text-center text-sm font-semibold text-white"
+              >
+                Book a Call
+              </Link>
+            </div>
+          </div>
+        ) : null}
 
         <section className={`relative z-10 border-b border-white/5 px-6 py-16 md:px-12 md:py-24 ${heroContentClassName}`}>
           <div className="max-w-4xl">

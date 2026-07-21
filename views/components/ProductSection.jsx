@@ -122,9 +122,6 @@ export default function ProductSection() {
                         {product.ctaText} 
                         <ArrowRight size={18} className="group-hover/link:translate-x-2 transition-transform" />
                       </a>
-                      {product.showPrice !== false && (
-                        <span className="text-gray-500 font-mono">Rs {product.price}</span>
-                      )}
                     </div>
                   </div>
 

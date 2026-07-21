@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import '../styles/globals.css'
-import { AuthProvider } from '../contexts/AuthContext'
 import { Analytics } from "@vercel/analytics/next"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { motion } from 'framer-motion'
@@ -179,10 +178,10 @@ export default function App({ Component, pageProps }) {
   }
 
   return (
-    <AuthProvider>
+    <>
       <Component {...pageProps} />
       {isProduction && <Analytics />}
       {isProduction && <SpeedInsights />}
-    </AuthProvider>
+    </>
   )
 }

@@ -1,9 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { Mail, Phone, MapPin, Send, MessageSquare, Briefcase, GraduationCap, Package, Linkedin, Github, Twitter, Instagram, Youtube, ExternalLink } from 'lucide-react'
 import Link from 'next/link'
 import PublicPageShell from './PublicPageShell'
-import { useAuth } from '../../contexts/AuthContext'
 
 const DEFAULT_MAP_URL = 'https://www.google.com/maps/place/WILDERBOTS+TECHNOLOGIES+PRIVATE+LIMITED/data=!4m2!3m1!1s0x3bae1707ff3e16a3:0x2e482c0f5dfa5a53?hl=en&trk=https%3A%2F%2Fc.gle%2FAOExmq1S2OsXyCFYzXTGVpyV32ZqWBNcFPW5PPXFO01rhc6xOueoVKv7RSbyjLPTqzIlirA_xxyyuY-yMqasamfalCKtIjQhHAemh8bsjGoQegUa8O-JMVzYGke50nkTnOxCDkc'
 const DEFAULT_MAP_EMBED_URL = 'https://www.google.com/maps?q=WILDERBOTS%20TECHNOLOGIES%20PRIVATE%20LIMITED&z=15&output=embed'
@@ -32,8 +31,60 @@ const iconMap = {
   MessageSquare
 }
 
+function MobileSnapCarousel({ items, activeIndex, setActiveIndex, renderItem, itemKey }) {
+  const containerRef = useRef(null)
+
+  const handleScroll = (event) => {
+    const { scrollLeft, clientWidth } = event.currentTarget
+    if (!clientWidth) return
+    const nextIndex = Math.round(scrollLeft / clientWidth)
+    if (nextIndex !== activeIndex) {
+      setActiveIndex(nextIndex)
+    }
+  }
+
+  const scrollToIndex = (index) => {
+    if (!containerRef.current) return
+    containerRef.current.scrollTo({
+      left: containerRef.current.clientWidth * index,
+      behavior: 'smooth'
+    })
+    setActiveIndex(index)
+  }
+
+  return (
+    <>
+      <div
+        ref={containerRef}
+        onScroll={handleScroll}
+        className="no-scrollbar -mx-6 flex snap-x snap-mandatory items-stretch overflow-x-auto overflow-y-hidden px-6 touch-pan-x md:hidden"
+      >
+        {items.map((item, index) => (
+          <div key={itemKey(item, index)} className="flex w-full shrink-0 snap-center">
+            {renderItem(item, index)}
+          </div>
+        ))}
+      </div>
+      {items.length > 1 ? (
+        <div className="mt-5 flex items-center justify-center gap-2 md:hidden">
+          {items.map((item, index) => (
+            <button
+              key={`${itemKey(item, index)}-dot`}
+              type="button"
+              onClick={() => scrollToIndex(index)}
+              className={`h-2.5 rounded-full transition-all ${
+                activeIndex === index ? 'w-6 bg-sky-400' : 'w-2.5 bg-white/20'
+              }`}
+              aria-label={`Go to slide ${index + 1}`}
+            />
+          ))}
+        </div>
+      ) : null}
+    </>
+  )
+}
+
 export default function ContactUsPage({ onBack }) {
-  const { user } = useAuth()
   const [companyInfo, setCompanyInfo] = useState(DEFAULT_COMPANY_INFO)
   const [emailAddresses, setEmailAddresses] = useState([])
   const [formData, setFormData] = useState({
@@ -45,18 +96,12 @@ export default function ContactUsPage({ onBack }) {
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitStatus, setSubmitStatus] = useState(null)
+  const [departmentsIndex, setDepartmentsIndex] = useState(0)
 
   useEffect(() => {
     fetchCompanyInfo()
     fetchEmailAddresses()
-    if (user) {
-      setFormData((current) => ({
-        ...current,
-        name: user.name || '',
-        email: user.email || ''
-      }))
-    }
-  }, [user])
+  }, [])
 
   const fetchCompanyInfo = async () => {
     try {
@@ -99,12 +144,8 @@ export default function ContactUsPage({ onBack }) {
     setSubmitStatus(null)
 
     try {
-      const token = localStorage.getItem('wilderbots_token')
       const headers = {
         'Content-Type': 'application/json',
-      }
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`
       }
 
       const response = await fetch('/api/contact', {
@@ -118,8 +159,8 @@ export default function ContactUsPage({ onBack }) {
       if (response.ok || response.status === 201) {
         setSubmitStatus('success')
         setFormData({
-          name: user?.name || '',
-          email: user?.email || '',
+          name: '',
+          email: '',
           subject: '',
           category: 'general',
           message: ''
@@ -251,6 +292,8 @@ export default function ContactUsPage({ onBack }) {
     ]
   }
 
+  const departments = getDepartments()
+
   return (
     <PublicPageShell
       onBack={onBack}
@@ -266,9 +309,9 @@ export default function ContactUsPage({ onBack }) {
       description="Whether you need application development, web delivery, education support, or a direct project conversation, this page now follows the same darker glass system as the homepage."
       contentClassName="space-y-8"
     >
-      <section className="rounded-[2rem] border border-white/10 bg-zinc-950/35 px-6 py-12 backdrop-blur-xl md:px-8">
+      <section className="rounded-[2rem] border border-white/10 bg-zinc-950/35 px-5 py-8 backdrop-blur-xl md:px-8 md:py-12">
         <div className="max-w-7xl mx-auto">
-          <div className="grid items-stretch gap-8 lg:grid-cols-2 xl:gap-10">
+          <div className="grid items-stretch gap-5 md:gap-8 lg:grid-cols-2 xl:gap-10">
             {/* Contact Form */}
             <motion.div
               initial={{ opacity: 0, x: -30 }}
@@ -276,15 +319,15 @@ export default function ContactUsPage({ onBack }) {
               viewport={{ once: true }}
               transition={{ duration: 0.7 }}
             >
-              <div className="flex h-full flex-col rounded-[28px] border border-white/10 bg-[linear-gradient(180deg,rgba(18,24,38,0.88)_0%,rgba(8,11,18,0.96)_100%)] p-6 shadow-[0_24px_80px_rgba(0,0,0,0.35)] md:p-8">
-                <div className="mb-8">
+              <div className="flex h-full flex-col rounded-[28px] border border-white/10 bg-[linear-gradient(180deg,rgba(18,24,38,0.88)_0%,rgba(8,11,18,0.96)_100%)] p-5 shadow-[0_24px_80px_rgba(0,0,0,0.35)] md:p-8">
+                <div className="mb-6 md:mb-8">
                   <p className="text-sm uppercase tracking-[0.22em] text-zinc-500">Direct message</p>
-                  <h2 className="mt-3 font-serif-custom text-3xl font-normal text-white">Send us a Message</h2>
+                  <h2 className="mt-3 font-serif-custom text-2xl font-normal text-white md:text-3xl">Send us a Message</h2>
                   <p className="mt-3 max-w-xl text-zinc-400">
                     Tell us what you&apos;re building, what you need help with, or where you want to collaborate.
                   </p>
                 </div>
-                <form onSubmit={handleSubmit} className="flex flex-col space-y-6">
+                <form onSubmit={handleSubmit} className="flex flex-col space-y-5 md:space-y-6">
                   <div className="grid gap-4 md:grid-cols-2">
                     <div>
                       <label htmlFor="name" className="mb-2 block text-sm font-medium text-zinc-300">Name *</label>
@@ -399,16 +442,16 @@ export default function ContactUsPage({ onBack }) {
               transition={{ duration: 0.7, delay: 0.1 }}
               className="h-full"
             >
-              <div className="flex h-full flex-col rounded-[28px] border border-white/10 bg-black/30 p-6 shadow-[0_24px_80px_rgba(0,0,0,0.28)] backdrop-blur-xl md:p-8">
+              <div className="flex h-full flex-col rounded-[28px] border border-white/10 bg-black/30 p-5 shadow-[0_24px_80px_rgba(0,0,0,0.28)] backdrop-blur-xl md:p-8">
                 <div>
                   <p className="text-sm uppercase tracking-[0.22em] text-zinc-500">Reach us</p>
-                  <h2 className="mt-3 font-serif-custom text-3xl font-normal text-white">Get in Touch</h2>
+                  <h2 className="mt-3 font-serif-custom text-2xl font-normal text-white md:text-3xl">Get in Touch</h2>
                   <p className="mt-3 max-w-lg text-zinc-400">
                     Prefer email, a quick call, or directions to the office? Everything you need is organized here.
                   </p>
                 </div>
 
-                <div className="mt-8 grid gap-4 sm:grid-cols-2">
+                <div className="mt-6 grid gap-4 sm:grid-cols-2 md:mt-8">
                   {getContactInfo().map((info, index) => (
                     <div key={index} className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
                       <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl border border-sky-500/20 bg-sky-500/10">
@@ -427,8 +470,8 @@ export default function ContactUsPage({ onBack }) {
                   ))}
                 </div>
 
-                <div className="mt-6 flex flex-1 flex-col overflow-hidden rounded-[24px] border border-white/10 bg-[#06080d]">
-                  <div className="relative min-h-[280px] flex-1 overflow-hidden">
+                <div className="mt-5 flex flex-1 flex-col overflow-hidden rounded-[24px] border border-white/10 bg-[#06080d] md:mt-6">
+                  <div className="relative min-h-[220px] flex-1 overflow-hidden md:min-h-[280px]">
                     <iframe
                       title="Wilderbots location map"
                       src={getMapEmbedLink()}
@@ -450,12 +493,12 @@ export default function ContactUsPage({ onBack }) {
                     href={getMapLink()}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="block border-t border-white/10 px-6 py-5 transition-colors hover:bg-white/5"
+                    className="block border-t border-white/10 px-5 py-4 transition-colors hover:bg-white/5 md:px-6 md:py-5"
                   >
                     <div className="flex items-start justify-between gap-4">
                       <div>
                         <p className="text-sm uppercase tracking-[0.24em] text-zinc-400">Visit us</p>
-                        <h3 className="mt-3 font-serif-custom text-2xl font-normal text-white">Map View</h3>
+                        <h3 className="mt-3 font-serif-custom text-xl font-normal text-white md:text-2xl">Map View</h3>
                         <p className="mt-2 max-w-md text-zinc-300">
                           Open the Wilderbots location in your preferred maps app.
                         </p>
@@ -469,7 +512,7 @@ export default function ContactUsPage({ onBack }) {
 
                 {/* Social Links */}
                 {companyInfo?.socialMedia && Object.values(companyInfo.socialMedia).some(url => url) && (
-                  <div className="mt-6 border-t border-white/10 pt-6">
+                  <div className="mt-5 border-t border-white/10 pt-5 md:mt-6 md:pt-6">
                     <h3 className="mb-2 text-xl font-semibold text-white">Follow Us</h3>
                     <p className="mb-6 text-zinc-400">Keep up with launches, updates, and what the team is building next.</p>
                     <div className="flex gap-4 flex-wrap">
@@ -533,14 +576,43 @@ export default function ContactUsPage({ onBack }) {
       </section>
 
       {/* Departments Section */}
-      <section className="rounded-[2rem] border border-white/10 bg-black/30 px-6 py-16 backdrop-blur-xl md:px-8">
+      <section className="rounded-[2rem] border border-white/10 bg-black/30 px-5 py-10 backdrop-blur-xl md:px-8 md:py-16">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="mb-4 font-serif-custom text-4xl font-normal text-white md:text-5xl">Contact by Department</h2>
-            <p className="text-xl text-zinc-400">Reach out to the right team for faster response</p>
+          <div className="mb-10 text-center md:mb-16">
+            <h2 className="mb-4 font-serif-custom text-3xl font-normal text-white md:text-5xl">Contact by Department</h2>
+            <p className="text-lg text-zinc-400 md:text-xl">Reach out to the right team for faster response</p>
           </div>
-          <div className="grid md:grid-cols-2 gap-6">
-            {getDepartments().map((dept, index) => (
+          <MobileSnapCarousel
+            items={departments}
+            activeIndex={departmentsIndex}
+            setActiveIndex={setDepartmentsIndex}
+            itemKey={(dept, index) => `${dept.title}-${index}`}
+            renderItem={(dept, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: (index % 2) * 0.1 }}
+                className="mr-5 flex w-full flex-col rounded-[1.75rem] border border-white/10 bg-[linear-gradient(180deg,rgba(18,24,38,0.88)_0%,rgba(8,11,18,0.96)_100%)] p-6 transition-all hover:border-white/20"
+              >
+                <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl border border-sky-500/20 bg-sky-500/10">
+                  <dept.icon className="h-8 w-8 text-sky-300" />
+                </div>
+                <h3 className="mb-2 font-serif-custom text-2xl font-normal text-white">{dept.title}</h3>
+                <p className="mb-4 flex-1 text-zinc-400">{dept.description}</p>
+                <a
+                  href={`mailto:${dept.email}`}
+                  className="flex items-center gap-2 break-all font-semibold text-sky-300 transition-colors hover:text-sky-200"
+                >
+                  <Mail size={16} />
+                  {dept.email}
+                </a>
+              </motion.div>
+            )}
+          />
+          <div className="hidden gap-6 md:grid md:grid-cols-2">
+            {departments.map((dept, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, y: 20 }}

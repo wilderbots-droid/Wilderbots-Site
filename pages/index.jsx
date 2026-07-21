@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -23,7 +23,6 @@ import {
   Zap
 } from 'lucide-react'
 import Logo from '../views/components/Logo'
-import OrderPage from '../views/components/OrderPage'
 import { getProductPreviewUrl } from '../lib/productCatalog'
 
 const DEFAULT_PRODUCTS = [
@@ -120,6 +119,59 @@ const getProductDestination = (product) => {
   if (product?.ctaLink) return product.ctaLink
   if (product?._id) return `/products/${product._id}`
   return '/products'
+}
+
+function MobileSnapCarousel({ items, activeIndex, setActiveIndex, renderItem, itemKey }) {
+  const containerRef = useRef(null)
+
+  const handleScroll = (event) => {
+    const { scrollLeft, clientWidth } = event.currentTarget
+    if (!clientWidth) return
+    const nextIndex = Math.round(scrollLeft / clientWidth)
+    if (nextIndex !== activeIndex) {
+      setActiveIndex(nextIndex)
+    }
+  }
+
+  const scrollToIndex = (index) => {
+    if (!containerRef.current) return
+    containerRef.current.scrollTo({
+      left: containerRef.current.clientWidth * index,
+      behavior: 'smooth'
+    })
+    setActiveIndex(index)
+  }
+
+  return (
+    <>
+      <div
+        ref={containerRef}
+        onScroll={handleScroll}
+        className="no-scrollbar -mx-6 flex snap-x snap-mandatory items-stretch overflow-x-auto overflow-y-hidden px-6 touch-pan-x lg:hidden"
+      >
+        {items.map((item, index) => (
+          <div key={itemKey(item, index)} className="flex w-full shrink-0 snap-center">
+            {renderItem(item, index)}
+          </div>
+        ))}
+      </div>
+      {items.length > 1 ? (
+        <div className="mt-5 flex items-center justify-center gap-2 lg:hidden">
+          {items.map((item, index) => (
+            <button
+              key={`${itemKey(item, index)}-dot`}
+              type="button"
+              onClick={() => scrollToIndex(index)}
+              className={`h-2.5 rounded-full transition-all ${
+                activeIndex === index ? 'w-6 bg-sky-400' : 'w-2.5 bg-white/20'
+              }`}
+              aria-label={`Go to slide ${index + 1}`}
+            />
+          ))}
+        </div>
+      ) : null}
+    </>
+  )
 }
 
 const PRODUCT_SHOWCASE_ORDER = ['wilderlinks', 'valueshift', 'neureck']
@@ -314,11 +366,7 @@ export default function Home() {
   const [reviews, setReviews] = useState(DEFAULT_REVIEWS)
   const [companyInfo, setCompanyInfo] = useState(null)
   const [emailAddresses, setEmailAddresses] = useState([])
-
-  const view = useMemo(() => {
-    if (!router.isReady) return 'landing'
-    return router.query.view === 'order' ? 'order' : 'landing'
-  }, [router.isReady, router.query.view])
+  const [servicesCarouselIndex, setServicesCarouselIndex] = useState(0)
 
   useEffect(() => {
     let cancelled = false
@@ -468,22 +516,7 @@ export default function Home() {
   }
 
   const goToOrder = () => {
-    if (primaryProduct?._id) {
-      router.push(`/products/${primaryProduct._id}`)
-      return
-    }
     router.push('/contact')
-  }
-
-  if (view === 'order') {
-    return (
-      <>
-        <Head>
-          <title>Order - Wilderbots</title>
-        </Head>
-        <OrderPage onBack={() => router.back()} />
-      </>
-    )
   }
 
   return (
@@ -777,7 +810,185 @@ export default function Home() {
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+              <MobileSnapCarousel
+                items={[0, 1]}
+                activeIndex={servicesCarouselIndex}
+                setActiveIndex={setServicesCarouselIndex}
+                itemKey={(item) => `featured-service-${item}`}
+                renderItem={(item) =>
+                  item === 0 ? (
+                    <div className="group relative mr-5 flex w-full flex-col overflow-hidden rounded-3xl border border-white/10 bg-zinc-900/20 transition-colors duration-500 hover:border-white/20">
+                      <div className="relative z-10 flex flex-1 flex-col p-8 md:p-10">
+                        <h3 className="mb-3 flex items-center gap-3 text-2xl font-medium tracking-tight text-white">
+                          <Sparkles className="h-7 w-7 text-sky-400" />
+                          {featuredServices[0]?.title || DEFAULT_SERVICES[0].title}
+                        </h3>
+                        <p className="mb-12 text-base font-light leading-relaxed text-zinc-400">
+                          {featuredServices[0]?.description || DEFAULT_SERVICES[0].description}
+                        </p>
+
+                        <div className="relative mt-auto flex h-[320px] w-full flex-col items-center justify-center overflow-hidden rounded-2xl border border-white/5 bg-black/12">
+                          <div
+                            className="absolute inset-0 z-0 opacity-30"
+                            style={{
+                              backgroundImage:
+                                'linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px)',
+                              backgroundSize: '30px 30px',
+                              transform: 'perspective(500px) rotateX(60deg) translateY(50px) scale(1.5)'
+                            }}
+                          />
+
+                          <div
+                            className="relative z-20 mb-10 flex items-center justify-center gap-2 text-[10px] font-mono text-zinc-300 md:gap-4 md:text-xs"
+                            style={{
+                              WebkitMaskImage: 'linear-gradient(90deg, transparent, black 5%, black 90%, transparent)',
+                              maskImage: 'linear-gradient(90deg, transparent, black 5%, black 90%, transparent)'
+                            }}
+                          >
+                            <div className="flex flex-col gap-3">
+                              <div className="flex items-center gap-2 rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-1.5 shadow-lg backdrop-blur-sm">
+                                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-indigo-500" />
+                                iOS
+                              </div>
+                              <div className="flex items-center gap-2 rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-1.5 shadow-lg backdrop-blur-sm">
+                                <span className="delay-75 h-1.5 w-1.5 animate-pulse rounded-full bg-sky-500" />
+                                Android
+                              </div>
+                            </div>
+
+                            <svg className="h-12 w-8 text-zinc-600" viewBox="0 0 32 48" fill="none" stroke="currentColor" strokeWidth="1.5">
+                              <path d="M0 12 C 16 12, 16 24, 32 24" strokeDasharray="3 3" className="opacity-50" />
+                              <path d="M0 36 C 16 36, 16 24, 32 24" strokeDasharray="3 3" className="opacity-50" />
+                            </svg>
+
+                            <div className="z-10 rounded-xl bg-gradient-to-br from-zinc-800 to-zinc-900 px-3 py-2 font-semibold text-white shadow-xl">
+                              ships product
+                            </div>
+
+                            <svg className="h-12 w-8 text-zinc-600" viewBox="0 0 32 48" fill="none" stroke="currentColor" strokeWidth="1.5">
+                              <path d="M0 24 C 16 24, 16 12, 32 12" strokeDasharray="3 3" className="opacity-50" />
+                              <path d="M0 24 C 16 24, 16 36, 32 36" strokeDasharray="3 3" className="opacity-50" />
+                            </svg>
+
+                            <div className="flex flex-col gap-3">
+                              <div className="rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-1.5 text-zinc-500 shadow-lg backdrop-blur-sm">
+                                cross-platform
+                              </div>
+                              <div className="rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-1.5 text-zinc-500 shadow-lg backdrop-blur-sm">
+                                production ready
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="absolute bottom-8 z-10 flex w-full justify-center gap-4 px-10">
+                            <span className="-rotate-2 cursor-default select-none rounded-full border border-indigo-500/30 bg-indigo-500/10 px-3 py-1 text-[10px] text-indigo-300 shadow-[0_0_15px_rgba(99,102,241,0.2)] backdrop-blur-sm transition-transform hover:scale-105">
+                              Mobile UI
+                            </span>
+                            <span className="rotate-3 cursor-default select-none rounded-full border border-sky-500/30 bg-sky-500/10 px-3 py-1 text-[10px] text-sky-300 shadow-[0_0_15px_rgba(14,165,233,0.2)] backdrop-blur-sm transition-transform hover:scale-105">
+                              API Layer
+                            </span>
+                            <span className="-translate-y-2 cursor-default select-none rounded-full border border-purple-500/30 bg-purple-500/10 px-3 py-1 text-[10px] text-purple-300 shadow-[0_0_15px_rgba(168,85,247,0.2)] backdrop-blur-sm transition-transform hover:scale-105">
+                              App Launch
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="group relative mr-5 flex w-full flex-col overflow-hidden rounded-3xl border border-white/10 bg-zinc-900/20 transition-colors duration-500 hover:border-white/20">
+                      <div className="relative z-10 flex h-full flex-col p-8 md:p-10">
+                        <h3 className="mb-3 flex items-center gap-3 text-2xl font-medium tracking-tight text-white">
+                          <Cpu className="h-7 w-7 text-sky-400" />
+                          {featuredServices[1]?.title || DEFAULT_SERVICES[1].title}
+                        </h3>
+                        <p className="mb-8 text-base font-light leading-relaxed text-zinc-400">
+                          {featuredServices[1]?.description || DEFAULT_SERVICES[1].description}
+                        </p>
+
+                        {!!(featuredServices[1]?.features || featuredServices[1]?.services)?.length ? (
+                          <div className="mb-8 flex flex-wrap gap-3">
+                            {(featuredServices[1]?.features || featuredServices[1]?.services || []).slice(0, 4).map((item, index) => (
+                              <span
+                                key={`${item}-${index}`}
+                                className="rounded-full border border-sky-500/20 bg-sky-500/8 px-3 py-1 text-[11px] font-medium text-sky-200"
+                              >
+                                {item}
+                              </span>
+                            ))}
+                          </div>
+                        ) : null}
+
+                        <div className="relative mt-auto w-full overflow-hidden rounded-xl border border-white/10 bg-[#0c0c0e] p-5 shadow-2xl transition-shadow duration-500 group-hover:shadow-indigo-500/10">
+                          <div className="mb-5 flex items-center justify-between border-b border-white/5 pb-3">
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs font-semibold tracking-wide text-white">Web Stack</span>
+                              <span className="rounded-md border border-white/5 bg-zinc-800 px-1.5 py-0.5 text-[9px] font-medium text-zinc-400">live setup</span>
+                            </div>
+                            <div className="flex gap-1.5">
+                              <div className="h-2 w-2 rounded-full bg-zinc-700" />
+                              <div className="h-2 w-2 rounded-full bg-zinc-700" />
+                            </div>
+                          </div>
+
+                          <div className="relative z-10 space-y-3 font-mono text-[10px] sm:text-xs">
+                            <div className="flex items-center gap-2">
+                              <span className="w-10 text-right font-medium text-zinc-500">Type</span>
+                              <div className="flex h-7 flex-1 items-center rounded border border-white/10 bg-zinc-900 px-2 text-sky-300 transition-colors group-hover:border-white/20">
+                                landing pages
+                              </div>
+                              <div className="flex h-7 w-8 items-center justify-center rounded border border-white/10 bg-zinc-900 text-zinc-400">+</div>
+                              <div className="flex h-7 w-20 items-center rounded border border-white/10 bg-zinc-900 px-2 text-[10px] text-white">
+                                portals
+                              </div>
+                            </div>
+
+                            <div className="flex items-center gap-2">
+                              <span className="w-10 text-right font-medium text-zinc-500">Built</span>
+                              <div className="flex h-7 flex-1 items-center rounded border border-white/10 bg-zinc-900 px-2 text-sky-300 transition-colors group-hover:border-white/20">
+                                responsive UI
+                              </div>
+                              <div className="flex h-7 w-8 items-center justify-center rounded border border-white/10 bg-zinc-900 text-zinc-400">{'>'}</div>
+                              <div className="flex h-7 w-20 items-center rounded border border-white/10 bg-zinc-900 px-2 text-emerald-400">
+                                shipped
+                              </div>
+                            </div>
+
+                            <div className="relative mt-2 border-l border-zinc-800 pl-4 pt-2">
+                              <span className="absolute top-5 -left-[17px] h-px w-4 bg-zinc-800" />
+                              <div className="mb-2 flex items-center gap-2">
+                                <span className="text-[9px] font-semibold uppercase tracking-wider text-zinc-600">Output</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <span className="w-10 text-right font-medium text-zinc-500">Focus</span>
+                                <div className="flex h-7 flex-1 items-center rounded border border-white/10 bg-zinc-900 px-2 text-sky-300">conversion + clarity</div>
+                                <div className="flex h-7 w-8 items-center justify-center rounded border border-white/10 bg-zinc-900 text-zinc-400">in</div>
+                                <div className="flex h-7 w-20 items-center rounded border border-white/10 bg-zinc-900 px-2 text-[10px] text-orange-400">
+                                  production
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="relative z-10 mt-5 grid grid-cols-2 gap-3">
+                            <div className="rounded-lg border border-white/8 bg-zinc-900/80 px-3 py-2">
+                              <div className="mb-1 text-[9px] uppercase tracking-[0.2em] text-zinc-600">Frontend</div>
+                              <div className="text-xs text-zinc-300">Responsive build</div>
+                            </div>
+                            <div className="rounded-lg border border-white/8 bg-zinc-900/80 px-3 py-2">
+                              <div className="mb-1 text-[9px] uppercase tracking-[0.2em] text-zinc-600">Delivery</div>
+                              <div className="text-xs text-zinc-300">Launch ready</div>
+                            </div>
+                          </div>
+
+                          <div className="pointer-events-none absolute -right-5 -bottom-10 h-32 w-32 rounded-full bg-indigo-500/10 blur-[40px] transition-all duration-700 group-hover:bg-indigo-500/20" />
+                        </div>
+                      </div>
+                    </div>
+                  )
+                }
+              />
+
+              <div className="hidden grid-cols-1 gap-8 lg:grid lg:grid-cols-2">
                 <div className="group relative flex flex-col overflow-hidden rounded-3xl border border-white/10 bg-zinc-900/20 transition-colors duration-500 hover:border-white/20">
                   <div className="relative z-10 flex flex-1 flex-col p-8 md:p-10">
                     <h3 className="mb-3 flex items-center gap-3 text-2xl font-medium tracking-tight text-white">
@@ -976,7 +1187,7 @@ export default function Home() {
             </section>
 
             <div className="relative z-20 flex w-full flex-col border-t border-white/5">
-              <section id="solutions" className="relative mx-auto w-full max-w-[1400px] px-6 py-24 md:px-12 lg:py-32">
+              <section id="solutions" className="relative mx-auto w-full max-w-[1400px] px-6 pt-20 pb-8 md:px-12 md:py-24 lg:py-32">
                 <div className="grid grid-cols-1 items-center gap-16 lg:grid-cols-2">
                   <div className="order-2 max-w-xl lg:order-1">
                     <h2 className="mb-6 font-serif-custom text-3xl font-normal tracking-tight text-white md:text-6xl">
@@ -1118,8 +1329,8 @@ export default function Home() {
             </div>
 
             <div className="relative flex w-full flex-col border-t border-white/5 bg-[linear-gradient(180deg,rgba(3,7,18,0.74)_0%,rgba(2,5,14,0.88)_100%)]">
-              <section id="reviews" className="relative z-10 mx-auto w-full max-w-[1400px] px-6 py-18 md:px-12 lg:py-20">
-                <div className="mb-10 flex flex-col items-center justify-center gap-5 text-center">
+              <section id="reviews" className="relative z-10 mx-auto w-full max-w-[1400px] px-6 py-8 md:px-12 md:py-18 lg:py-20">
+                <div className="mb-6 flex flex-col items-center justify-center gap-5 text-center md:mb-10">
                   <div className="max-w-3xl">
                     <div className="mb-4 inline-flex items-center rounded-full border border-sky-500/20 bg-sky-500/10 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-sky-300">
                       Client Reviews
@@ -1134,7 +1345,11 @@ export default function Home() {
                 </div>
 
                 <div
-                  className="no-scrollbar -mx-6 flex snap-x gap-5 overflow-x-auto px-6 pb-2 md:mx-0 md:px-0"
+                  className={`no-scrollbar -mx-6 flex snap-x gap-5 overflow-y-hidden px-6 pb-2 touch-pan-x md:mx-0 md:px-0 ${
+                    reviews.slice(0, 3).length === 1
+                      ? 'justify-center overflow-x-hidden md:justify-start md:overflow-x-auto'
+                      : 'overflow-x-auto'
+                  }`}
                   style={{
                     WebkitMaskImage: 'linear-gradient(90deg, transparent, black 6%, black 94%, transparent)',
                     maskImage: 'linear-gradient(90deg, transparent, black 6%, black 94%, transparent)'
@@ -1209,7 +1424,7 @@ export default function Home() {
                 <div className="h-full w-px bg-white/5" />
               </div>
 
-              <section id="showcase" className="relative z-10 mx-auto w-full max-w-[1400px] px-6 py-24 md:px-12 lg:py-32">
+              <section id="showcase" className="relative z-10 mx-auto w-full max-w-[1400px] px-6 pt-10 pb-10 md:px-12 md:py-24 lg:py-32">
                 <div className="mb-16 flex flex-col justify-between gap-8 md:flex-row md:items-end">
                   <h2 className="max-w-3xl font-serif-custom text-4xl font-normal leading-[0.95] tracking-tight text-white md:text-6xl">
                     Explore
@@ -1227,7 +1442,7 @@ export default function Home() {
                 </div>
 
                 <div
-                  className="no-scrollbar -mx-6 flex snap-x gap-6 overflow-x-auto px-6 pb-12 pt-4 md:mx-0 md:pl-12"
+                  className="no-scrollbar -mx-6 flex snap-x gap-6 overflow-x-auto overflow-y-hidden px-6 pb-12 pt-4 touch-pan-x md:mx-0 md:pl-12"
                   style={{
                     WebkitMaskImage: 'linear-gradient(90deg, transparent, black 10%, black 90%, transparent)',
                     maskImage: 'linear-gradient(90deg, transparent, black 10%, black 90%, transparent)'

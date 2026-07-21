@@ -20,7 +20,6 @@ const productSchema = new mongoose.Schema(
         icon: String
       }
     ],
-    price: { type: Number, required: true },
     image: { type: String, required: true },
     isActive: { type: Boolean, default: true },
     isPrimary: { type: Boolean, default: false },
@@ -28,8 +27,7 @@ const productSchema = new mongoose.Schema(
     ctaLink: { type: String },
     appStoreLink: { type: String },
     playStoreLink: { type: String },
-    showCta: { type: Boolean, default: true },
-    showPrice: { type: Boolean, default: true }
+    showCta: { type: Boolean, default: true }
   },
   { timestamps: true }
 )
@@ -86,8 +84,8 @@ async function handler(req, res) {
     if (req.method === 'POST') {
       const {
         title, subtitle, edition, engineeredBy, description,
-        detailedOverview, features, price, image, isActive,
-        isPrimary, ctaText, ctaLink, appStoreLink, playStoreLink, showCta, showPrice
+        detailedOverview, features, image, isActive,
+        isPrimary, ctaText, ctaLink, appStoreLink, playStoreLink, showCta
       } = req.body;
 
       if (isPrimary) {
@@ -96,8 +94,8 @@ async function handler(req, res) {
 
       const product = await Product.create({
         title, subtitle, edition, engineeredBy, description,
-        detailedOverview, features, price, image, isActive,
-        isPrimary, ctaText, ctaLink, appStoreLink, playStoreLink, showCta, showPrice
+        detailedOverview, features, image, isActive,
+        isPrimary, ctaText, ctaLink, appStoreLink, playStoreLink, showCta
       });
       return res.status(201).json({ success: true, product })
     }
@@ -112,8 +110,8 @@ async function handler(req, res) {
 
       const {
         title, subtitle, edition, engineeredBy, description,
-        detailedOverview, features, price, image, isActive,
-        isPrimary, ctaText, ctaLink, appStoreLink, playStoreLink, showCta, showPrice
+        detailedOverview, features, image, isActive,
+        isPrimary, ctaText, ctaLink, appStoreLink, playStoreLink, showCta
       } = req.body;
 
       if (isPrimary) {
@@ -124,8 +122,8 @@ async function handler(req, res) {
         id,
         {
           title, subtitle, edition, engineeredBy, description,
-          detailedOverview, features, price, image, isActive,
-          isPrimary, ctaText, ctaLink, appStoreLink, playStoreLink, showCta, showPrice
+          detailedOverview, features, image, isActive,
+          isPrimary, ctaText, ctaLink, appStoreLink, playStoreLink, showCta
         },
         { new: true }
       );

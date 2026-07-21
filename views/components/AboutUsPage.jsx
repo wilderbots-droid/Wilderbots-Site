@@ -1,9 +1,62 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { Github, Linkedin, Mail, Users, Lightbulb, Rocket, Target, Package, Code, BookOpen, Twitter } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import PublicPageShell from './PublicPageShell'
+
+function MobileSnapCarousel({ items, activeIndex, setActiveIndex, renderItem }) {
+  const containerRef = useRef(null)
+
+  const handleScroll = (event) => {
+    const { scrollLeft, clientWidth } = event.currentTarget
+    if (!clientWidth) return
+    const nextIndex = Math.round(scrollLeft / clientWidth)
+    if (nextIndex !== activeIndex) {
+      setActiveIndex(nextIndex)
+    }
+  }
+
+  const scrollToIndex = (index) => {
+    if (!containerRef.current) return
+    containerRef.current.scrollTo({
+      left: containerRef.current.clientWidth * index,
+      behavior: 'smooth'
+    })
+    setActiveIndex(index)
+  }
+
+  return (
+    <>
+      <div
+        ref={containerRef}
+        onScroll={handleScroll}
+        className="no-scrollbar -mx-6 flex snap-x snap-mandatory items-stretch overflow-x-auto overflow-y-hidden px-6 touch-pan-x md:hidden"
+      >
+        {items.map((item, index) => (
+          <div key={item.title || item.name || index} className="flex w-full shrink-0 snap-center">
+            {renderItem(item, index)}
+          </div>
+        ))}
+      </div>
+      {items.length > 1 ? (
+        <div className="mt-5 flex items-center justify-center gap-2 md:hidden">
+          {items.map((item, index) => (
+            <button
+              key={`${item.title || item.name || index}-dot`}
+              type="button"
+              onClick={() => scrollToIndex(index)}
+              className={`h-2.5 rounded-full transition-all ${
+                activeIndex === index ? 'w-6 bg-sky-400' : 'w-2.5 bg-white/20'
+              }`}
+              aria-label={`Go to slide ${index + 1}`}
+            />
+          ))}
+        </div>
+      ) : null}
+    </>
+  )
+}
 
 export default function AboutUsPage({ onBack }) {
   const [teamMembers, setTeamMembers] = useState([])
@@ -13,6 +66,9 @@ export default function AboutUsPage({ onBack }) {
     { value: '35', label: 'Countries' }
   ])
   const [loading, setLoading] = useState(true)
+  const [pillarsIndex, setPillarsIndex] = useState(0)
+  const [valuesIndex, setValuesIndex] = useState(0)
+  const [teamIndex, setTeamIndex] = useState(0)
 
   useEffect(() => {
     fetchTeamMembers()
@@ -103,6 +159,77 @@ export default function AboutUsPage({ onBack }) {
       icon: Target,
       title: "Open Source",
       description: "Transparency and collaboration drive innovation. Our code, designs, and knowledge are open for all to learn and build upon."
+    }
+  ]
+
+  const renderPillarCard = (pillar, index) => {
+    const colorClasses = [
+      {
+        iconBg: 'bg-green-500/10',
+        iconBorder: 'border-green-500/20',
+        iconHover: 'group-hover:bg-green-500/20',
+        iconText: 'text-green-400',
+        dot: 'bg-green-500'
+      },
+      {
+        iconBg: 'bg-purple-500/10',
+        iconBorder: 'border-purple-500/20',
+        iconHover: 'group-hover:bg-purple-500/20',
+        iconText: 'text-purple-400',
+        dot: 'bg-purple-500'
+      },
+      {
+        iconBg: 'bg-blue-500/10',
+        iconBorder: 'border-blue-500/20',
+        iconHover: 'group-hover:bg-blue-500/20',
+        iconText: 'text-blue-400',
+        dot: 'bg-blue-500'
+      }
+    ][index] || {
+      iconBg: 'bg-sky-500/10',
+      iconBorder: 'border-sky-500/20',
+      iconHover: 'group-hover:bg-sky-500/20',
+      iconText: 'text-sky-400',
+      dot: 'bg-sky-500'
+    }
+
+    return (
+      <div className="group mr-5 flex h-full w-full flex-col rounded-[1.75rem] border border-white/10 bg-[linear-gradient(180deg,rgba(18,24,38,0.88)_0%,rgba(8,11,18,0.96)_100%)] p-8 transition-all hover:border-white/20 md:mr-0">
+        <div className={`mb-6 flex h-16 w-16 items-center justify-center rounded-2xl border ${colorClasses.iconBg} ${colorClasses.iconBorder} ${colorClasses.iconHover} transition-all`}>
+          <pillar.icon className={`h-8 w-8 ${colorClasses.iconText}`} />
+        </div>
+        <h3 className="mb-3 font-serif-custom text-2xl font-normal text-white">{pillar.title}</h3>
+        <p className="mb-4 leading-relaxed text-zinc-400">{pillar.description}</p>
+        <ul className="space-y-2 text-sm text-zinc-500">
+          {pillar.items.map((item) => (
+            <li key={item} className="flex items-center gap-2">
+              <div className={`h-1.5 w-1.5 rounded-full ${colorClasses.dot}`}></div>
+              {item}
+            </li>
+          ))}
+        </ul>
+      </div>
+    )
+  }
+
+  const pillars = [
+    {
+      icon: Package,
+      title: 'Digital Products',
+      description: 'We design and launch digital products, internal tools, and experience-led platforms that help teams move from concept to rollout with confidence.',
+      items: ['Product Strategy & Delivery', 'Platform Architecture', 'Launch & Iteration']
+    },
+    {
+      icon: Code,
+      title: 'Service Company',
+      description: 'Our IT services division transforms businesses through cutting-edge development. From mobile apps to web platforms, AI solutions to cloud architecture-we deliver enterprise-grade software that scales and performs.',
+      items: ['App & Web Development', 'AI & Machine Learning', 'Cloud & DevOps Solutions']
+    },
+    {
+      icon: BookOpen,
+      title: 'Ed-Tech Company',
+      description: 'Neureck is our educational platform revolutionizing STEM learning. Through interactive AI-driven modules, hands-on projects, and a global community, we\'re making complex technology accessible to learners everywhere.',
+      items: ['Interactive Learning Platform', 'AI-Powered Curriculum', 'Global Student Community']
     }
   ]
 
@@ -200,80 +327,18 @@ export default function AboutUsPage({ onBack }) {
             <h2 className="mb-4 font-serif-custom text-4xl font-normal text-white md:text-5xl">Three Pillars, One Vision</h2>
             <p className="text-xl text-zinc-400">Product. Service. Education. One operating system for useful technology.</p>
           </div>
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="group rounded-[1.75rem] border border-white/10 bg-[linear-gradient(180deg,rgba(18,24,38,0.88)_0%,rgba(8,11,18,0.96)_100%)] p-8 transition-all hover:border-white/20">
-              <div className="w-16 h-16 bg-green-500/10 rounded-2xl flex items-center justify-center mb-6 border border-green-500/20 group-hover:bg-green-500/20 transition-all">
-                <Package className="text-green-400 w-8 h-8" />
+          <MobileSnapCarousel
+            items={pillars}
+            activeIndex={pillarsIndex}
+            setActiveIndex={setPillarsIndex}
+            renderItem={renderPillarCard}
+          />
+          <div className="hidden gap-8 md:grid md:grid-cols-3">
+            {pillars.map((pillar, index) => (
+              <div key={pillar.title} className="contents">
+                {renderPillarCard(pillar, index)}
               </div>
-              <h3 className="mb-3 font-serif-custom text-2xl font-normal text-white">Digital Products</h3>
-              <p className="mb-4 leading-relaxed text-zinc-400">
-                We design and launch digital products, internal tools, and experience-led platforms that help teams move from concept to rollout with confidence.
-              </p>
-              <ul className="space-y-2 text-sm text-zinc-500">
-                <li className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
-                  Product Strategy & Delivery
-                </li>
-                <li className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
-                  Platform Architecture
-                </li>
-                <li className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
-                  Launch & Iteration
-                </li>
-              </ul>
-            </div>
-
-            <div className="group rounded-[1.75rem] border border-white/10 bg-[linear-gradient(180deg,rgba(18,24,38,0.88)_0%,rgba(8,11,18,0.96)_100%)] p-8 transition-all hover:border-white/20">
-              <div className="w-16 h-16 bg-purple-500/10 rounded-2xl flex items-center justify-center mb-6 border border-purple-500/20 group-hover:bg-purple-500/20 transition-all">
-                <Code className="text-purple-400 w-8 h-8" />
-              </div>
-              <h3 className="mb-3 font-serif-custom text-2xl font-normal text-white">Service Company</h3>
-              <p className="mb-4 leading-relaxed text-zinc-400">
-                Our IT services division transforms businesses through cutting-edge development. From mobile apps to web platforms, 
-                AI solutions to cloud architecture—we deliver enterprise-grade software that scales and performs.
-              </p>
-              <ul className="space-y-2 text-sm text-zinc-500">
-                <li className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 bg-purple-500 rounded-full"></div>
-                  App & Web Development
-                </li>
-                <li className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 bg-purple-500 rounded-full"></div>
-                  AI & Machine Learning
-                </li>
-                <li className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 bg-purple-500 rounded-full"></div>
-                  Cloud & DevOps Solutions
-                </li>
-              </ul>
-            </div>
-
-            <div className="group rounded-[1.75rem] border border-white/10 bg-[linear-gradient(180deg,rgba(18,24,38,0.88)_0%,rgba(8,11,18,0.96)_100%)] p-8 transition-all hover:border-white/20">
-              <div className="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center mb-6 border border-blue-500/20 group-hover:bg-blue-500/20 transition-all">
-                <BookOpen className="text-blue-400 w-8 h-8" />
-              </div>
-              <h3 className="mb-3 font-serif-custom text-2xl font-normal text-white">Ed-Tech Company</h3>
-              <p className="mb-4 leading-relaxed text-zinc-400">
-                Neureck is our educational platform revolutionizing STEM learning. Through interactive AI-driven modules, 
-                hands-on projects, and a global community, we&apos;re making complex technology accessible to learners everywhere.
-              </p>
-              <ul className="space-y-2 text-sm text-zinc-500">
-                <li className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
-                  Interactive Learning Platform
-                </li>
-                <li className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
-                  AI-Powered Curriculum
-                </li>
-                <li className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
-                  Global Student Community
-                </li>
-              </ul>
-            </div>
+            ))}
           </div>
         </div>
       </section>
@@ -285,7 +350,28 @@ export default function AboutUsPage({ onBack }) {
             <h2 className="mb-4 font-serif-custom text-4xl font-normal text-white md:text-5xl">Our Values</h2>
             <p className="text-xl text-zinc-400">The principles that guide everything we do</p>
           </div>
-          <div className="grid md:grid-cols-2 gap-8">
+          <MobileSnapCarousel
+            items={values}
+            activeIndex={valuesIndex}
+            setActiveIndex={setValuesIndex}
+            renderItem={(value, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: (index % 2) * 0.1 }}
+                className="mr-5 flex h-full w-full flex-col rounded-[1.75rem] border border-white/10 bg-[linear-gradient(180deg,rgba(18,24,38,0.88)_0%,rgba(8,11,18,0.96)_100%)] p-8 transition-all hover:border-white/20"
+              >
+                <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl border border-purple-500/20 bg-purple-500/10">
+                  <value.icon className="h-8 w-8 text-purple-400" />
+                </div>
+                <h3 className="mb-3 font-serif-custom text-2xl font-normal text-white">{value.title}</h3>
+                <p className="leading-relaxed text-zinc-400">{value.description}</p>
+              </motion.div>
+            )}
+          />
+          <div className="hidden gap-8 md:grid md:grid-cols-2">
             {values.map((value, index) => (
               <motion.div
                 key={index}
@@ -295,8 +381,8 @@ export default function AboutUsPage({ onBack }) {
                 transition={{ duration: 0.5, delay: (index % 2) * 0.1 }}
                 className="rounded-[1.75rem] border border-white/10 bg-[linear-gradient(180deg,rgba(18,24,38,0.88)_0%,rgba(8,11,18,0.96)_100%)] p-8 transition-all hover:border-white/20"
               >
-                <div className="w-16 h-16 bg-purple-500/10 rounded-2xl flex items-center justify-center mb-6 border border-purple-500/20">
-                  <value.icon className="text-purple-400 w-8 h-8" />
+                <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl border border-purple-500/20 bg-purple-500/10">
+                  <value.icon className="h-8 w-8 text-purple-400" />
                 </div>
                 <h3 className="mb-3 font-serif-custom text-2xl font-normal text-white">{value.title}</h3>
                 <p className="leading-relaxed text-zinc-400">{value.description}</p>
@@ -316,68 +402,135 @@ export default function AboutUsPage({ onBack }) {
           {loading ? (
             <div className="py-12 text-center text-zinc-400">Loading team members...</div>
           ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {teamMembers.map((member, index) => (
-                <div key={member._id || index} className="group rounded-[1.75rem] border border-white/10 bg-[linear-gradient(180deg,rgba(18,24,38,0.88)_0%,rgba(8,11,18,0.96)_100%)] p-8 transition-all hover:border-white/20">
-                  <div className="flex flex-col items-center text-center mb-6">
-                    <div className="relative mb-4">
-                      <Image 
-                        src={member.avatar || 'https://i.pravatar.cc/150'} 
-                        alt={member.name} 
-                        width={120}
-                        height={120}
-                        className="w-[120px] h-[120px] rounded-full object-cover"
-                        unoptimized
-                      />
-                      <div className="absolute inset-0 rounded-full bg-gradient-to-br from-purple-500/20 to-blue-500/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <>
+              <MobileSnapCarousel
+                items={teamMembers}
+                activeIndex={teamIndex}
+                setActiveIndex={setTeamIndex}
+                renderItem={(member, index) => (
+                  <div key={member._id || index} className="group mr-5 flex h-full w-full flex-col rounded-[1.75rem] border border-white/10 bg-[linear-gradient(180deg,rgba(18,24,38,0.88)_0%,rgba(8,11,18,0.96)_100%)] p-8 transition-all hover:border-white/20">
+                    <div className="mb-6 flex flex-1 flex-col items-center text-center">
+                      <div className="relative mb-4">
+                        <Image
+                          src={member.avatar || 'https://i.pravatar.cc/150'}
+                          alt={member.name}
+                          width={120}
+                          height={120}
+                          className="h-[120px] w-[120px] rounded-full object-cover"
+                          unoptimized
+                        />
+                        <div className="absolute inset-0 rounded-full bg-gradient-to-br from-purple-500/20 to-blue-500/20 opacity-0 transition-opacity group-hover:opacity-100"></div>
+                      </div>
+                      <h3 className="mb-1 text-xl font-semibold text-white">{member.name}</h3>
+                      <p className="mb-3 text-sky-300">{member.role}</p>
+                      <p className="text-sm leading-relaxed text-zinc-400">{member.bio}</p>
                     </div>
-                    <h3 className="mb-1 text-xl font-semibold text-white">{member.name}</h3>
-                    <p className="mb-3 text-sky-300">{member.role}</p>
-                    <p className="text-sm leading-relaxed text-zinc-400">{member.bio}</p>
+                    <div className="flex items-center justify-center gap-4 border-t border-white/10 pt-4">
+                      {member.social?.linkedin && (
+                        <a
+                          href={member.social.linkedin}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex h-10 w-10 items-center justify-center rounded-full bg-white/5 transition-colors hover:bg-white/10"
+                        >
+                          <Linkedin size={18} className="text-gray-400" />
+                        </a>
+                      )}
+                      {member.social?.github && (
+                        <a
+                          href={member.social.github}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex h-10 w-10 items-center justify-center rounded-full bg-white/5 transition-colors hover:bg-white/10"
+                        >
+                          <Github size={18} className="text-gray-400" />
+                        </a>
+                      )}
+                      {member.social?.email && (
+                        <a
+                          href={`mailto:${member.social.email}`}
+                          className="flex h-10 w-10 items-center justify-center rounded-full bg-white/5 transition-colors hover:bg-white/10"
+                        >
+                          <Mail size={18} className="text-gray-400" />
+                        </a>
+                      )}
+                      {member.social?.twitter && (
+                        <a
+                          href={member.social.twitter}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex h-10 w-10 items-center justify-center rounded-full bg-white/5 transition-colors hover:bg-white/10"
+                        >
+                          <Twitter size={18} className="text-gray-400" />
+                        </a>
+                      )}
+                    </div>
                   </div>
-                  <div className="flex items-center justify-center gap-4 pt-4 border-t border-white/10">
-                    {member.social?.linkedin && (
-                      <a 
-                        href={member.social.linkedin} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="flex h-10 w-10 items-center justify-center rounded-full bg-white/5 transition-colors hover:bg-white/10"
-                      >
-                        <Linkedin size={18} className="text-gray-400" />
-                      </a>
-                    )}
-                    {member.social?.github && (
-                      <a 
-                        href={member.social.github} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="flex h-10 w-10 items-center justify-center rounded-full bg-white/5 transition-colors hover:bg-white/10"
-                      >
-                        <Github size={18} className="text-gray-400" />
-                      </a>
-                    )}
-                    {member.social?.email && (
-                      <a 
-                        href={`mailto:${member.social.email}`}
-                        className="flex h-10 w-10 items-center justify-center rounded-full bg-white/5 transition-colors hover:bg-white/10"
-                      >
-                        <Mail size={18} className="text-gray-400" />
-                      </a>
-                    )}
-                    {member.social?.twitter && (
-                      <a 
-                        href={member.social.twitter} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="flex h-10 w-10 items-center justify-center rounded-full bg-white/5 transition-colors hover:bg-white/10"
-                      >
-                        <Twitter size={18} className="text-gray-400" />
-                      </a>
-                    )}
+                )}
+              />
+              <div className="hidden gap-8 md:grid md:grid-cols-2 lg:grid-cols-3">
+                {teamMembers.map((member, index) => (
+                  <div key={member._id || index} className="group rounded-[1.75rem] border border-white/10 bg-[linear-gradient(180deg,rgba(18,24,38,0.88)_0%,rgba(8,11,18,0.96)_100%)] p-8 transition-all hover:border-white/20">
+                    <div className="mb-6 flex flex-col items-center text-center">
+                      <div className="relative mb-4">
+                        <Image 
+                          src={member.avatar || 'https://i.pravatar.cc/150'} 
+                          alt={member.name} 
+                          width={120}
+                          height={120}
+                          className="w-[120px] h-[120px] rounded-full object-cover"
+                          unoptimized
+                        />
+                        <div className="absolute inset-0 rounded-full bg-gradient-to-br from-purple-500/20 to-blue-500/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                      </div>
+                      <h3 className="mb-1 text-xl font-semibold text-white">{member.name}</h3>
+                      <p className="mb-3 text-sky-300">{member.role}</p>
+                      <p className="text-sm leading-relaxed text-zinc-400">{member.bio}</p>
+                    </div>
+                    <div className="flex items-center justify-center gap-4 pt-4 border-t border-white/10">
+                      {member.social?.linkedin && (
+                        <a 
+                          href={member.social.linkedin} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="flex h-10 w-10 items-center justify-center rounded-full bg-white/5 transition-colors hover:bg-white/10"
+                        >
+                          <Linkedin size={18} className="text-gray-400" />
+                        </a>
+                      )}
+                      {member.social?.github && (
+                        <a 
+                          href={member.social.github} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="flex h-10 w-10 items-center justify-center rounded-full bg-white/5 transition-colors hover:bg-white/10"
+                        >
+                          <Github size={18} className="text-gray-400" />
+                        </a>
+                      )}
+                      {member.social?.email && (
+                        <a 
+                          href={`mailto:${member.social.email}`}
+                          className="flex h-10 w-10 items-center justify-center rounded-full bg-white/5 transition-colors hover:bg-white/10"
+                        >
+                          <Mail size={18} className="text-gray-400" />
+                        </a>
+                      )}
+                      {member.social?.twitter && (
+                        <a 
+                          href={member.social.twitter} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="flex h-10 w-10 items-center justify-center rounded-full bg-white/5 transition-colors hover:bg-white/10"
+                        >
+                          <Twitter size={18} className="text-gray-400" />
+                        </a>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            </>
           )}
         </div>
       </section>
