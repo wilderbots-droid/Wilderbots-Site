@@ -3,6 +3,7 @@ import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
+import { Easing, interpolate } from 'remotion'
 import {
   ArrowRight,
   ChevronRight,
@@ -112,6 +113,102 @@ const toReadableLabel = (value, fallback) => {
 
 const stripHtml = (value) => String(value || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
 
+const REMOTION_FPS = 30
+const REMOTION_EASE = Easing.bezier(0.16, 1, 0.3, 1)
+const REMOTION_SOFT_EASE = Easing.bezier(0.45, 0, 0.2, 1)
+const REMOTION_TAU = Math.PI * 2
+
+const getLoopedFrame = (frame, durationInFrames) => {
+  if (!durationInFrames) return 0
+  return ((frame % durationInFrames) + durationInFrames) % durationInFrames
+}
+
+const mapFrame = (frame, inputRange, outputRange, easing = REMOTION_SOFT_EASE) =>
+  interpolate(frame, inputRange, outputRange, {
+    easing,
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp'
+  })
+
+const oscillate = (frame, { period = 180, phase = 0, min = -1, max = 1, wave = Math.sin } = {}) => {
+  const progress = (((frame + phase) % period) + period) % period
+  const value = wave((progress / period) * REMOTION_TAU)
+  return min + ((value + 1) / 2) * (max - min)
+}
+
+const drift = (frame, options = {}) => oscillate(frame, { wave: Math.sin, ...options })
+const breathe = (frame, options = {}) => oscillate(frame, { wave: Math.cos, ...options })
+
+function useRemotionFrame({ fps = REMOTION_FPS } = {}) {
+  const [frame, setFrame] = useState(0)
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
+  const lastFrameRef = useRef(0)
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.matchMedia) return undefined
+
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const updatePreference = () => {
+      setPrefersReducedMotion(mediaQuery.matches)
+    }
+
+    updatePreference()
+
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener('change', updatePreference)
+      return () => mediaQuery.removeEventListener('change', updatePreference)
+    }
+
+    mediaQuery.addListener(updatePreference)
+    return () => mediaQuery.removeListener(updatePreference)
+  }, [])
+
+  useEffect(() => {
+    if (prefersReducedMotion || typeof window === 'undefined') return undefined
+
+    let animationFrameId = 0
+    const start = window.performance.now()
+    lastFrameRef.current = 0
+
+    const tick = (now) => {
+      const nextFrame = ((now - start) / 1000) * fps
+      if (Math.abs(nextFrame - lastFrameRef.current) > 0.01) {
+        lastFrameRef.current = nextFrame
+        setFrame(nextFrame)
+      }
+      animationFrameId = window.requestAnimationFrame(tick)
+    }
+
+    animationFrameId = window.requestAnimationFrame(tick)
+
+    return () => {
+      window.cancelAnimationFrame(animationFrameId)
+    }
+  }, [fps, prefersReducedMotion])
+
+  return prefersReducedMotion ? 0 : frame
+}
+
+function AnimatedHeroStageCards() {
+  const frame = useRemotionFrame()
+  return <HeroStageCards frame={frame} />
+}
+
+function AnimatedServiceDeliveryVisual() {
+  const frame = useRemotionFrame()
+  return <ServiceDeliveryVisual frame={frame} />
+}
+
+function AnimatedWebStackPreviewCard() {
+  const frame = useRemotionFrame()
+  return <WebStackPreviewCard frame={frame} />
+}
+
+function AnimatedSolutionWorkflowPreview(props) {
+  const frame = useRemotionFrame()
+  return <SolutionWorkflowPreview frame={frame} {...props} />
+}
+
 const getProductDestination = (product) => {
   if (!product) return '/products'
   const previewUrl = getProductPreviewUrl(product)
@@ -171,6 +268,577 @@ function MobileSnapCarousel({ items, activeIndex, setActiveIndex, renderItem, it
         </div>
       ) : null}
     </>
+  )
+}
+
+function HeroStageCards({ frame }) {
+  const stages = [
+    {
+      id: '01',
+      title: 'Ingest',
+      icon: Zap,
+      wrapperClassName: 'absolute bottom-12 right-8 z-40 hidden origin-bottom-left md:block lg:left-[52%] lg:right-auto lg:bottom-[12%]',
+      widthClassName: 'w-52',
+      phase: 0
+    },
+    {
+      id: '02',
+      title: 'Build',
+      icon: Cpu,
+      wrapperClassName: 'absolute right-8 bottom-[12rem] z-40 hidden origin-bottom-right md:block lg:right-[25%] lg:bottom-[40%]',
+      widthClassName: 'w-56',
+      phase: 24
+    },
+    {
+      id: '03',
+      title: 'Launch',
+      icon: Server,
+      wrapperClassName: 'absolute right-8 bottom-[20rem] z-40 hidden origin-bottom-right md:block lg:right-[10%] lg:top-[15%] lg:bottom-auto',
+      widthClassName: 'w-52',
+      phase: 48
+    }
+  ]
+
+  return (
+    <>
+      {stages.map((stage) => {
+        const Icon = stage.icon
+        const stageFrame = frame + stage.phase
+        const entrance = mapFrame(stageFrame, [0, 22], [0.86, 1], REMOTION_EASE)
+        const bob = drift(stageFrame, { period: 240, min: -16, max: 4 })
+        const sway = drift(stageFrame + 30, { period: 280, min: -4, max: 4 })
+        const glow = breathe(stageFrame, { period: 260, min: 0.18, max: 0.3 })
+
+        return (
+          <div
+            key={stage.id}
+            className={stage.wrapperClassName}
+            style={{
+              opacity: entrance,
+              transform: `translate3d(${sway}px, ${bob}px, 0) scale(${entrance})`
+            }}
+          >
+            <div
+              className={`relative z-10 flex ${stage.widthClassName} flex-col gap-3 rounded-xl border border-white/10 bg-zinc-900/90 p-5 shadow-[0_8px_30px_rgba(0,0,0,0.5)] backdrop-blur-md`}
+              style={{
+                boxShadow: `0 10px 36px rgba(0,0,0,0.52), 0 0 32px rgba(99,102,241,${glow})`
+              }}
+            >
+              <div className="flex items-center justify-between border-b border-white/5 pb-3">
+                <div className="flex items-center gap-2.5">
+                  <span className="flex h-5 w-5 items-center justify-center rounded bg-zinc-800 text-[10px] font-bold text-zinc-400">{stage.id}</span>
+                  <span className="text-xs font-semibold uppercase tracking-wide text-zinc-200">{stage.title}</span>
+                </div>
+                <Icon
+                  className="h-4 w-4 text-zinc-500"
+                  style={{
+                    transform: `scale(${breathe(stageFrame, { period: 220, min: 0.97, max: 1.05 })})`
+                  }}
+                />
+              </div>
+
+              {stage.id === '01' ? (
+                <div className="space-y-2">
+                  {[
+                    {
+                      key: 'brief',
+                      label: 'Client Brief',
+                      status: 'Active',
+                      phase: 0,
+                      leading: <div className="flex h-4 w-4 items-center justify-center rounded border border-orange-500/20 bg-orange-900/30 text-[10px] text-orange-400">B</div>
+                    },
+                    {
+                      key: 'scope',
+                      label: 'Project Scope',
+                      status: 'Reviewing',
+                      phase: 14,
+                      leading: (
+                        <div className="flex h-4 w-4 items-center justify-center rounded border border-blue-500/20 bg-blue-900/30 text-[10px] text-blue-400">
+                          <Database className="h-3 w-3" />
+                        </div>
+                      )
+                    }
+                  ].map((item) => {
+                    const rowFrame = stageFrame + item.phase
+                    const rowGlow = breathe(rowFrame, { period: 210, min: 0.08, max: 0.16 })
+                    return (
+                      <div
+                        key={item.key}
+                        className="flex items-center justify-between rounded-lg px-1 py-0.5"
+                        style={{
+                          backgroundColor: `rgba(255,255,255,${rowGlow})`
+                        }}
+                      >
+                        <div className="flex items-center gap-2">
+                          {item.leading}
+                          <span className="text-[10px] font-medium text-zinc-400">{item.label}</span>
+                        </div>
+                        <span
+                          className={item.key === 'brief'
+                            ? 'rounded-full border border-emerald-500/20 bg-emerald-500/10 px-1.5 py-0.5 text-[9px] font-medium text-emerald-400'
+                            : 'text-[9px] text-zinc-600'}
+                        >
+                          {item.status}
+                        </span>
+                      </div>
+                    )
+                  })}
+                </div>
+              ) : null}
+
+              {stage.id === '02' ? (
+                <div className="rounded border border-white/5 bg-black/40 p-2.5">
+                  <div className="mb-1 flex gap-1.5">
+                    {['bg-red-500/40', 'bg-yellow-500/40', 'bg-green-500/40'].map((color, index) => {
+                      const dotFrame = stageFrame + index * 10
+                      return (
+                        <div
+                          key={color}
+                          className={`h-2 w-2 rounded-full ${color}`}
+                          style={{
+                            transform: `scale(${breathe(dotFrame, { period: 160, min: 0.92, max: 1.12 })})`
+                          }}
+                        />
+                      )
+                    })}
+                  </div>
+                  <p className="font-mono text-[10px] leading-tight text-zinc-400">
+                    <span className="text-purple-400">WILDERBOTS</span> build <span className="text-purple-400">WHEN</span> goals align
+                    <span
+                      className="ml-1 inline-block h-3 w-[1px] bg-sky-400 align-middle"
+                      style={{ opacity: 0.85 }}
+                    />
+                  </p>
+                </div>
+              ) : null}
+
+              {stage.id === '03' ? (
+                <>
+                  <div className="flex items-center gap-2">
+                    <div
+                      className="h-2 w-2 rounded-full bg-emerald-500"
+                      style={{
+                        boxShadow: `0 0 10px rgba(16,185,129,${breathe(stageFrame, { period: 190, min: 0.28, max: 0.62 })})`,
+                        transform: `scale(${breathe(stageFrame, { period: 190, min: 0.94, max: 1.14 })})`
+                      }}
+                    />
+                    <span className="text-xs font-medium text-zinc-400">Delivery Active</span>
+                  </div>
+                  <div className="mt-1 flex items-center justify-between">
+                    <span className="font-mono text-[10px] uppercase text-zinc-500">Stage</span>
+                    <span
+                      className="font-mono text-xs font-medium text-emerald-400"
+                      style={{
+                        transform: `translateX(${drift(stageFrame, { period: 210, min: 0, max: 3 })}px)`
+                      }}
+                    >
+                      Go-live
+                    </span>
+                  </div>
+                </>
+              ) : null}
+            </div>
+          </div>
+        )
+      })}
+    </>
+  )
+}
+
+function ServiceDeliveryVisual({ frame }) {
+  const containerLift = drift(frame, { period: 250, min: -14, max: 6 })
+  const trackShift = drift(frame, { period: 260, min: -10, max: 6 })
+  const chipScale = breathe(frame, { period: 220, min: 0.97, max: 1.045 })
+  const chipGlow = breathe(frame, { period: 260, min: 0.18, max: 0.28 })
+
+  return (
+    <div
+      className="relative mt-auto flex h-[320px] w-full flex-col items-center justify-center overflow-hidden rounded-2xl border border-white/5 bg-black/12"
+      style={{ transform: `translate3d(0, ${containerLift}px, 0)` }}
+    >
+      <div
+        className="absolute inset-0 z-0 opacity-30"
+        style={{
+          backgroundImage:
+            'linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px)',
+          backgroundSize: '30px 30px',
+          transform: 'perspective(500px) rotateX(60deg) translateY(50px) scale(1.5)'
+        }}
+      />
+
+      <div
+        className="absolute inset-x-8 top-10 h-20 rounded-full bg-sky-500/10 blur-3xl"
+        style={{
+          opacity: breathe(frame, { period: 260, min: 0.2, max: 0.34 }),
+          transform: `translateX(${trackShift * 4}px)`
+        }}
+      />
+
+      <div
+        className="relative z-20 mb-10 flex items-center justify-center gap-2 text-[10px] font-mono text-zinc-300 md:gap-4 md:text-xs"
+        style={{
+          WebkitMaskImage: 'linear-gradient(90deg, transparent, black 5%, black 90%, transparent)',
+          maskImage: 'linear-gradient(90deg, transparent, black 5%, black 90%, transparent)'
+        }}
+      >
+        <div className="flex flex-col gap-3">
+          {[
+            { label: 'iOS', dotClassName: 'bg-indigo-500', phase: 0 },
+            { label: 'Android', dotClassName: 'bg-sky-500', phase: 18 }
+          ].map((item) => {
+            const itemFrame = frame + item.phase
+            return (
+              <div
+                key={item.label}
+                className="flex items-center gap-2 rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-1.5 shadow-lg backdrop-blur-sm"
+                style={{
+                  transform: `translate3d(${drift(itemFrame, { period: 190, min: 0, max: 8 })}px, ${drift(itemFrame + 40, { period: 230, min: -5, max: 3 })}px, 0)`,
+                  borderColor: `rgba(255,255,255,${breathe(itemFrame, { period: 210, min: 0.12, max: 0.2 })})`
+                }}
+              >
+                <span
+                  className={`h-1.5 w-1.5 rounded-full ${item.dotClassName}`}
+                  style={{
+                    transform: `scale(${breathe(itemFrame, { period: 180, min: 0.94, max: 1.18 })})`
+                  }}
+                />
+                {item.label}
+              </div>
+            )
+          })}
+        </div>
+
+        <svg className="h-12 w-8 text-zinc-600" viewBox="0 0 32 48" fill="none" stroke="currentColor" strokeWidth="1.5">
+          <path d="M0 12 C 16 12, 16 24, 32 24" strokeDasharray="3 3" strokeDashoffset={drift(frame, { period: 160, min: -12, max: 12 })} className="opacity-50" />
+          <path d="M0 36 C 16 36, 16 24, 32 24" strokeDasharray="3 3" strokeDashoffset={drift(frame + 24, { period: 160, min: -12, max: 12 })} className="opacity-50" />
+        </svg>
+
+        <div
+          className="z-10 rounded-xl bg-gradient-to-br from-zinc-800 to-zinc-900 px-3 py-2 font-semibold text-white shadow-xl"
+          style={{
+            transform: `scale(${chipScale})`,
+            boxShadow: `0 18px 24px rgba(0,0,0,0.35), 0 0 26px rgba(56,189,248,${chipGlow})`
+          }}
+        >
+          ships product
+        </div>
+
+        <svg className="h-12 w-8 text-zinc-600" viewBox="0 0 32 48" fill="none" stroke="currentColor" strokeWidth="1.5">
+          <path d="M0 24 C 16 24, 16 12, 32 12" strokeDasharray="3 3" strokeDashoffset={drift(frame + 48, { period: 170, min: -12, max: 12 })} className="opacity-50" />
+          <path d="M0 24 C 16 24, 16 36, 32 36" strokeDasharray="3 3" strokeDashoffset={drift(frame + 72, { period: 170, min: -12, max: 12 })} className="opacity-50" />
+        </svg>
+
+        <div className="flex flex-col gap-3">
+          {[
+            { label: 'cross-platform', phase: 36 },
+            { label: 'production ready', phase: 56 }
+          ].map((item) => {
+            const itemFrame = frame + item.phase
+            return (
+              <div
+                key={item.label}
+                className="rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-1.5 text-zinc-500 shadow-lg backdrop-blur-sm"
+                style={{
+                  transform: `translate3d(${drift(itemFrame, { period: 200, min: 2, max: 12 })}px, ${drift(itemFrame + 30, { period: 240, min: -4, max: 4 })}px, 0)`
+                }}
+              >
+                {item.label}
+              </div>
+            )
+          })}
+        </div>
+      </div>
+
+      <div className="absolute bottom-8 z-10 flex w-full justify-center gap-4 px-10">
+        {[
+          { label: 'Mobile UI', colorClassName: 'border-indigo-500/30 bg-indigo-500/10 text-indigo-300', phase: 0, rotation: -2 },
+          { label: 'API Layer', colorClassName: 'border-sky-500/30 bg-sky-500/10 text-sky-300', phase: 14, rotation: 3 },
+          { label: 'App Launch', colorClassName: 'border-purple-500/30 bg-purple-500/10 text-purple-300', phase: 28, rotation: -1 }
+        ].map((pill) => {
+          const pillFrame = frame + pill.phase
+          const y = drift(pillFrame, { period: 220, min: -4, max: 10 })
+          const x = drift(pillFrame + 50, { period: 260, min: -3, max: 3 })
+          return (
+            <span
+              key={pill.label}
+              className={`cursor-default select-none rounded-full border px-3 py-1 text-[10px] shadow-[0_0_15px_rgba(99,102,241,0.12)] backdrop-blur-sm ${pill.colorClassName}`}
+              style={{
+                transform: `translate3d(${x}px, ${y}px, 0) rotate(${pill.rotation}deg)`
+              }}
+            >
+              {pill.label}
+            </span>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+function WebStackPreviewCard({ frame }) {
+  const cardLift = drift(frame, { period: 240, min: -10, max: 8 })
+  const rows = [
+    { label: 'Type', value: 'landing pages', operator: '+', suffix: 'portals', suffixClassName: 'text-white', phase: 0 },
+    { label: 'Built', value: 'responsive UI', operator: '>', suffix: 'shipped', suffixClassName: 'text-emerald-400', phase: 18 },
+    { label: 'Focus', value: 'conversion + clarity', operator: 'in', suffix: 'production', suffixClassName: 'text-orange-400', phase: 36 }
+  ]
+
+  return (
+    <div
+      className="relative mt-auto w-full overflow-hidden rounded-xl border border-white/10 bg-[#0c0c0e] p-5 shadow-2xl"
+      style={{ transform: `translate3d(0, ${cardLift}px, 0)` }}
+    >
+      <div
+        className="pointer-events-none absolute top-0 right-0 h-32 w-32 rounded-full bg-indigo-500/10 blur-[40px]"
+        style={{
+          opacity: breathe(frame, { period: 260, min: 0.38, max: 0.68 }),
+          transform: `translate(${drift(frame, { period: 250, min: -4, max: 6 })}px, ${drift(frame + 40, { period: 250, min: -6, max: 6 })}px)`
+        }}
+      />
+      <div className="mb-5 flex items-center justify-between border-b border-white/5 pb-3">
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-semibold tracking-wide text-white">Web Stack</span>
+          <span
+            className="rounded-md border border-white/5 bg-zinc-800 px-1.5 py-0.5 text-[9px] font-medium text-zinc-400"
+            style={{
+              transform: `translateY(${drift(frame + 20, { period: 220, min: 0, max: 2 })}px)`
+            }}
+          >
+            live setup
+          </span>
+        </div>
+        <div className="flex gap-1.5">
+          {[0, 12].map((phase) => {
+            const dotFrame = frame + phase
+            return (
+              <div
+                key={phase}
+                className="h-2 w-2 rounded-full bg-zinc-700"
+                style={{
+                  transform: `scale(${breathe(dotFrame, { period: 180, min: 0.95, max: 1.12 })})`
+                }}
+              />
+            )
+          })}
+        </div>
+      </div>
+
+      <div className="relative z-10 space-y-3 font-mono text-[10px] sm:text-xs">
+        {rows.slice(0, 2).map((row) => {
+          const rowFrame = frame + row.phase
+          return (
+            <div key={row.label} className="flex items-center gap-2">
+              <span className="w-10 text-right font-medium text-zinc-500">{row.label}</span>
+              <div
+                className="flex h-7 flex-1 items-center rounded border border-white/10 bg-zinc-900 px-2 text-sky-300"
+                style={{
+                  borderColor: `rgba(125,211,252,${breathe(rowFrame, { period: 210, min: 0.14, max: 0.24 })})`,
+                  boxShadow: `inset 0 0 0 1px rgba(14,165,233,${breathe(rowFrame, { period: 210, min: 0.02, max: 0.1 })})`,
+                  transform: `translate3d(${drift(rowFrame, { period: 200, min: 2, max: 10 })}px, ${drift(rowFrame + 45, { period: 230, min: -3, max: 3 })}px, 0)`
+                }}
+              >
+                {row.value}
+              </div>
+              <div className="flex h-7 w-8 items-center justify-center rounded border border-white/10 bg-zinc-900 text-zinc-400">{row.operator}</div>
+              <div className={`flex h-7 w-20 items-center rounded border border-white/10 bg-zinc-900 px-2 text-[10px] ${row.suffixClassName}`}>
+                {row.suffix}
+              </div>
+            </div>
+          )
+        })}
+
+        <div className="relative mt-2 border-l border-zinc-800 pl-4 pt-2">
+          <span className="absolute top-5 -left-[17px] h-px w-4 bg-zinc-800" />
+          <div className="mb-2 flex items-center gap-2">
+            <span className="text-[9px] font-semibold uppercase tracking-wider text-zinc-600">Output</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="w-10 text-right font-medium text-zinc-500">{rows[2].label}</span>
+            <div
+              className="flex h-7 flex-1 items-center rounded border border-white/10 bg-zinc-900 px-2 text-sky-300"
+              style={{
+                transform: `translate3d(${drift(frame + rows[2].phase, { period: 210, min: 2, max: 10 })}px, ${drift(frame + rows[2].phase + 45, { period: 240, min: -3, max: 3 })}px, 0)`
+              }}
+            >
+              {rows[2].value}
+            </div>
+            <div className="flex h-7 w-8 items-center justify-center rounded border border-white/10 bg-zinc-900 text-zinc-400">{rows[2].operator}</div>
+            <div className={`flex h-7 w-20 items-center rounded border border-white/10 bg-zinc-900 px-2 text-[10px] ${rows[2].suffixClassName}`}>
+              {rows[2].suffix}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="relative z-10 mt-5 grid grid-cols-2 gap-3">
+        {[
+          { label: 'Frontend', value: 'Responsive build', phase: 0 },
+          { label: 'Delivery', value: 'Launch ready', phase: 18 }
+        ].map((panel) => {
+          const panelFrame = frame + panel.phase
+          return (
+            <div
+              key={panel.label}
+              className="rounded-lg border border-white/8 bg-zinc-900/80 px-3 py-2"
+              style={{
+                transform: `translateY(${drift(panelFrame, { period: 220, min: 0, max: 8 })}px)`
+              }}
+            >
+              <div className="mb-1 text-[9px] uppercase tracking-[0.2em] text-zinc-600">{panel.label}</div>
+              <div className="text-xs text-zinc-300">{panel.value}</div>
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+function SolutionWorkflowPreview({
+  frame,
+  solutionEventLabel,
+  solutionNarrative,
+  solutionSummaryLabel,
+  solutionFeatureLine,
+  productFeatureCount
+}) {
+  return (
+    <div className="relative z-10 mt-16 flex flex-col items-center gap-6">
+      <div
+        className="group relative w-full rounded-2xl border border-white/5 bg-zinc-900/62 p-5 shadow-2xl backdrop-blur-md"
+        style={{
+          opacity: mapFrame(frame, [0, 24], [0.72, 1]),
+          transform: `translate3d(${drift(frame + 60, { period: 260, min: -2, max: 2 })}px, ${drift(frame, { period: 230, min: -4, max: 12 })}px, 0)`
+        }}
+      >
+        <div
+          className="absolute top-8 -left-px h-8 w-[3px] rounded-r-full bg-indigo-500"
+          style={{
+            boxShadow: `0 0 12px rgba(99,102,241,${breathe(frame, { period: 240, min: 0.24, max: 0.5 })})`
+          }}
+        />
+        <div className="flex items-start gap-4">
+          <div
+            className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-indigo-500/20 bg-indigo-500/10 text-indigo-400"
+            style={{
+              transform: `scale(${breathe(frame + 20, { period: 220, min: 0.97, max: 1.05 })})`
+            }}
+          >
+            <Sparkles className="h-4 w-4" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="mb-1 flex items-center justify-between">
+              <h4 className="font-mono text-sm font-medium text-white">Service request received</h4>
+              <span
+                className="font-mono text-[10px] text-zinc-500"
+              >
+                24ms
+              </span>
+            </div>
+            <p
+              className="truncate font-mono text-xs leading-relaxed text-zinc-400"
+              style={{
+                transform: `translateX(${drift(frame + 18, { period: 210, min: 0, max: 7 })}px)`
+              }}
+            >
+              {solutionEventLabel}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className="relative flex flex-col items-center">
+        <div className="h-6 w-px border-r border-dashed border-zinc-700 bg-gradient-to-b from-white/10 to-transparent" />
+        <div
+          className="z-20 my-2 flex items-center gap-2 rounded-full border border-zinc-800 bg-black px-3 py-1.5 shadow-xl"
+          style={{
+            transform: `scale(${breathe(frame + 40, { period: 230, min: 0.98, max: 1.04 })})`,
+            boxShadow: `0 16px 30px rgba(0,0,0,0.45), 0 0 24px rgba(16,185,129,${breathe(frame + 40, { period: 230, min: 0.1, max: 0.22 })})`
+          }}
+        >
+          <div
+            className="h-1.5 w-1.5 rounded-full bg-emerald-500"
+            style={{
+              transform: `scale(${breathe(frame + 40, { period: 180, min: 0.96, max: 1.18 })})`
+            }}
+          />
+          <span className="font-mono text-[10px] font-medium text-zinc-400">WILDERBOTS CORE</span>
+        </div>
+        <div className="h-6 w-px border-r border-dashed border-zinc-700 bg-gradient-to-b from-transparent to-white/10" />
+      </div>
+
+      <div
+        className="relative w-full overflow-hidden rounded-2xl border border-white/10 bg-[#0c0c0e] p-5 shadow-2xl"
+        style={{
+          opacity: mapFrame(frame, [20, 50], [0.72, 1]),
+          transform: `translate3d(${drift(frame + 35, { period: 250, min: -2, max: 2 })}px, ${drift(frame + 25, { period: 240, min: -3, max: 14 })}px, 0)`
+        }}
+      >
+        <div
+          className="pointer-events-none absolute top-0 right-0 h-32 w-32 rounded-full bg-sky-500/5 blur-3xl"
+          style={{
+            opacity: breathe(frame + 30, { period: 260, min: 0.12, max: 0.28 })
+          }}
+        />
+        <div className="mb-4 flex items-center gap-3">
+          <Database className="h-5 w-5 text-neutral-50" />
+          <span className="text-sm font-medium text-zinc-200">{solutionNarrative}</span>
+          <div className="ml-auto flex gap-1">
+            {[0, 10].map((phase) => {
+              const dotFrame = frame + phase
+              return (
+                <span
+                  key={phase}
+                  className="h-1.5 w-1.5 rounded-full bg-zinc-700"
+                  style={{
+                    transform: `scale(${breathe(dotFrame, { period: 180, min: 0.96, max: 1.14 })})`
+                  }}
+                />
+              )
+            })}
+          </div>
+        </div>
+
+        <div
+          className="flex items-center justify-between gap-4 rounded-lg border border-white/5 bg-zinc-900/50 p-3"
+          style={{
+            borderColor: `rgba(255,255,255,${breathe(frame + 45, { period: 240, min: 0.08, max: 0.16 })})`
+          }}
+        >
+          <div className="min-w-0 flex items-center gap-3">
+            <div
+              className="h-2 w-2 rounded-full bg-orange-500"
+              style={{
+                boxShadow: `0 0 10px rgba(249,115,22,${breathe(frame + 60, { period: 190, min: 0.24, max: 0.48 })})`,
+                transform: `scale(${breathe(frame + 60, { period: 190, min: 0.96, max: 1.14 })})`
+              }}
+            />
+            <div className="min-w-0 flex flex-col">
+              <span className="truncate text-xs font-medium text-white">{solutionSummaryLabel}</span>
+              <span
+                className="truncate font-mono text-[10px] text-zinc-500"
+              >
+                {solutionFeatureLine}
+              </span>
+            </div>
+          </div>
+          <div className="flex shrink-0 items-center gap-2">
+            <span
+              className="rounded border border-white/5 bg-zinc-800 px-1.5 py-0.5 font-mono text-[10px] text-zinc-400"
+              style={{ transform: `translateY(${drift(frame + 70, { period: 220, min: 0, max: 5 })}px)` }}
+            >
+              Wilderbots
+            </span>
+            <div
+              className="flex h-6 w-6 items-center justify-center rounded border border-white/5 bg-zinc-800"
+              style={{ transform: `scale(${breathe(frame + 90, { period: 200, min: 0.97, max: 1.08 })})` }}
+            >
+              <span className="text-[10px] text-zinc-400">{productFeatureCount}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   )
 }
 
@@ -721,77 +1389,7 @@ export default function Home() {
                 </rect>
               </svg>
 
-              <div className="absolute bottom-12 right-8 z-40 hidden origin-bottom-left animate-float md:block lg:left-[52%] lg:right-auto lg:bottom-[12%]">
-                <div className="relative z-10 flex w-52 flex-col gap-3 rounded-xl border border-white/10 bg-zinc-900/90 p-5 shadow-[0_8px_30px_rgba(0,0,0,0.5)] backdrop-blur-md">
-                  <div className="flex items-center justify-between border-b border-white/5 pb-3">
-                    <div className="flex items-center gap-2.5">
-                      <span className="flex h-5 w-5 items-center justify-center rounded bg-zinc-800 text-[10px] font-bold text-zinc-400">01</span>
-                      <span className="text-xs font-semibold uppercase tracking-wide text-zinc-200">Ingest</span>
-                    </div>
-                    <Zap className="h-4 w-4 text-zinc-500" />
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <div className="flex h-4 w-4 items-center justify-center rounded border border-orange-500/20 bg-orange-900/30 text-[10px] text-orange-400">B</div>
-                        <span className="text-[10px] font-medium text-zinc-400">Client Brief</span>
-                      </div>
-                      <span className="rounded-full border border-emerald-500/20 bg-emerald-500/10 px-1.5 py-0.5 text-[9px] font-medium text-emerald-400">Active</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <div className="flex h-4 w-4 items-center justify-center rounded border border-blue-500/20 bg-blue-900/30 text-[10px] text-blue-400">
-                          <Database className="h-3 w-3" />
-                        </div>
-                        <span className="text-[10px] font-medium text-zinc-400">Project Scope</span>
-                      </div>
-                      <span className="text-[9px] text-zinc-600">Reviewing</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="absolute right-8 bottom-[12rem] z-40 hidden origin-bottom-right animate-float delay-200 md:block lg:right-[25%] lg:bottom-[40%]">
-                <div className="relative z-10 flex w-56 flex-col gap-3 rounded-xl border border-white/10 bg-zinc-900/90 p-5 shadow-[0_8px_30px_rgba(0,0,0,0.5)] backdrop-blur-md">
-                  <div className="flex items-center justify-between border-b border-white/5 pb-3">
-                    <div className="flex items-center gap-2.5">
-                      <span className="flex h-5 w-5 items-center justify-center rounded bg-zinc-800 text-[10px] font-bold text-zinc-400">02</span>
-                      <span className="text-xs font-semibold uppercase tracking-wide text-zinc-200">Build</span>
-                    </div>
-                    <Cpu className="h-4 w-4 text-zinc-500" />
-                  </div>
-                  <div className="rounded border border-white/5 bg-black/40 p-2.5">
-                    <div className="mb-1 flex gap-1.5">
-                      <div className="h-2 w-2 rounded-full bg-red-500/40" />
-                      <div className="h-2 w-2 rounded-full bg-yellow-500/40" />
-                      <div className="h-2 w-2 rounded-full bg-green-500/40" />
-                    </div>
-                    <p className="font-mono text-[10px] leading-tight text-zinc-400">
-                      <span className="text-purple-400">WILDERBOTS</span> build <span className="text-purple-400">WHEN</span> goals align
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="absolute right-8 bottom-[20rem] z-40 hidden origin-bottom-right animate-float md:block lg:right-[10%] lg:top-[15%] lg:bottom-auto">
-                <div className="relative z-10 flex w-52 flex-col gap-3 rounded-xl border border-white/10 bg-zinc-900/90 p-5 shadow-[0_8px_30px_rgba(0,0,0,0.5)] backdrop-blur-md">
-                  <div className="flex items-center justify-between border-b border-white/5 pb-3">
-                    <div className="flex items-center gap-2.5">
-                      <span className="flex h-5 w-5 items-center justify-center rounded bg-zinc-800 text-[10px] font-bold text-zinc-400">03</span>
-                      <span className="text-xs font-semibold uppercase tracking-wide text-zinc-200">Launch</span>
-                    </div>
-                    <Server className="h-4 w-4 text-zinc-500" />
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]" />
-                    <span className="text-xs font-medium text-zinc-400">Delivery Active</span>
-                  </div>
-                  <div className="mt-1 flex items-center justify-between">
-                    <span className="font-mono text-[10px] uppercase text-zinc-500">Stage</span>
-                    <span className="font-mono text-xs font-medium text-emerald-400">Go-live</span>
-                  </div>
-                </div>
-              </div>
+              <AnimatedHeroStageCards />
             </div>
           </div>
 
@@ -827,71 +1425,7 @@ export default function Home() {
                           {featuredServices[0]?.description || DEFAULT_SERVICES[0].description}
                         </p>
 
-                        <div className="relative mt-auto flex h-[320px] w-full flex-col items-center justify-center overflow-hidden rounded-2xl border border-white/5 bg-black/12">
-                          <div
-                            className="absolute inset-0 z-0 opacity-30"
-                            style={{
-                              backgroundImage:
-                                'linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px)',
-                              backgroundSize: '30px 30px',
-                              transform: 'perspective(500px) rotateX(60deg) translateY(50px) scale(1.5)'
-                            }}
-                          />
-
-                          <div
-                            className="relative z-20 mb-10 flex items-center justify-center gap-2 text-[10px] font-mono text-zinc-300 md:gap-4 md:text-xs"
-                            style={{
-                              WebkitMaskImage: 'linear-gradient(90deg, transparent, black 5%, black 90%, transparent)',
-                              maskImage: 'linear-gradient(90deg, transparent, black 5%, black 90%, transparent)'
-                            }}
-                          >
-                            <div className="flex flex-col gap-3">
-                              <div className="flex items-center gap-2 rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-1.5 shadow-lg backdrop-blur-sm">
-                                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-indigo-500" />
-                                iOS
-                              </div>
-                              <div className="flex items-center gap-2 rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-1.5 shadow-lg backdrop-blur-sm">
-                                <span className="delay-75 h-1.5 w-1.5 animate-pulse rounded-full bg-sky-500" />
-                                Android
-                              </div>
-                            </div>
-
-                            <svg className="h-12 w-8 text-zinc-600" viewBox="0 0 32 48" fill="none" stroke="currentColor" strokeWidth="1.5">
-                              <path d="M0 12 C 16 12, 16 24, 32 24" strokeDasharray="3 3" className="opacity-50" />
-                              <path d="M0 36 C 16 36, 16 24, 32 24" strokeDasharray="3 3" className="opacity-50" />
-                            </svg>
-
-                            <div className="z-10 rounded-xl bg-gradient-to-br from-zinc-800 to-zinc-900 px-3 py-2 font-semibold text-white shadow-xl">
-                              ships product
-                            </div>
-
-                            <svg className="h-12 w-8 text-zinc-600" viewBox="0 0 32 48" fill="none" stroke="currentColor" strokeWidth="1.5">
-                              <path d="M0 24 C 16 24, 16 12, 32 12" strokeDasharray="3 3" className="opacity-50" />
-                              <path d="M0 24 C 16 24, 16 36, 32 36" strokeDasharray="3 3" className="opacity-50" />
-                            </svg>
-
-                            <div className="flex flex-col gap-3">
-                              <div className="rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-1.5 text-zinc-500 shadow-lg backdrop-blur-sm">
-                                cross-platform
-                              </div>
-                              <div className="rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-1.5 text-zinc-500 shadow-lg backdrop-blur-sm">
-                                production ready
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className="absolute bottom-8 z-10 flex w-full justify-center gap-4 px-10">
-                            <span className="-rotate-2 cursor-default select-none rounded-full border border-indigo-500/30 bg-indigo-500/10 px-3 py-1 text-[10px] text-indigo-300 shadow-[0_0_15px_rgba(99,102,241,0.2)] backdrop-blur-sm transition-transform hover:scale-105">
-                              Mobile UI
-                            </span>
-                            <span className="rotate-3 cursor-default select-none rounded-full border border-sky-500/30 bg-sky-500/10 px-3 py-1 text-[10px] text-sky-300 shadow-[0_0_15px_rgba(14,165,233,0.2)] backdrop-blur-sm transition-transform hover:scale-105">
-                              API Layer
-                            </span>
-                            <span className="-translate-y-2 cursor-default select-none rounded-full border border-purple-500/30 bg-purple-500/10 px-3 py-1 text-[10px] text-purple-300 shadow-[0_0_15px_rgba(168,85,247,0.2)] backdrop-blur-sm transition-transform hover:scale-105">
-                              App Launch
-                            </span>
-                          </div>
-                        </div>
+                        <AnimatedServiceDeliveryVisual />
                       </div>
                     </div>
                   ) : (
@@ -918,70 +1452,7 @@ export default function Home() {
                           </div>
                         ) : null}
 
-                        <div className="relative mt-auto w-full overflow-hidden rounded-xl border border-white/10 bg-[#0c0c0e] p-5 shadow-2xl transition-shadow duration-500 group-hover:shadow-indigo-500/10">
-                          <div className="mb-5 flex items-center justify-between border-b border-white/5 pb-3">
-                            <div className="flex items-center gap-2">
-                              <span className="text-xs font-semibold tracking-wide text-white">Web Stack</span>
-                              <span className="rounded-md border border-white/5 bg-zinc-800 px-1.5 py-0.5 text-[9px] font-medium text-zinc-400">live setup</span>
-                            </div>
-                            <div className="flex gap-1.5">
-                              <div className="h-2 w-2 rounded-full bg-zinc-700" />
-                              <div className="h-2 w-2 rounded-full bg-zinc-700" />
-                            </div>
-                          </div>
-
-                          <div className="relative z-10 space-y-3 font-mono text-[10px] sm:text-xs">
-                            <div className="flex items-center gap-2">
-                              <span className="w-10 text-right font-medium text-zinc-500">Type</span>
-                              <div className="flex h-7 flex-1 items-center rounded border border-white/10 bg-zinc-900 px-2 text-sky-300 transition-colors group-hover:border-white/20">
-                                landing pages
-                              </div>
-                              <div className="flex h-7 w-8 items-center justify-center rounded border border-white/10 bg-zinc-900 text-zinc-400">+</div>
-                              <div className="flex h-7 w-20 items-center rounded border border-white/10 bg-zinc-900 px-2 text-[10px] text-white">
-                                portals
-                              </div>
-                            </div>
-
-                            <div className="flex items-center gap-2">
-                              <span className="w-10 text-right font-medium text-zinc-500">Built</span>
-                              <div className="flex h-7 flex-1 items-center rounded border border-white/10 bg-zinc-900 px-2 text-sky-300 transition-colors group-hover:border-white/20">
-                                responsive UI
-                              </div>
-                              <div className="flex h-7 w-8 items-center justify-center rounded border border-white/10 bg-zinc-900 text-zinc-400">{'>'}</div>
-                              <div className="flex h-7 w-20 items-center rounded border border-white/10 bg-zinc-900 px-2 text-emerald-400">
-                                shipped
-                              </div>
-                            </div>
-
-                            <div className="relative mt-2 border-l border-zinc-800 pl-4 pt-2">
-                              <span className="absolute top-5 -left-[17px] h-px w-4 bg-zinc-800" />
-                              <div className="mb-2 flex items-center gap-2">
-                                <span className="text-[9px] font-semibold uppercase tracking-wider text-zinc-600">Output</span>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <span className="w-10 text-right font-medium text-zinc-500">Focus</span>
-                                <div className="flex h-7 flex-1 items-center rounded border border-white/10 bg-zinc-900 px-2 text-sky-300">conversion + clarity</div>
-                                <div className="flex h-7 w-8 items-center justify-center rounded border border-white/10 bg-zinc-900 text-zinc-400">in</div>
-                                <div className="flex h-7 w-20 items-center rounded border border-white/10 bg-zinc-900 px-2 text-[10px] text-orange-400">
-                                  production
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className="relative z-10 mt-5 grid grid-cols-2 gap-3">
-                            <div className="rounded-lg border border-white/8 bg-zinc-900/80 px-3 py-2">
-                              <div className="mb-1 text-[9px] uppercase tracking-[0.2em] text-zinc-600">Frontend</div>
-                              <div className="text-xs text-zinc-300">Responsive build</div>
-                            </div>
-                            <div className="rounded-lg border border-white/8 bg-zinc-900/80 px-3 py-2">
-                              <div className="mb-1 text-[9px] uppercase tracking-[0.2em] text-zinc-600">Delivery</div>
-                              <div className="text-xs text-zinc-300">Launch ready</div>
-                            </div>
-                          </div>
-
-                          <div className="pointer-events-none absolute -right-5 -bottom-10 h-32 w-32 rounded-full bg-indigo-500/10 blur-[40px] transition-all duration-700 group-hover:bg-indigo-500/20" />
-                        </div>
+                        <AnimatedWebStackPreviewCard />
                       </div>
                     </div>
                   )
@@ -999,71 +1470,7 @@ export default function Home() {
                       {featuredServices[0]?.description || DEFAULT_SERVICES[0].description}
                     </p>
 
-                    <div className="relative mt-auto flex h-[320px] w-full flex-col items-center justify-center overflow-hidden rounded-2xl border border-white/5 bg-black/12">
-                      <div
-                        className="absolute inset-0 z-0 opacity-30"
-                        style={{
-                          backgroundImage:
-                            'linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px)',
-                          backgroundSize: '30px 30px',
-                          transform: 'perspective(500px) rotateX(60deg) translateY(50px) scale(1.5)'
-                        }}
-                      />
-
-                      <div
-                        className="relative z-20 mb-10 flex items-center justify-center gap-2 text-[10px] font-mono text-zinc-300 md:gap-4 md:text-xs"
-                        style={{
-                          WebkitMaskImage: 'linear-gradient(90deg, transparent, black 5%, black 90%, transparent)',
-                          maskImage: 'linear-gradient(90deg, transparent, black 5%, black 90%, transparent)'
-                        }}
-                      >
-                        <div className="flex flex-col gap-3">
-                          <div className="flex items-center gap-2 rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-1.5 shadow-lg backdrop-blur-sm">
-                            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-indigo-500" />
-                            iOS
-                          </div>
-                          <div className="flex items-center gap-2 rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-1.5 shadow-lg backdrop-blur-sm">
-                            <span className="delay-75 h-1.5 w-1.5 animate-pulse rounded-full bg-sky-500" />
-                            Android
-                          </div>
-                        </div>
-
-                        <svg className="h-12 w-8 text-zinc-600" viewBox="0 0 32 48" fill="none" stroke="currentColor" strokeWidth="1.5">
-                          <path d="M0 12 C 16 12, 16 24, 32 24" strokeDasharray="3 3" className="opacity-50" />
-                          <path d="M0 36 C 16 36, 16 24, 32 24" strokeDasharray="3 3" className="opacity-50" />
-                        </svg>
-
-                        <div className="z-10 rounded-xl bg-gradient-to-br from-zinc-800 to-zinc-900 px-3 py-2 font-semibold text-white shadow-xl">
-                          ships product
-                        </div>
-
-                        <svg className="h-12 w-8 text-zinc-600" viewBox="0 0 32 48" fill="none" stroke="currentColor" strokeWidth="1.5">
-                          <path d="M0 24 C 16 24, 16 12, 32 12" strokeDasharray="3 3" className="opacity-50" />
-                          <path d="M0 24 C 16 24, 16 36, 32 36" strokeDasharray="3 3" className="opacity-50" />
-                        </svg>
-
-                        <div className="flex flex-col gap-3">
-                          <div className="rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-1.5 text-zinc-500 shadow-lg backdrop-blur-sm">
-                            cross-platform
-                          </div>
-                          <div className="rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-1.5 text-zinc-500 shadow-lg backdrop-blur-sm">
-                            production ready
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="absolute bottom-8 z-10 flex w-full justify-center gap-4 px-10">
-                        <span className="-rotate-2 cursor-default select-none rounded-full border border-indigo-500/30 bg-indigo-500/10 px-3 py-1 text-[10px] text-indigo-300 shadow-[0_0_15px_rgba(99,102,241,0.2)] backdrop-blur-sm transition-transform hover:scale-105">
-                          Mobile UI
-                        </span>
-                        <span className="rotate-3 cursor-default select-none rounded-full border border-sky-500/30 bg-sky-500/10 px-3 py-1 text-[10px] text-sky-300 shadow-[0_0_15px_rgba(14,165,233,0.2)] backdrop-blur-sm transition-transform hover:scale-105">
-                          API Layer
-                        </span>
-                        <span className="-translate-y-2 cursor-default select-none rounded-full border border-purple-500/30 bg-purple-500/10 px-3 py-1 text-[10px] text-purple-300 shadow-[0_0_15px_rgba(168,85,247,0.2)] backdrop-blur-sm transition-transform hover:scale-105">
-                          App Launch
-                        </span>
-                      </div>
-                    </div>
+                    <AnimatedServiceDeliveryVisual />
                   </div>
                 </div>
 
@@ -1090,70 +1497,7 @@ export default function Home() {
                       </div>
                     ) : null}
 
-                    <div className="relative mt-auto w-full overflow-hidden rounded-xl border border-white/10 bg-[#0c0c0e] p-5 shadow-2xl transition-shadow duration-500 group-hover:shadow-indigo-500/10">
-                      <div className="mb-5 flex items-center justify-between border-b border-white/5 pb-3">
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs font-semibold tracking-wide text-white">Web Stack</span>
-                          <span className="rounded-md border border-white/5 bg-zinc-800 px-1.5 py-0.5 text-[9px] font-medium text-zinc-400">live setup</span>
-                        </div>
-                        <div className="flex gap-1.5">
-                          <div className="h-2 w-2 rounded-full bg-zinc-700" />
-                          <div className="h-2 w-2 rounded-full bg-zinc-700" />
-                        </div>
-                      </div>
-
-                      <div className="relative z-10 space-y-3 font-mono text-[10px] sm:text-xs">
-                        <div className="flex items-center gap-2">
-                          <span className="w-10 text-right font-medium text-zinc-500">Type</span>
-                          <div className="flex h-7 flex-1 items-center rounded border border-white/10 bg-zinc-900 px-2 text-sky-300 transition-colors group-hover:border-white/20">
-                            landing pages
-                          </div>
-                          <div className="flex h-7 w-8 items-center justify-center rounded border border-white/10 bg-zinc-900 text-zinc-400">+</div>
-                          <div className="flex h-7 w-20 items-center rounded border border-white/10 bg-zinc-900 px-2 text-[10px] text-white">
-                            portals
-                          </div>
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                          <span className="w-10 text-right font-medium text-zinc-500">Built</span>
-                          <div className="flex h-7 flex-1 items-center rounded border border-white/10 bg-zinc-900 px-2 text-sky-300 transition-colors group-hover:border-white/20">
-                            responsive UI
-                          </div>
-                          <div className="flex h-7 w-8 items-center justify-center rounded border border-white/10 bg-zinc-900 text-zinc-400">{'>'}</div>
-                          <div className="flex h-7 w-20 items-center rounded border border-white/10 bg-zinc-900 px-2 text-emerald-400">
-                            shipped
-                          </div>
-                        </div>
-
-                        <div className="relative mt-2 border-l border-zinc-800 pl-4 pt-2">
-                          <span className="absolute top-5 -left-[17px] h-px w-4 bg-zinc-800" />
-                          <div className="mb-2 flex items-center gap-2">
-                            <span className="text-[9px] font-semibold uppercase tracking-wider text-zinc-600">Output</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span className="w-10 text-right font-medium text-zinc-500">Focus</span>
-                            <div className="flex h-7 flex-1 items-center rounded border border-white/10 bg-zinc-900 px-2 text-sky-300">conversion + clarity</div>
-                            <div className="flex h-7 w-8 items-center justify-center rounded border border-white/10 bg-zinc-900 text-zinc-400">in</div>
-                            <div className="flex h-7 w-20 items-center rounded border border-white/10 bg-zinc-900 px-2 text-[10px] text-orange-400">
-                              production
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="relative z-10 mt-5 grid grid-cols-2 gap-3">
-                        <div className="rounded-lg border border-white/8 bg-zinc-900/80 px-3 py-2">
-                          <div className="mb-1 text-[9px] uppercase tracking-[0.2em] text-zinc-600">Frontend</div>
-                          <div className="text-xs text-zinc-300">Responsive build</div>
-                        </div>
-                        <div className="rounded-lg border border-white/8 bg-zinc-900/80 px-3 py-2">
-                          <div className="mb-1 text-[9px] uppercase tracking-[0.2em] text-zinc-600">Delivery</div>
-                          <div className="text-xs text-zinc-300">Launch ready</div>
-                        </div>
-                      </div>
-
-                      <div className="pointer-events-none absolute -right-5 -bottom-10 h-32 w-32 rounded-full bg-indigo-500/10 blur-[40px] transition-all duration-700 group-hover:bg-indigo-500/20" />
-                    </div>
+                    <AnimatedWebStackPreviewCard />
                   </div>
                 </div>
               </div>
@@ -1212,116 +1556,14 @@ export default function Home() {
                   </div>
 
                   <div className="order-1 relative w-full lg:order-2">
-                    <div className="relative mx-auto mr-auto ml-auto w-full max-w-lg lg:mr-0">
-                      <div className="mb-6 flex justify-between px-4 text-[10px] font-mono uppercase tracking-widest text-zinc-600">
-                        <span>Connected Tools</span>
-                        <span className="mr-12">{companyName} Workflow</span>
-                      </div>
-
-                      <div className="relative mb-12 flex items-center justify-between px-2">
-                        <div className="flex gap-3 md:gap-4">
-                          {(serviceToolLabels.length ? serviceToolLabels : ['Applications', 'Web', 'Software', 'AI']).map((label) => (
-                            <div key={label} className="group flex h-12 min-w-[5.75rem] items-center justify-center rounded-xl border border-white/10 bg-zinc-900 px-3 text-white/50 shadow-lg transition-all duration-300 hover:scale-105 hover:border-white/20 hover:text-white">
-                              <span className="text-xs font-semibold">{label}</span>
-                            </div>
-                          ))}
-                        </div>
-
-                        <div className="flex gap-3 border-l border-dashed border-white/5 pl-8 md:gap-4">
-                          {processingLabels.map((label) => (
-                            <div key={label} className="group flex h-12 min-w-[5.75rem] items-center justify-center rounded-xl border border-white/10 bg-zinc-900 px-3 text-white/50 shadow-lg transition-all duration-300 hover:scale-105 hover:border-white/20 hover:text-white">
-                              <span className="text-xs font-semibold">{label}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-
-                      <div className="absolute top-10 left-0 z-0 hidden h-[180px] w-full pointer-events-none sm:block">
-                        <svg className="h-full w-full overflow-visible" preserveAspectRatio="none" viewBox="0 0 512 180">
-                          <path d="M 32 24 C 32 80, 256 40, 256 120" fill="none" stroke="white" strokeOpacity="0.05" strokeWidth="1.5" />
-                          <path d="M 92 24 C 92 80, 256 40, 256 120" fill="none" stroke="white" strokeOpacity="0.05" strokeWidth="1.5" />
-                          <path d="M 152 24 C 152 80, 256 40, 256 120" fill="none" stroke="white" strokeOpacity="0.05" strokeWidth="1.5" />
-                          <path d="M 212 24 C 212 80, 256 40, 256 120" fill="none" stroke="white" strokeOpacity="0.05" strokeWidth="1.5" />
-                          <path d="M 360 24 C 360 80, 256 40, 256 120" fill="none" stroke="white" strokeOpacity="0.05" strokeWidth="1.5" />
-                          <path d="M 420 24 C 420 80, 256 40, 256 120" fill="none" stroke="white" strokeOpacity="0.05" strokeWidth="1.5" />
-                          <path d="M 480 24 C 480 80, 256 40, 256 120" fill="none" stroke="white" strokeOpacity="0.05" strokeWidth="1.5" />
-
-                          <path d="M 32 24 C 32 80, 256 40, 256 120" fill="none" stroke="url(#line-gradient)" strokeWidth="1.5" className="animate-beam" />
-                          <path d="M 92 24 C 92 80, 256 40, 256 120" fill="none" stroke="url(#line-gradient)" strokeWidth="1.5" className="animate-beam" style={{ animationDelay: '-1s' }} />
-                          <path d="M 152 24 C 152 80, 256 40, 256 120" fill="none" stroke="url(#line-gradient)" strokeWidth="1.5" className="animate-beam" style={{ animationDelay: '-2s' }} />
-                          <path d="M 212 24 C 212 80, 256 40, 256 120" fill="none" stroke="url(#line-gradient)" strokeWidth="1.5" className="animate-beam" style={{ animationDelay: '-3s' }} />
-                          <path d="M 360 24 C 360 80, 256 40, 256 120" fill="none" stroke="url(#line-gradient)" strokeWidth="1.5" className="animate-beam" style={{ animationDelay: '-1.5s' }} />
-                          <path d="M 420 24 C 420 80, 256 40, 256 120" fill="none" stroke="url(#line-gradient)" strokeWidth="1.5" className="animate-beam" style={{ animationDelay: '-2.5s' }} />
-                          <path d="M 480 24 C 480 80, 256 40, 256 120" fill="none" stroke="url(#line-gradient)" strokeWidth="1.5" className="animate-beam" style={{ animationDelay: '-0.5s' }} />
-
-                          <circle cx="256" cy="120" r="3" fill="#6366f1" className="animate-pulse">
-                            <animate attributeName="r" values="3;5;3" dur="2s" repeatCount="indefinite" />
-                            <animate attributeName="opacity" values="1;0.5;1" dur="2s" repeatCount="indefinite" />
-                          </circle>
-                          <line x1="256" y1="120" x2="256" y2="160" stroke="#6366f1" strokeWidth="1.5" strokeDasharray="4 4" opacity="0.5" />
-                        </svg>
-                      </div>
-
-                      <div className="relative z-10 mt-16 flex flex-col items-center gap-6">
-                        <div className="group relative w-full rounded-2xl border border-white/5 bg-zinc-900/62 p-5 shadow-2xl backdrop-blur-md">
-                          <div className="absolute top-8 -left-px h-8 w-[3px] rounded-r-full bg-indigo-500" />
-                          <div className="flex items-start gap-4">
-                            <div className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-indigo-500/20 bg-indigo-500/10 text-indigo-400">
-                              <Sparkles className="h-4 w-4" />
-                            </div>
-                            <div className="min-w-0 flex-1">
-                              <div className="mb-1 flex items-center justify-between">
-                                <h4 className="font-mono text-sm font-medium text-white">Service request received</h4>
-                                <span className="font-mono text-[10px] text-zinc-500">24ms</span>
-                              </div>
-                              <p className="truncate font-mono text-xs leading-relaxed text-zinc-400 opacity-70">
-                                {solutionEventLabel}
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="relative flex flex-col items-center">
-                          <div className="h-6 w-px border-r border-dashed border-zinc-700 bg-gradient-to-b from-white/10 to-transparent" />
-                          <div className="z-20 my-2 flex items-center gap-2 rounded-full border border-zinc-800 bg-black px-3 py-1.5 shadow-xl">
-                            <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
-                            <span className="font-mono text-[10px] font-medium text-zinc-400">WILDERBOTS CORE</span>
-                          </div>
-                          <div className="h-6 w-px border-r border-dashed border-zinc-700 bg-gradient-to-b from-transparent to-white/10" />
-                        </div>
-
-                        <div className="relative w-full overflow-hidden rounded-2xl border border-white/10 bg-[#0c0c0e] p-5 shadow-2xl">
-                          <div className="pointer-events-none absolute top-0 right-0 h-32 w-32 rounded-full bg-sky-500/5 blur-3xl" />
-                          <div className="mb-4 flex items-center gap-3">
-                            <Database className="h-5 w-5 text-neutral-50" />
-                            <span className="text-sm font-medium text-zinc-200">{solutionNarrative}</span>
-                            <div className="ml-auto flex gap-1">
-                              <span className="h-1.5 w-1.5 rounded-full bg-zinc-700" />
-                              <span className="h-1.5 w-1.5 rounded-full bg-zinc-700" />
-                            </div>
-                          </div>
-
-                          <div className="flex items-center justify-between gap-4 rounded-lg border border-white/5 bg-zinc-900/50 p-3">
-                            <div className="min-w-0 flex items-center gap-3">
-                              <div className="h-2 w-2 rounded-full bg-orange-500 shadow-[0_0_8px_rgba(249,115,22,0.4)]" />
-                              <div className="min-w-0 flex flex-col">
-                                <span className="truncate text-xs font-medium text-white">{solutionSummaryLabel}</span>
-                                <span className="truncate font-mono text-[10px] text-zinc-500">
-                                  {solutionFeatureLine}
-                                </span>
-                              </div>
-                            </div>
-                            <div className="flex shrink-0 items-center gap-2">
-                              <span className="rounded border border-white/5 bg-zinc-800 px-1.5 py-0.5 font-mono text-[10px] text-zinc-400">
-                                Wilderbots
-                              </span>
-                              <div className="flex h-6 w-6 items-center justify-center rounded border border-white/5 bg-zinc-800">
-                                <span className="text-[10px] text-zinc-400">{Math.max(1, productFeatureTitles.length || 1)}</span>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+                    <div className="relative mx-auto mr-auto ml-auto w-full max-w-[760px] lg:mr-0">
+                      <AnimatedSolutionWorkflowPreview
+                        solutionEventLabel={solutionEventLabel}
+                        solutionNarrative={solutionNarrative}
+                        solutionSummaryLabel={solutionSummaryLabel}
+                        solutionFeatureLine={solutionFeatureLine}
+                        productFeatureCount={Math.max(1, productFeatureTitles.length || 1)}
+                      />
                     </div>
                   </div>
                 </div>
