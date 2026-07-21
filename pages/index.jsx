@@ -189,26 +189,6 @@ function useRemotionFrame({ fps = REMOTION_FPS } = {}) {
   return prefersReducedMotion ? 0 : frame
 }
 
-function AnimatedHeroStageCards() {
-  const frame = useRemotionFrame()
-  return <HeroStageCards frame={frame} />
-}
-
-function AnimatedServiceDeliveryVisual() {
-  const frame = useRemotionFrame()
-  return <ServiceDeliveryVisual frame={frame} />
-}
-
-function AnimatedWebStackPreviewCard() {
-  const frame = useRemotionFrame()
-  return <WebStackPreviewCard frame={frame} />
-}
-
-function AnimatedSolutionWorkflowPreview(props) {
-  const frame = useRemotionFrame()
-  return <SolutionWorkflowPreview frame={frame} {...props} />
-}
-
 const getProductDestination = (product) => {
   if (!product) return '/products'
   const previewUrl = getProductPreviewUrl(product)
@@ -956,6 +936,15 @@ function AuraBackdrop() {
   useEffect(() => {
     let cancelled = false
     let retryTimer = null
+    let idleHandle = null
+
+    if (typeof window === 'undefined') return undefined
+
+    const prefersReducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+    const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection
+    const shouldSkipBackdrop = prefersReducedMotion || window.innerWidth < 1024 || connection?.saveData
+
+    if (shouldSkipBackdrop) return undefined
 
     const initBackdrop = () => {
       if (cancelled || typeof window === 'undefined') return
@@ -974,22 +963,35 @@ function AuraBackdrop() {
       retryTimer = window.setTimeout(initBackdrop, 1200)
     }
 
-    const existingScript = document.querySelector('script[data-unicorn-studio]')
-    if (!existingScript) {
-      const script = document.createElement('script')
-      script.src =
-        'https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v1.4.29/dist/unicornStudio.umd.js'
-      script.async = true
-      script.dataset.unicornStudio = 'true'
-      script.onload = initBackdrop
-      document.body.appendChild(script)
+    const loadBackdropScript = () => {
+      if (cancelled) return
+
+      const existingScript = document.querySelector('script[data-unicorn-studio]')
+      if (!existingScript) {
+        const script = document.createElement('script')
+        script.src =
+          'https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v1.4.29/dist/unicornStudio.umd.js'
+        script.async = true
+        script.dataset.unicornStudio = 'true'
+        script.onload = initBackdrop
+        document.body.appendChild(script)
+      } else {
+        initBackdrop()
+      }
+    }
+
+    if ('requestIdleCallback' in window) {
+      idleHandle = window.requestIdleCallback(loadBackdropScript, { timeout: 2000 })
     } else {
-      initBackdrop()
+      retryTimer = window.setTimeout(loadBackdropScript, 800)
     }
 
     return () => {
       cancelled = true
       if (retryTimer) window.clearTimeout(retryTimer)
+      if (idleHandle && 'cancelIdleCallback' in window) {
+        window.cancelIdleCallback(idleHandle)
+      }
     }
   }, [])
 
@@ -1024,83 +1026,25 @@ function AuraBackdrop() {
   )
 }
 
-export default function Home() {
+export default function Home({
+  initialProducts = DEFAULT_PRODUCTS,
+  initialServices = DEFAULT_SERVICES,
+  initialStats = DEFAULT_STATS,
+  initialReviews = DEFAULT_REVIEWS,
+  initialCompanyInfo = null,
+  initialEmailAddresses = []
+}) {
   const router = useRouter()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [showAllServices, setShowAllServices] = useState(false)
-  const [products, setProducts] = useState(DEFAULT_PRODUCTS)
-  const [services, setServices] = useState(DEFAULT_SERVICES)
-  const [stats, setStats] = useState(DEFAULT_STATS)
-  const [reviews, setReviews] = useState(DEFAULT_REVIEWS)
-  const [companyInfo, setCompanyInfo] = useState(null)
-  const [emailAddresses, setEmailAddresses] = useState([])
   const [servicesCarouselIndex, setServicesCarouselIndex] = useState(0)
-
-  useEffect(() => {
-    let cancelled = false
-
-    const loadData = async () => {
-      try {
-        const [productsRes, servicesRes, statsRes, companyInfoRes, emailAddressesRes, reviewsRes] = await Promise.allSettled([
-          fetch('/api/product'),
-          fetch('/api/services'),
-          fetch('/api/stats'),
-          fetch('/api/company-info'),
-          fetch('/api/email-addresses'),
-          fetch('/api/reviews')
-        ])
-
-        if (cancelled) return
-
-        if (productsRes.status === 'fulfilled' && productsRes.value.ok) {
-          const data = await productsRes.value.json()
-          if (Array.isArray(data) && data.length > 0) setProducts(data)
-        }
-
-        if (servicesRes.status === 'fulfilled' && servicesRes.value.ok) {
-          const data = await servicesRes.value.json()
-          if (Array.isArray(data.services) && data.services.length > 0) {
-            setServices(data.services)
-          }
-        }
-
-        if (statsRes.status === 'fulfilled' && statsRes.value.ok) {
-          const data = await statsRes.value.json()
-          if (Array.isArray(data.stats) && data.stats.length > 0) {
-            setStats(data.stats.slice(0, 4))
-          }
-        }
-
-        if (companyInfoRes.status === 'fulfilled' && companyInfoRes.value.ok) {
-          const data = await companyInfoRes.value.json()
-          if (data?.companyInfo) {
-            setCompanyInfo(data.companyInfo)
-          }
-        }
-
-        if (emailAddressesRes.status === 'fulfilled' && emailAddressesRes.value.ok) {
-          const data = await emailAddressesRes.value.json()
-          if (Array.isArray(data.emailAddresses)) {
-            setEmailAddresses(data.emailAddresses)
-          }
-        }
-
-        if (reviewsRes.status === 'fulfilled' && reviewsRes.value.ok) {
-          const data = await reviewsRes.value.json()
-          if (Array.isArray(data.reviews) && data.reviews.length > 0) {
-            setReviews(data.reviews)
-          }
-        }
-      } catch (error) {
-        console.error('Failed to load landing data', error)
-      }
-    }
-
-    loadData()
-    return () => {
-      cancelled = true
-    }
-  }, [])
+  const products = initialProducts.length ? initialProducts : DEFAULT_PRODUCTS
+  const services = initialServices.length ? initialServices : DEFAULT_SERVICES
+  const stats = initialStats.length ? initialStats : DEFAULT_STATS
+  const reviews = initialReviews.length ? initialReviews : DEFAULT_REVIEWS
+  const companyInfo = initialCompanyInfo
+  const emailAddresses = initialEmailAddresses
+  const frame = useRemotionFrame({ fps: 24 })
 
   const primaryProduct = products[0] || DEFAULT_PRODUCTS[0]
   const heroTitle = primaryProduct.title || DEFAULT_PRODUCTS[0].title
@@ -1389,7 +1333,7 @@ export default function Home() {
                 </rect>
               </svg>
 
-              <AnimatedHeroStageCards />
+              <HeroStageCards frame={frame} />
             </div>
           </div>
 
@@ -1425,7 +1369,7 @@ export default function Home() {
                           {featuredServices[0]?.description || DEFAULT_SERVICES[0].description}
                         </p>
 
-                        <AnimatedServiceDeliveryVisual />
+                        <ServiceDeliveryVisual frame={frame} />
                       </div>
                     </div>
                   ) : (
@@ -1452,7 +1396,7 @@ export default function Home() {
                           </div>
                         ) : null}
 
-                        <AnimatedWebStackPreviewCard />
+                        <WebStackPreviewCard frame={frame} />
                       </div>
                     </div>
                   )
@@ -1470,7 +1414,7 @@ export default function Home() {
                       {featuredServices[0]?.description || DEFAULT_SERVICES[0].description}
                     </p>
 
-                    <AnimatedServiceDeliveryVisual />
+                    <ServiceDeliveryVisual frame={frame} />
                   </div>
                 </div>
 
@@ -1497,7 +1441,7 @@ export default function Home() {
                       </div>
                     ) : null}
 
-                    <AnimatedWebStackPreviewCard />
+                    <WebStackPreviewCard frame={frame} />
                   </div>
                 </div>
               </div>
@@ -1557,7 +1501,8 @@ export default function Home() {
 
                   <div className="order-1 relative w-full lg:order-2">
                     <div className="relative mx-auto mr-auto ml-auto w-full max-w-[760px] lg:mr-0">
-                      <AnimatedSolutionWorkflowPreview
+                      <SolutionWorkflowPreview
+                        frame={frame}
                         solutionEventLabel={solutionEventLabel}
                         solutionNarrative={solutionNarrative}
                         solutionSummaryLabel={solutionSummaryLabel}
@@ -1959,4 +1904,65 @@ export default function Home() {
       </div>
     </>
   )
+}
+
+const serializeDocs = (value) => JSON.parse(JSON.stringify(value))
+
+export async function getStaticProps() {
+  try {
+    const [
+      { default: connectDB },
+      { default: Product },
+      { default: Service },
+      { default: Stat },
+      { default: CompanyInfo },
+      { default: EmailAddress },
+      { default: Review }
+    ] = await Promise.all([
+      import('../lib/mongodb'),
+      import('../models/Product'),
+      import('../models/Service'),
+      import('../models/Stat'),
+      import('../models/CompanyInfo'),
+      import('../models/EmailAddress'),
+      import('../models/Review')
+    ])
+
+    await connectDB()
+
+    const [products, services, stats, companyInfo, emailAddresses, reviews] = await Promise.all([
+      Product.find({ isActive: true }).sort({ isPrimary: -1, createdAt: -1 }).lean(),
+      Service.find({ isActive: true }).sort({ order: 1, createdAt: -1 }).select('-isActive -createdAt -updatedAt').lean(),
+      Stat.find({ isActive: true }).sort({ order: 1, createdAt: 1 }).lean(),
+      CompanyInfo.findOne().lean(),
+      EmailAddress.find({ isActive: true }).sort({ isPrimary: -1, createdAt: -1 }).lean(),
+      Review.find({ isActive: true }).sort({ order: 1, createdAt: -1 }).select('-isActive -createdAt -updatedAt').lean()
+    ])
+
+    return {
+      props: {
+        initialProducts: products?.length ? serializeDocs(products) : DEFAULT_PRODUCTS,
+        initialServices: services?.length ? serializeDocs(services) : DEFAULT_SERVICES,
+        initialStats: stats?.length ? serializeDocs(stats).slice(0, 4) : DEFAULT_STATS,
+        initialReviews: reviews?.length ? serializeDocs(reviews) : DEFAULT_REVIEWS,
+        initialCompanyInfo: companyInfo ? serializeDocs(companyInfo) : null,
+        initialEmailAddresses: emailAddresses?.length ? serializeDocs(emailAddresses) : []
+      },
+      revalidate: 300
+    }
+  } catch (error) {
+    console.error('Failed to build homepage data', error)
+
+    return {
+      props: {
+        initialProducts: DEFAULT_PRODUCTS,
+        initialServices: DEFAULT_SERVICES,
+        initialStats: DEFAULT_STATS,
+        initialReviews: DEFAULT_REVIEWS,
+        initialCompanyInfo: null,
+        initialEmailAddresses: []
+      },
+      revalidate: 60
+    }
+  }
 }
