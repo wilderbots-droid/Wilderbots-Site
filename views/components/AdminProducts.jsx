@@ -22,6 +22,7 @@ export default function AdminProducts() {
     isPrimary: false,
     ctaText: 'Learn More',
     ctaLink: '',
+    websiteUrl: '',
     appStoreLink: '',
     playStoreLink: '',
     showCta: true
@@ -173,6 +174,7 @@ export default function AdminProducts() {
   const handleEdit = (product) => {
     setFormData({
       ...product,
+      websiteUrl: product.websiteUrl || '',
       features: product.features || []
     })
     setImagePreview(product.image)
@@ -194,6 +196,7 @@ export default function AdminProducts() {
       isPrimary: false,
       ctaText: 'Learn More',
       ctaLink: '',
+      websiteUrl: '',
       appStoreLink: '',
       playStoreLink: '',
       showCta: true
@@ -434,6 +437,19 @@ export default function AdminProducts() {
                         className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-white focus:outline-none focus:border-purple-500 transition-colors"
                       />
                     </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-gray-400">Website Preview URL</label>
+                      <input
+                        type="url"
+                        value={formData.websiteUrl}
+                        onChange={(e) => setFormData({ ...formData, websiteUrl: e.target.value })}
+                        placeholder="https://example.com/"
+                        className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-white focus:outline-none focus:border-purple-500 transition-colors"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <label className="text-sm font-medium text-gray-400">CTA Link (Internal or External)</label>
                       <input

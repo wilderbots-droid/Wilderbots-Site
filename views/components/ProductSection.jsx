@@ -174,10 +174,10 @@ export default function ProductSection() {
                 </p>
                 
                 <div className="flex items-center gap-6 pt-4">
-                  <a 
-                    href={valueShiftProduct.ctaLink || `https://valueshift.in`}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <a
+                    href={valueShiftProduct.ctaLink || valueShiftProduct.websiteUrl || `/products/${valueShiftProduct._id}`}
+                    target={valueShiftProduct.ctaLink || valueShiftProduct.websiteUrl ? '_blank' : undefined}
+                    rel={valueShiftProduct.ctaLink || valueShiftProduct.websiteUrl ? 'noopener noreferrer' : undefined}
                     className="flex items-center gap-2 font-bold group/link transition-all text-blue-400 hover:text-blue-300"
                   >
                     {valueShiftProduct.ctaText || 'Visit ValueShift.in'} 

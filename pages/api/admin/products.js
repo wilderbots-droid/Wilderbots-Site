@@ -25,6 +25,7 @@ const productSchema = new mongoose.Schema(
     isPrimary: { type: Boolean, default: false },
     ctaText: { type: String, default: 'Learn More' },
     ctaLink: { type: String },
+    websiteUrl: { type: String },
     appStoreLink: { type: String },
     playStoreLink: { type: String },
     showCta: { type: Boolean, default: true }
@@ -85,7 +86,7 @@ async function handler(req, res) {
       const {
         title, subtitle, edition, engineeredBy, description,
         detailedOverview, features, image, isActive,
-        isPrimary, ctaText, ctaLink, appStoreLink, playStoreLink, showCta
+        isPrimary, ctaText, ctaLink, websiteUrl, appStoreLink, playStoreLink, showCta
       } = req.body;
 
       if (isPrimary) {
@@ -95,7 +96,7 @@ async function handler(req, res) {
       const product = await Product.create({
         title, subtitle, edition, engineeredBy, description,
         detailedOverview, features, image, isActive,
-        isPrimary, ctaText, ctaLink, appStoreLink, playStoreLink, showCta
+        isPrimary, ctaText, ctaLink, websiteUrl, appStoreLink, playStoreLink, showCta
       });
       return res.status(201).json({ success: true, product })
     }
@@ -111,7 +112,7 @@ async function handler(req, res) {
       const {
         title, subtitle, edition, engineeredBy, description,
         detailedOverview, features, image, isActive,
-        isPrimary, ctaText, ctaLink, appStoreLink, playStoreLink, showCta
+        isPrimary, ctaText, ctaLink, websiteUrl, appStoreLink, playStoreLink, showCta
       } = req.body;
 
       if (isPrimary) {
@@ -123,7 +124,7 @@ async function handler(req, res) {
         {
           title, subtitle, edition, engineeredBy, description,
           detailedOverview, features, image, isActive,
-          isPrimary, ctaText, ctaLink, appStoreLink, playStoreLink, showCta
+          isPrimary, ctaText, ctaLink, websiteUrl, appStoreLink, playStoreLink, showCta
         },
         { new: true }
       );

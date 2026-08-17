@@ -51,6 +51,9 @@ const productSchema = new mongoose.Schema(
     ctaLink: {
       type: String
     },
+    websiteUrl: {
+      type: String
+    },
     appStoreLink: {
       type: String
     },
