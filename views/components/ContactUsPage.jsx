@@ -292,6 +292,8 @@ export default function ContactUsPage({ onBack }) {
     ]
   }
 
+  const contactInfo = getContactInfo()
+
   const departments = getDepartments()
 
   return (
@@ -451,9 +453,12 @@ export default function ContactUsPage({ onBack }) {
                   </p>
                 </div>
 
-                <div className="mt-6 grid gap-4 sm:grid-cols-2 md:mt-8">
-                  {getContactInfo().map((info, index) => (
-                    <div key={index} className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+                <div className={`mt-6 grid gap-4 md:mt-8 ${contactInfo.length > 1 ? 'sm:grid-cols-2' : 'sm:grid-cols-1'}`}>
+                  {contactInfo.map((info, index) => (
+                    <div
+                      key={index}
+                      className={`rounded-2xl border border-white/10 bg-white/[0.03] p-5 ${contactInfo.length === 1 ? 'sm:col-span-1' : ''}`}
+                    >
                       <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl border border-sky-500/20 bg-sky-500/10">
                         <info.icon className="h-5 w-5 text-sky-300" />
                       </div>
