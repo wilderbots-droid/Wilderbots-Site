@@ -98,30 +98,34 @@ export default function ProductDetailPage() {
 
   const previewUrl = useMemo(() => getProductPreviewUrl(product), [product])
   const previewConfig = useMemo(() => getProductPreviewConfig(product), [product])
-  const featureTitles = useMemo(
-    () => (product?.features || []).map((feature) => feature?.title).filter(Boolean),
+  const productFeatures = useMemo(
+    () => (product?.features || []).filter((feature) => feature?.title || feature?.description),
     [product]
+  )
+  const featureTitles = useMemo(
+    () => productFeatures.map((feature) => feature?.title).filter(Boolean),
+    [productFeatures]
   )
   const metaCards = useMemo(
     () => [
       {
         icon: Package2,
-        label: 'Edition',
+        label: 'Best For',
         value: product?.edition || 'Wilderbots'
       },
       {
         icon: Layers3,
-        label: 'Feature Count',
-        value: `${featureTitles.length || 1} modules`
+        label: 'What You Get',
+        value: featureTitles.length ? `${featureTitles.length} key benefits` : 'A focused product experience'
       },
       {
         icon: Globe,
-        label: 'Launch Route',
-        value: previewUrl ? 'Live site available' : 'Internal showcase'
+        label: 'Availability',
+        value: previewUrl ? 'Live experience available' : 'Details available here'
       },
       {
         icon: ArrowRight,
-        label: 'CTA',
+        label: 'Next Step',
         value: product?.ctaText || `Explore ${product?.title || 'product'}`
       }
     ],
@@ -328,16 +332,16 @@ export default function ProductDetailPage() {
             <section className="rounded-[2rem] border border-white/10 bg-black/20 p-5 md:p-8">
               <div className="mb-6 flex flex-col gap-4 md:mb-8 lg:flex-row lg:items-end lg:justify-between">
                 <div>
-                  <div className="mb-3 text-xs uppercase tracking-[0.24em] text-zinc-500">Core Capabilities</div>
-                  <h2 className="font-serif-custom text-3xl text-white md:text-5xl">What powers {product.title}</h2>
+                  <div className="mb-3 text-xs uppercase tracking-[0.24em] text-zinc-500">Why People Use It</div>
+                  <h2 className="font-serif-custom text-3xl text-white md:text-5xl">What you can do with {product.title}</h2>
                 </div>
                 <p className="max-w-2xl text-sm leading-relaxed text-zinc-400 md:text-base">
-                  Every detail below is being pulled from the product record, so this page now stays in sync with the actual product content instead of using old static UI blocks.
+                  Explore the main benefits, use cases, and actions this product supports.
                 </p>
               </div>
 
               <MobileSnapCarousel
-                items={product.features || []}
+                items={productFeatures}
                 activeIndex={featureIndex}
                 setActiveIndex={setFeatureIndex}
                 itemKey={(feature, index) => `${feature?.title || 'feature'}-${index}`}
@@ -350,13 +354,13 @@ export default function ProductDetailPage() {
                       <CheckCircle className="h-5 w-5" />
                     </div>
                     <h3 className="mb-3 text-2xl font-semibold text-white">{feature?.title}</h3>
-                    <p className="text-sm leading-relaxed text-zinc-400">{feature?.description || 'Feature details are managed from the product dashboard.'}</p>
+                    <p className="text-sm leading-relaxed text-zinc-400">{feature?.description || 'A useful part of the product experience.'}</p>
                   </article>
                 )}
               />
 
               <div className="hidden gap-5 md:grid md:grid-cols-2 xl:grid-cols-3">
-                {(product.features || []).map((feature, index) => (
+                {productFeatures.map((feature, index) => (
                   <article
                     key={`${feature?.title || 'feature'}-${index}`}
                     className="rounded-[1.7rem] border border-white/10 bg-[linear-gradient(180deg,rgba(18,24,38,0.9)_0%,rgba(8,11,18,0.98)_100%)] p-6"
@@ -365,7 +369,7 @@ export default function ProductDetailPage() {
                       <CheckCircle className="h-5 w-5" />
                     </div>
                     <h3 className="mb-3 text-2xl font-semibold text-white">{feature?.title}</h3>
-                    <p className="text-sm leading-relaxed text-zinc-400">{feature?.description || 'Feature details are managed from the product dashboard.'}</p>
+                    <p className="text-sm leading-relaxed text-zinc-400">{feature?.description || 'A useful part of the product experience.'}</p>
                   </article>
                 ))}
               </div>
